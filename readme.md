@@ -80,7 +80,7 @@ For example:
 
 1.  A Google Analytics platform insight may be "Returning Website Users are down, from 2,092 to 1,676, a 19.89% drop." 
 
-2.  The generated tags would be: _platform,negative,google_analytics,engaged_users
+2.  The generated tags would be: _platform,negative,google_analytics,engaged_users_
 
 We then add one of two types of phrases to the insight:
 
@@ -88,7 +88,7 @@ We then add one of two types of phrases to the insight:
 
 2.  Talking Points ("Why do you think that is?")
 
-**Bucket Scores: **
+**Bucket Scores:**
 
 *   Each platform-level metric maps the current value to a percentile from 0-100 based on all historical values.
 

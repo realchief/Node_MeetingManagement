@@ -57,7 +57,6 @@ FT.data.buckets.demand = {};
 FT.data.buckets.demand.meta = {
 	'name' : "demand",
 	'label' : "Demand",
-	'order' : [ 'engagement', 'conversion', 'acquisition'],
 	'shortLabel' : "Demand"
 };
 
@@ -89,7 +88,6 @@ FT.data.buckets.user_engagement = {};
 FT.data.buckets.user_engagement.meta = {
 	'name' : "user_engagement",
 	'label' : "User Engagement",
-	'order' : [ 'engagement', 'conversion', 'acquisition'],
 	'shortLabel' : "Engagement"
 };
 

@@ -83,13 +83,13 @@ FT.connector.google = {
 			gapi.client.analytics.metadata.columns.list({ 'reportType' : 'ga'}).then( function(response) {
 
 				
-				FT.defaults.gaColumns = {}
+				FT.connector.google.gaColumns = {}
 
 				$.each( response.result.items, function(index, column) {
 
 					//console.log(column)
 
-					FT.defaults.gaColumns[column.id] = column.attributes;
+					FT.connector.google.gaColumns[column.id] = column.attributes;
 
 				})
 
@@ -868,7 +868,7 @@ FT.connector.google = {
 
         		$.each( report.columnHeader.dimensions, function(index, dimension) {
 
-        			table.push('<th>', FT.defaults.gaColumns[dimension].uiName, '</th>')
+        			table.push('<th>', FT.connector.google.gaColumns[dimension].uiName, '</th>')
         			dimensionNames.push(dimension.split('ga:')[1]);
 
         		})
@@ -893,8 +893,8 @@ FT.connector.google = {
 	        		 valueTypes.push(header.type)
 	        		 fieldNames.push(header.name.split("ga:")[1])
 
-	        		 if ( typeof FT.defaults.gaColumns[header.name] !== 'undefined') {
-	        		 	table.push('<th>', FT.defaults.gaColumns[header.name].uiName, '</th>');	        		
+	        		 if ( typeof FT.connector.google.gaColumns[header.name] !== 'undefined') {
+	        		 	table.push('<th>', FT.connector.google.gaColumns[header.name].uiName, '</th>');	        		
         			} else {
         				table.push('<th>', FT.data.data_sources.google_analytics.metric_assets.goals[index].name, '</th>');	        
         			}

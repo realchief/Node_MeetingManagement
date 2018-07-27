@@ -571,7 +571,7 @@ FT.insights = {
 		// NEED TO GET RID OF THIS!!!
 		var status = "positive";
 
-		var topFactors = [];
+		var topAssets = [];
 		
 		//console.log('GET CONTRIB FACTOR>>', metricName, 'Sources Used:', dataSources, 'Factors:', assetLinks, status, "BucketName:", bucketName)
 
@@ -587,7 +587,7 @@ FT.insights = {
 					factorGroup = 'posts';
 				}
 
-				var topFactor = {}
+				var topAsset = {}
 				if ( typeof FT.data.data_sources[dataSource].metric_assets[factorGroup] !== 'undefined' ) {
 					
 					switch (assetLink.orderType) {
@@ -619,30 +619,30 @@ FT.insights = {
 
 					//console.log('LIST>>>', dataSource, factorGroup, sortBy, filter, FT.data.data_sources[dataSource].metric_assets[factorGroup].current.list)
 
-					topFactor = FT.insights.sort(FT.data.data_sources[dataSource].metric_assets[factorGroup].current.list, sortBy, filter )
+					topAsset = FT.insights.sort(FT.data.data_sources[dataSource].metric_assets[factorGroup].current.list, sortBy, filter )
 				}
 
-				if ( topFactor ) {
+				if ( topAsset ) {
 
-					topFactor.meta = assetLink;
-					topFactor.meta.dataSource = FT.data.data_sources[dataSource].meta.name
-					topFactor.meta.genericName = FT.data.data_sources[dataSource].meta.genericName
-					topFactor.meta.bucketName = bucketName
-					topFactor.meta.parentMetric = metricName
-					topFactor.meta.value = topFactor[assetLink.field]
+					topAsset.meta = assetLink;
+					topAsset.meta.dataSource = FT.data.data_sources[dataSource].meta.name
+					topAsset.meta.genericName = FT.data.data_sources[dataSource].meta.genericName
+					topAsset.meta.bucketName = bucketName
+					topAsset.meta.parentMetric = metricName
+					topAsset.meta.value = topAsset[assetLink.field]
 					
-					topFactor.meta.status = status
-					topFactor.meta.format = assetLink.format || 'none'
+					topAsset.meta.status = status
+					topAsset.meta.format = assetLink.format || 'none'
 					
 					var deltaChangeField = assetLink.field + "_" + 'deltaChange'
 					var percentChangeField = assetLink.field + "_" + 'percentChange'
 					var percentOfTotalField = assetLink.field + "_" + 'percentOfTotal'
-					topFactor.meta.valuePercentChange = topFactor[percentChangeField]
-					topFactor.meta.valueDeltaChange = topFactor[deltaChangeField]
-					topFactor.meta.valuePercentOfTotal = topFactor[percentOfTotalField]
+					topAsset.meta.valuePercentChange = topAsset[percentChangeField]
+					topAsset.meta.valueDeltaChange = topAsset[deltaChangeField]
+					topAsset.meta.valuePercentOfTotal = topAsset[percentOfTotalField]
 				
 					/*if ( metricName == 'pageviews') {
-					console.log('FACTOR MADE>>', topFactor.meta.dataSource, metricName, topFactor)
+					console.log('FACTOR MADE>>', topAsset.meta.dataSource, metricName, topAsset)
 					}*/
 
 					tags.push('asset')
@@ -662,24 +662,24 @@ FT.insights = {
 
 					//tags.push('by_' + sortType)
 				
-					topFactor.meta.tags = tags
+					topAsset.meta.tags = tags
 
 					if ( typeof assetLink.match !== 'undefined') {
 				
 						if ( FT.data.data_sources.google_analytics.metric_assets[assetLink.match] ) {
 
-							var pageInfo = FT.insights.filter(FT.data.data_sources.google_analytics.metric_assets[assetLink.match].current.list, 'primary_dimension', topFactor[assetLink.linkable] )
+							var pageInfo = FT.insights.filter(FT.data.data_sources.google_analytics.metric_assets[assetLink.match].current.list, 'primary_dimension', topAsset[assetLink.linkable] )
 						
 							if ( typeof pageInfo[0] !== 'undefined' ) {
 								
-								//console.log('Page Title', 'for:', topFactor[assetLink.linkable], pageInfo[0]['secondary_dimension'])
-								//console.log('Hostname', 'for:', topFactor[assetLink.linkable], pageInfo[0]['hostname'])
+								//console.log('Page Title', 'for:', topAsset[assetLink.linkable], pageInfo[0]['secondary_dimension'])
+								//console.log('Hostname', 'for:', topAsset[assetLink.linkable], pageInfo[0]['hostname'])
 
-								topFactor.meta.title = pageInfo[0]['secondary_dimension']
-								topFactor.meta.hostname = pageInfo[0]['hostname']
+								topAsset.meta.title = pageInfo[0]['secondary_dimension']
+								topAsset.meta.hostname = pageInfo[0]['hostname']
 						
-								if ( topFactor.meta.title == "(not set)" ) {
-									topFactor.meta.title = pageInfo[0]['secondary_dimension']
+								if ( topAsset.meta.title == "(not set)" ) {
+									topAsset.meta.title = pageInfo[0]['secondary_dimension']
 								}
 
 							}
@@ -689,13 +689,13 @@ FT.insights = {
 
 
 
-					topFactors.push($.extend({},topFactor)) // new object in case we use the same article
+					topAssets.push($.extend({},topAsset)) // new object in case we use the same article
 					
 				}
 
 			})
 
-		return topFactors;
+		return topAssets;
 
 	},
 

@@ -703,7 +703,7 @@ FT.insights = {
 
 		if ( asset.meta.value ) {
 
-			//console.log('>>>> FACTOR', asset.meta.dataSource, factor)
+			//console.log('>>>> ASSET FACTOR', asset.meta.dataSource, asset.meta.field, asset)
 
 			var actions = []
 			var action = "";
@@ -727,7 +727,7 @@ FT.insights = {
 
 			// TODO: add "total" value for lookups where value is "change" //
 			var formattedValue = asset.meta[valueFieldToUse]
-			var valueDeltaChange = asset.meta.valueDeltaChange
+			var valueDeltaChange = asset.meta.valueDeltaChange.toLocaleString()
 			var valuePercentChange = asset.meta.valuePercentChange
 
 			//console.log('Field to use:', valueFieldToUse, 'Value Delta Change:', valueDeltaChange, 'Value Percent Change to use:', valuePercentChange, 'Formatted Value', formattedValue, typeof formattedValue)

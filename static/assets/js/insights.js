@@ -127,7 +127,7 @@ FT.insights = {
 							
 							$.each( assetInsights, function( index, factor ) {
 
-								//console.log('Individual Factor>>>>', factor.meta.parentMetric, factor)
+								//console.log('Individual Factor>>>>', asset.meta.parentMetric, factor)
 
 								var assetPhrase = ""
 								assetPhrase = FT.insights.assetPhraser( factor )
@@ -466,16 +466,16 @@ FT.insights = {
 
 			$.each( metric.assetInsights, function( index, assetInsight ) {
 
-					var factor = assetInsight.meta
+					var asset = assetInsight.meta
 					//console.log('Asset Insight:', factor)
 
-					var inlineStyle = FT.utilities.getInlineStyle('status', factor.status);
+					var inlineStyle = FT.utilities.getInlineStyle('status', asset.status);
 
 					var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
 
-					if ( typeof factor.pointsPhrases !== 'undefined') {
-						var phraseToUse = FT.insights.getUniquePhrase(factor.pointsPhrases)
-						phraseList.push('<span class="metric-asset">' + factor.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>')
+					if ( typeof asset.pointsPhrases !== 'undefined') {
+						var phraseToUse = FT.insights.getUniquePhrase(asset.pointsPhrases)
+						phraseList.push('<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>')
 					}
 
 
@@ -699,40 +699,40 @@ FT.insights = {
 
 	},
 
-	assetPhraser : function( factor ) {
+	assetPhraser : function( asset ) {
 
-		if ( factor.meta.value ) {
+		if ( asset.meta.value ) {
 
-			//console.log('>>>> FACTOR', factor.meta.dataSource, factor)
+			//console.log('>>>> FACTOR', asset.meta.dataSource, factor)
 
 			var actions = []
 			var action = "";
-			var status = factor.meta.status
+			var status = asset.meta.status
 			var actionableItem = ""
-			var actionType = factor.meta.type || 'post';
-			var sourcePhrase = factor.meta.genericName || factor.meta.dataSource
+			var actionType = asset.meta.type || 'post';
+			var sourcePhrase = asset.meta.genericName || asset.meta.dataSource
 			var tags = [];
 
-			var phraseToken = factor.meta.type || factor.meta.field
+			var phraseToken = asset.meta.type || asset.meta.field
 
-			if ( factor.meta.orderType ) {
+			if ( asset.meta.orderType ) {
 				phraseToken = 'delta'
 			}
 
-			if ( factor.meta.orderType ) {
-				var valueFieldToUse = 'value' + FT.utilities.uppercaseFirst(factor.meta.orderType) + "Change"
+			if ( asset.meta.orderType ) {
+				var valueFieldToUse = 'value' + FT.utilities.uppercaseFirst(asset.meta.orderType) + "Change"
 			} else {
 				var valueFieldToUse = 'value'
 			}
 
 			// TODO: add "total" value for lookups where value is "change" //
-			var formattedValue = factor.meta[valueFieldToUse]
-			var valueDeltaChange = factor.meta.valueDeltaChange
-			var valuePercentChange = factor.meta.valuePercentChange
+			var formattedValue = asset.meta[valueFieldToUse]
+			var valueDeltaChange = asset.meta.valueDeltaChange
+			var valuePercentChange = asset.meta.valuePercentChange
 
 			//console.log('Field to use:', valueFieldToUse, 'Value Delta Change:', valueDeltaChange, 'Value Percent Change to use:', valuePercentChange, 'Formatted Value', formattedValue, typeof formattedValue)
 
-			switch ( factor.meta.format ) {
+			switch ( asset.meta.format ) {
 
 				default :
 					
@@ -772,29 +772,29 @@ FT.insights = {
 			}
 
 
-			switch (typeof factor.meta.linkable) {
+			switch (typeof asset.meta.linkable) {
 
 				case 'undefined' : 
 				
 
-					if ( typeof factor.link !== 'undefined') {
-						actionableItem = '<a href="' + factor.link + '" class="post-link" target="_blank">'
+					if ( typeof asset.link !== 'undefined') {
+						actionableItem = '<a href="' + asset.link + '" class="post-link" target="_blank">'
 						actionableItem += 'This ' + sourcePhrase + ' ' + actionType;
 						actionableItem += '</a>'
 					} else {
-						actionableItem = factor.primary_dimension
+						actionableItem = asset.primary_dimension
 					}
 				
 				break
 
 				default : 
 
-						var displayTitle = factor.meta['title'] || factor[factor.meta['linkable']] 
-						var displayHostname = factor.meta['hostname'] || 'needURL'
+						var displayTitle = asset.meta['title'] || asset[asset.meta['linkable']] 
+						var displayHostname = asset.meta['hostname'] || 'needURL'
 
 						actionableItem = ""
 						//actionableItem += 'The ' + sourcePhrase + ' ' + actionType + ' ';
-						actionableItem += '<a href="' + '//' + displayHostname + factor[factor.meta['linkable']] + '" class="post-link" target="_blank">'
+						actionableItem += '<a href="' + '//' + displayHostname + asset[asset.meta['linkable']] + '" class="post-link" target="_blank">'
 						actionableItem += displayTitle;
 						actionableItem += '</a>'  
 
@@ -808,16 +808,16 @@ FT.insights = {
 		 * 
 		*/
 
-		var tags = factor.meta.tags
+		var tags = asset.meta.tags
 		//var insightsTagsSearch = tags.concat(metric.name)
 		var insightsTagsSearch = tags
 
 
-		//console.log( 'ASSET INSIGHTS TAG SEARCH:', factor.meta.field, factor.meta.parentMetric, insightsTagsSearch)
+		//console.log( 'ASSET INSIGHTS TAG SEARCH:', asset.meta.field, asset.meta.parentMetric, insightsTagsSearch)
 		var insightsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.insights, insightsTagsSearch) 
 	
 		//console.log( 'ASSET INSIGHTS PHRASES FOUND:', insightsPhrases)
-		//console.log("ASSET TRYING TAGS SEARCH>>>", factor.meta.field, factor.meta.parentMetric, tags.slice(0,3))
+		//console.log("ASSET TRYING TAGS SEARCH>>>", asset.meta.field, asset.meta.parentMetric, tags.slice(0,3))
 		
 		var pointsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.phrases, tags.slice(0,3)) 
 		
@@ -849,8 +849,8 @@ FT.insights = {
 		}
 
 
-			factor.meta.insightsPhrases = replacedPhrases
-			factor.meta.pointsPhrases = pointsPhrases
+			asset.meta.insightsPhrases = replacedPhrases
+			asset.meta.pointsPhrases = pointsPhrases
 
 			/**
 			 *
@@ -859,8 +859,8 @@ FT.insights = {
 			*/
 
 			var data = {}
-			data = factor.meta;
-			//data.original_factor = factor; // this creates a cyclic object value
+			data = asset.meta;
+			//data.original_asset = asset; // this creates a cyclic object value
 
 			if ( typeof FT.insights.data.asset_insights.statuses[status] == "undefined") {
 				FT.insights.data.asset_insights.statuses[status] = {
@@ -869,19 +869,19 @@ FT.insights = {
 				}
 			}
 
-			if ( typeof FT.insights.data.asset_insights.metrics[factor.meta.parentMetric] == "undefined") {
-				FT.insights.data.asset_insights.metrics[factor.meta.parentMetric] = []
+			if ( typeof FT.insights.data.asset_insights.metrics[asset.meta.parentMetric] == "undefined") {
+				FT.insights.data.asset_insights.metrics[asset.meta.parentMetric] = []
 			}
 
-			if ( typeof FT.insights.data.asset_insights.buckets[factor.meta.bucketName] == "undefined") {
-				FT.insights.data.asset_insights.buckets[factor.meta.bucketName] = []
+			if ( typeof FT.insights.data.asset_insights.buckets[asset.meta.bucketName] == "undefined") {
+				FT.insights.data.asset_insights.buckets[asset.meta.bucketName] = []
 			}
 
 
 			FT.insights.data.asset_insights.statuses[status].count++;
 			FT.insights.data.asset_insights.statuses[status].list.push(data)
-			FT.insights.data.asset_insights.metrics[factor.meta.parentMetric].push(data)
-			FT.insights.data.asset_insights.buckets[factor.meta.bucketName].push(data)
+			FT.insights.data.asset_insights.metrics[asset.meta.parentMetric].push(data)
+			FT.insights.data.asset_insights.buckets[asset.meta.bucketName].push(data)
 
 			return {
 				data : data

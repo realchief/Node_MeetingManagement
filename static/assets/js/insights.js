@@ -115,7 +115,7 @@ FT.insights = {
 
 					bucketName = FT.utilities.getBucket(metricName);
 
-					var phraseObject = FT.insights.phraser(metric);
+					var phraseObject = FT.insights.platformPhraser(metric);
 					var status = phraseObject.status
 		
 					if ( metric.asset_links ) {
@@ -229,7 +229,7 @@ FT.insights = {
 
 							var metricToPhrase = FT.data.platform[category][metricParent][metric];
 							
-							var phraseObject = FT.insights.phraser(metricToPhrase);
+							var phraseObject = FT.insights.platformPhraser(metricToPhrase);
 							var status = phraseObject.status;
 							var phrase = phraseObject.phrase
 
@@ -727,7 +727,7 @@ FT.insights = {
 
 			// TODO: add "total" value for lookups where value is "change" //
 			var formattedValue = asset.meta[valueFieldToUse]
-			var valueDeltaChange = asset.meta.valueDeltaChange.toLocaleString()
+			var valueDeltaChange = asset.meta.valueDeltaChange
 			var valuePercentChange = asset.meta.valuePercentChange
 
 			//console.log('Field to use:', valueFieldToUse, 'Value Delta Change:', valueDeltaChange, 'Value Percent Change to use:', valuePercentChange, 'Formatted Value', formattedValue, typeof formattedValue)
@@ -830,7 +830,7 @@ FT.insights = {
 			 var replacements = {
 		       	value: formattedValue,
 		        //compared_value: comparedTotal,
-		        total_delta : Math.abs(valueDeltaChange),
+		        total_delta : Math.abs(valueDeltaChange).toLocaleString(),
 		        percent_change : Math.abs(valuePercentChange).toFixed(2) + '%',
 		        primary_dimension : actionableItem
 		    };
@@ -891,7 +891,7 @@ FT.insights = {
 
 	},
 
-	phraser : function(metric) {
+	platformPhraser : function(metric) {
 
 		var insightsData = FT.insights.data
 		

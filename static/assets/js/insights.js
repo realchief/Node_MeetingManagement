@@ -566,23 +566,23 @@ FT.insights = {
 	},
 
 
-	getAssetInsights : function( dataSources, metricFactors, status, metricName, bucketName ) {
+	getAssetInsights : function( dataSources, assetLinks, status, metricName, bucketName ) {
 
 		// NEED TO GET RID OF THIS!!!
 		var status = "positive";
 
 		var topFactors = [];
 		
-		//console.log('GET CONTRIB FACTOR>>', metricName, 'Sources Used:', dataSources, 'Factors:', metricFactors, status, "BucketName:", bucketName)
+		//console.log('GET CONTRIB FACTOR>>', metricName, 'Sources Used:', dataSources, 'Factors:', assetLinks, status, "BucketName:", bucketName)
 
-			$.each ( metricFactors, function( index, metricFactor ) {
+			$.each ( assetLinks, function( index, assetLink ) {
 
-				var dataSource = metricFactor.source;
+				var dataSource = assetLink.source;
 				var factorGroup = "";
 				var tags = [];
 				
-				if ( typeof metricFactor.group !== 'undefined') {
-					factorGroup = metricFactor.group 
+				if ( typeof assetLink.group !== 'undefined') {
+					factorGroup = assetLink.group 
 				} else {
 					factorGroup = 'posts';
 				}
@@ -590,11 +590,11 @@ FT.insights = {
 				var topFactor = {}
 				if ( typeof FT.data.data_sources[dataSource].metric_assets[factorGroup] !== 'undefined' ) {
 					
-					switch (metricFactor.orderType) {
+					switch (assetLink.orderType) {
 
 						default :
 
-							var sortBy = metricFactor.sortBy || metricFactor.field
+							var sortBy = assetLink.sortBy || assetLink.field
 							var filter = ""
 							var sortType = 'total'
 
@@ -603,10 +603,10 @@ FT.insights = {
 						case 'percent' :
 						case 'delta' :
 
-							//console.log('INSIGHT DELTA SORTING>>>', metricFactor.field)
+							//console.log('INSIGHT DELTA SORTING>>>', assetLink.field)
 
-							var sortType = metricFactor.orderType;
-							var sortBy = metricFactor.field + '_' + sortType + 'Change'
+							var sortType = assetLink.orderType;
+							var sortBy = assetLink.field + '_' + sortType + 'Change'
 							var sortType = sortType + '_change'
 
 							//console.log('DELTA SORTING FIELD:', sortBy)
@@ -624,19 +624,19 @@ FT.insights = {
 
 				if ( topFactor ) {
 
-					topFactor.meta = metricFactor;
+					topFactor.meta = assetLink;
 					topFactor.meta.dataSource = FT.data.data_sources[dataSource].meta.name
 					topFactor.meta.genericName = FT.data.data_sources[dataSource].meta.genericName
 					topFactor.meta.bucketName = bucketName
 					topFactor.meta.parentMetric = metricName
-					topFactor.meta.value = topFactor[metricFactor.field]
+					topFactor.meta.value = topFactor[assetLink.field]
 					
 					topFactor.meta.status = status
-					topFactor.meta.format = metricFactor.format || 'none'
+					topFactor.meta.format = assetLink.format || 'none'
 					
-					var deltaChangeField = metricFactor.field + "_" + 'deltaChange'
-					var percentChangeField = metricFactor.field + "_" + 'percentChange'
-					var percentOfTotalField = metricFactor.field + "_" + 'percentOfTotal'
+					var deltaChangeField = assetLink.field + "_" + 'deltaChange'
+					var percentChangeField = assetLink.field + "_" + 'percentChange'
+					var percentOfTotalField = assetLink.field + "_" + 'percentOfTotal'
 					topFactor.meta.valuePercentChange = topFactor[percentChangeField]
 					topFactor.meta.valueDeltaChange = topFactor[deltaChangeField]
 					topFactor.meta.valuePercentOfTotal = topFactor[percentOfTotalField]
@@ -650,10 +650,10 @@ FT.insights = {
 					tags.push(status)
 					tags.push(metricName)
 					tags.push(sortType)
-					tags.push(metricFactor.field)
+					tags.push(assetLink.field)
 
-					if ( typeof metricFactor.type !== 'undefined') {
-						tags.push(metricFactor.type)
+					if ( typeof assetLink.type !== 'undefined') {
+						tags.push(assetLink.type)
 					}
 
 					/*if ( sortType !== "total" ) {
@@ -664,16 +664,16 @@ FT.insights = {
 				
 					topFactor.meta.tags = tags
 
-					if ( typeof metricFactor.match !== 'undefined') {
+					if ( typeof assetLink.match !== 'undefined') {
 				
-						if ( FT.data.data_sources.google_analytics.metric_assets[metricFactor.match] ) {
+						if ( FT.data.data_sources.google_analytics.metric_assets[assetLink.match] ) {
 
-							var pageInfo = FT.insights.filter(FT.data.data_sources.google_analytics.metric_assets[metricFactor.match].current.list, 'primary_dimension', topFactor[metricFactor.linkable] )
+							var pageInfo = FT.insights.filter(FT.data.data_sources.google_analytics.metric_assets[assetLink.match].current.list, 'primary_dimension', topFactor[assetLink.linkable] )
 						
 							if ( typeof pageInfo[0] !== 'undefined' ) {
 								
-								//console.log('Page Title', 'for:', topFactor[metricFactor.linkable], pageInfo[0]['secondary_dimension'])
-								//console.log('Hostname', 'for:', topFactor[metricFactor.linkable], pageInfo[0]['hostname'])
+								//console.log('Page Title', 'for:', topFactor[assetLink.linkable], pageInfo[0]['secondary_dimension'])
+								//console.log('Hostname', 'for:', topFactor[assetLink.linkable], pageInfo[0]['hostname'])
 
 								topFactor.meta.title = pageInfo[0]['secondary_dimension']
 								topFactor.meta.hostname = pageInfo[0]['hostname']

@@ -183,11 +183,9 @@ FT.process = {
 						FT.data.platform[categoryName].metrics[metric].data.values.percentDelta = totalPercentDelta
 						FT.data.platform[categoryName].metrics[metric].data.values.weightedPercentDelta = weightedPercentDelta
 						FT.data.platform[categoryName].metrics[metric].data.values.rolledUpPercentDelta = rolledUpPercentDelta
-						FT.data.platform[categoryName].metrics[metric].data.values.weight = FT.data.platform[categoryName].metrics[metric].weight
 						FT.data.platform[categoryName].metrics[metric].metricsUsed = fieldsUsed;
 						FT.data.platform[categoryName].metrics[metric].dataSourcesUsed = dataSourcesUsed;
 						FT.data.platform[categoryName].metrics[metric].metricScore = metricScore;
-
 
 					} else {
 

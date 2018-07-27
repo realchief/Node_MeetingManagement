@@ -20,9 +20,7 @@ FT.insights = {
 		},
 		platform_insights : {
 			statuses : {},
-			metrics : {
-				statuses : {}
-			},
+			metrics : {},
 			buckets: {}
 		},
 		usedPhrases : {
@@ -64,7 +62,7 @@ FT.insights = {
 		 * 
 		*/
 
-		var addToInsightsObject = function(phraseObject, parent, assetInsights) {
+		var addToInsightsObject = function(phraseObject, parentBucket, assetInsights) {
 
 			var status = phraseObject.status
 
@@ -75,8 +73,8 @@ FT.insights = {
 				}
 			}
 
-			if ( typeof insightsData.platform_insights.buckets[parent] == 'undefined' ) {
-				insightsData.platform_insights.buckets[parent] = []
+			if ( typeof insightsData.platform_insights.buckets[parentBucket] == 'undefined' ) {
+				insightsData.platform_insights.buckets[parentBucket] = []
 			}
 
 			insightsData.platform_insights.statuses[status].count++
@@ -87,7 +85,7 @@ FT.insights = {
 
 			insightsData.platform_insights.statuses[status].list.push(phraseObject.data)
 			insightsData.platform_insights.metrics.push(phraseObject.data)
-			insightsData.platform_insights.buckets[parent].push(phraseObject.data)
+			insightsData.platform_insights.buckets[parentBucket].push(phraseObject.data)
 
 		}
 		
@@ -103,11 +101,7 @@ FT.insights = {
 		
 		$.each ( FT.data.platform, function( categoryName, category ) {
 
-			var tipSet = [];
-			var tipHeader = [];
 			var bucketName = "none"
-
-			tipHeader.push('<li class="header">' + category.meta.label + '</li>')
 
 			$.each ( category.metrics, function( metricName, metric ) {
 
@@ -165,17 +159,12 @@ FT.insights = {
 	
 		$.each ( FT.data.buckets, function( bucketName, bucket ) {
 
-			var tipSet = [];
-			var tipHeader = [];
-			var scoreValues = [];
-			var scoreWeights = [];
-			var statusScoreValues = [];
-		
-			tipHeader.push('<li class="header">' + bucket.meta.label + '</li>')
-
+			
 			/**
 			 *
 			 * Performance Pictures MAKE INSIGHT OBJECT
+			 * THIS LITTLE SECTION IS NOT "REAL". Should be done
+			 * with SCORES
 			 * 
 			*/
 
@@ -204,10 +193,15 @@ FT.insights = {
 			insightsData.bucket_insights.statuses[status].buckets.push( bucketName )
 
 
+			var scoreValues = [];
+			var scoreWeights = [];
+			var statusScoreValues = [];
+			var weightedScoreDisplay = "";
 
 			/**
 			 *
 			 * Category Pictures
+			 * SET BUCKET INSIGHTS
 			 * 
 			*/
 
@@ -218,43 +212,37 @@ FT.insights = {
 
 				$.each ( bucket.meta.mappings[category], function( index, metric ) {
 
-					$.each ( [ 'metrics', 'equations' ], function( index, metricParent ) {
+					var metricParent = 'metrics';
 
-						if ( typeof FT.data.platform[category][metricParent][metric] == "undefined") { 
-							return 
+					if ( typeof FT.data.platform[category][metricParent][metric] == "undefined") { 
+						return 
+					}
+
+					// TODO: dont add metrics to scores if there is no reason for it (I.E. revenue for GA)
+					if ( typeof FT.data.platform[category][metricParent][metric].data !== "undefined") {
+
+						var metric = FT.data.platform[category][metricParent][metric];
+						var status = metric.status;
+					
+						scoreValues.push(metric.metricScore)
+						scoreWeights.push(metric.weight)
+
+						if ( status == 'positive') {
+							statusScoreValues.push(1)
+						} else {
+							statusScoreValues.push(0)	
 						}
 
-						// TODO: dont add metrics to scores if there is no reason for it (I.E. revenue for GA)
-						if ( typeof FT.data.platform[category][metricParent][metric].data !== "undefined") {
+					}
 
-							var metricToPhrase = FT.data.platform[category][metricParent][metric];
-							
-							var phraseObject = FT.insights.platformPhraser(metricToPhrase);
-							var status = phraseObject.status;
-							var phrase = phraseObject.phrase
-
-							scoreValues.push(phraseObject.data.metricScore)
-							scoreWeights.push(phraseObject.data.weight)
-
-							if ( status == 'positive') {
-								statusScoreValues.push(1)
-							} else {
-								statusScoreValues.push(0)	
-							}
-
-
-							//tipSet.push(phrase)
-
-							if ( metricToPhrase.metricsUsed.length > 1 ) {
-								phrase += " <span class='metrics-used'>" + metricToPhrase.metricsUsed.join(" + ") + "</span>";
-							}
-
-						}
-				
-					} )
 
 				} )
 
+				var weightedScore = FT.utilities.weightedMean( scoreValues, scoreWeights )
+				weightedScoreDisplay = (weightedScore * 100).toFixed(0) 
+			
+				FT.data.buckets[bucketName].data.totalScore = weightedScoreDisplay;
+		
 			} )			
 
 			insightsData.bucket_insights.buckets.push({
@@ -263,7 +251,8 @@ FT.insights = {
 				percentage : bucketPerformancePercentage,
 				scoreValues : scoreValues,
 				statusScoreValues : statusScoreValues,
-				scoreWeights : scoreWeights
+				scoreWeights : scoreWeights,
+				totalScore : weightedScoreDisplay
 			})
 
 
@@ -283,9 +272,15 @@ FT.insights = {
 
 	arrangeBucketInsights : function() {
 
-		// this is not how we want to do the headline. The below is looking at the number of positive metrics and negative metrics to determine
-		// if the bucket is "good" or "bad". 
-		// we should be looking at the score and how it compares historically.
+	
+		/**
+		 *
+		 * this is not how we want to do the headline. The below is looking at the number of positive metrics and negative metrics to determine
+		 * if the bucket is "good" or "bad". 
+		 * we should be looking at the score and how it compares historically.
+		 * GO TO SCORES BELOW
+		 * 
+		*/
 
 		var pictureTips = [];
 
@@ -366,6 +361,7 @@ FT.insights = {
 
 		FT.insights.data.bucket_insights.headline = sentences
 
+
 		/**
 		 *
 		 * Scores
@@ -377,13 +373,11 @@ FT.insights = {
 		$.each(FT.insights.data.bucket_insights.buckets, function( index, bucket ) {
 
 			var bucketLabel = FT.data.buckets[bucket.name].meta.label
-
-			var weightedScore = FT.utilities.weightedMean( bucket.scoreValues, bucket.scoreWeights )
-			var weightedScoreDisplay = (weightedScore * 100).toFixed(0) 
+			var score = bucket.totalScore
 			
-			FT.data.buckets[bucket.name].data.totalScore = weightedScoreDisplay;
+			FT.data.buckets[bucket.name].data.totalScore = score;
 
-			pictureTips.push(bucketLabel + ' Score is: ' + " " + weightedScoreDisplay)
+			pictureTips.push(bucketLabel + ' Score is: ' + " " + score)
 
 		})
 
@@ -578,17 +572,17 @@ FT.insights = {
 			$.each ( assetLinks, function( index, assetLink ) {
 
 				var dataSource = assetLink.source;
-				var factorGroup = "";
+				var assetGroup = "";
 				var tags = [];
 				
 				if ( typeof assetLink.group !== 'undefined') {
-					factorGroup = assetLink.group 
+					assetGroup = assetLink.group 
 				} else {
-					factorGroup = 'posts';
+					assetGroup = 'posts';
 				}
 
 				var topAsset = {}
-				if ( typeof FT.data.data_sources[dataSource].metric_assets[factorGroup] !== 'undefined' ) {
+				if ( typeof FT.data.data_sources[dataSource].metric_assets[assetGroup] !== 'undefined' ) {
 					
 					switch (assetLink.orderType) {
 
@@ -617,9 +611,9 @@ FT.insights = {
 					}
 
 
-					//console.log('LIST>>>', dataSource, factorGroup, sortBy, filter, FT.data.data_sources[dataSource].metric_assets[factorGroup].current.list)
+					//console.log('LIST>>>', dataSource, assetGroup, sortBy, filter, FT.data.data_sources[dataSource].metric_assets[assetGroup].current.list)
 
-					topAsset = FT.insights.sort(FT.data.data_sources[dataSource].metric_assets[factorGroup].current.list, sortBy, filter )
+					topAsset = FT.insights.sort(FT.data.data_sources[dataSource].metric_assets[assetGroup].current.list, sortBy, filter )
 				}
 
 				if ( topAsset ) {
@@ -820,7 +814,8 @@ FT.insights = {
 		//console.log("ASSET TRYING TAGS SEARCH>>>", asset.meta.field, asset.meta.parentMetric, tags.slice(0,3))
 		
 		var pointsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.phrases, tags.slice(0,3)) 
-		
+
+		//console.log('points tags:', tags.slice(0,3))		
 		//console.log( 'ASSET POINTS PHRASES FOUND:', pointsPhrases)
 		
 		var replacedPhrases = [];
@@ -906,7 +901,6 @@ FT.insights = {
 		var totalPercentDelta = metric.data.values.percentDelta
 		var weightedPercentDelta = metric.data.values.weightedPercentDelta
 		var rolledUpPercentDelta =  metric.data.values.rolledUpPercentDelta
-		var weight =  metric.data.values.weight
 		var metricScore = metric.metricScore
 		var label = metric.label;
 		var trend = ( typeof metric.trend === 'undefined' ) ? 'higher' : 'lower'
@@ -1034,6 +1028,9 @@ FT.insights = {
 
 		}
 
+		// Add status to platform metric for use in bucket insights lookups
+		metric.status = status;
+
 		var data = {
 			name : metric.name,
 			label : metric.label,
@@ -1043,10 +1040,9 @@ FT.insights = {
 			comparedTotal : comparedTotal,
 			totalPercentDelta : totalPercentDelta,
 			weightedPercentDelta : weightedPercentDelta,
-			weight : weight,
 			metricScore : metricScore,
 			tags : tags,
-			rolledUpPercentDelta : metric.data.values.rolledUpPercentDelta,
+			rolledUpPercentDelta : rolledUpPercentDelta,
 			insightsPhrases : replacedPhrases,
 			pointsPhrases: pointsPhrases
 		}

@@ -129,8 +129,8 @@ FT.insights = {
 
 								//console.log('Individual Factor>>>>', factor.meta.parentMetric, factor)
 
-								var factorPhrase = ""
-								factorPhrase = FT.insights.factorPhraser( factor )
+								var assetPhrase = ""
+								assetPhrase = FT.insights.assetPhraser( factor )
 							
 							})
 						}
@@ -699,7 +699,7 @@ FT.insights = {
 
 	},
 
-	factorPhraser : function( factor ) {
+	assetPhraser : function( factor ) {
 
 		if ( factor.meta.value ) {
 

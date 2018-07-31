@@ -10,7 +10,6 @@ FT.insights = {
 	data : {
 
 		bucket_insights : {
-			statuses : {},
 			buckets : []
 		},
 		asset_insights : {
@@ -39,8 +38,7 @@ FT.insights = {
 
 		FT.insights.data.bucket_insights = {}
 		FT.insights.data.bucket_insights.buckets = []
-		FT.insights.data.bucket_insights.statuses = {}
-
+	
 		FT.insights.data.platform_insights.statuses = {}
 		FT.insights.data.platform_insights.metrics = []
 		FT.insights.data.platform_insights.buckets = {}
@@ -87,6 +85,7 @@ FT.insights = {
 			insightsData.platform_insights.metrics.push(phraseObject.data)
 			insightsData.platform_insights.buckets[parentBucket].push(phraseObject.data)
 
+	
 		}
 		
 		//console.log('>>>>> Insights Data', insightsData)
@@ -108,7 +107,7 @@ FT.insights = {
 				if ( typeof metric.data !== 'undefined') {
 
 					bucketName = FT.utilities.getBucket(metricName);
-
+		
 					var phraseObject = FT.insights.platformPhraser(metric);
 					var status = phraseObject.status
 		
@@ -159,52 +158,19 @@ FT.insights = {
 	
 		$.each ( FT.data.buckets, function( bucketName, bucket ) {
 
-			
-			/**
-			 *
-			 * Performance Pictures MAKE INSIGHT OBJECT
-			 * THIS LITTLE SECTION IS NOT "REAL". Should be done
-			 * with SCORES
-			 * 
-			*/
-
-			var bucketPerformance = bucket.data.positiveMappingsCount / bucket.data.totalMappingsCount
-			bucketPerformancePercentage = bucketPerformance * 100;
-			var performanceId = "";
-			
-			if ( bucketPerformancePercentage > 50 ) {
-				status = 'positive'	
-			} else if ( bucketPerformancePercentage < 50 ) {
-				status = 'negative'	
-			} else {
-				status = 'neutral'	
-			}
-
-			if ( typeof insightsData.bucket_insights.statuses[status] == 'undefined' ) {
-				insightsData.bucket_insights.statuses[status] = {
-					count : 0,
-					buckets : []
-				}
-			}
-
-			FT.data.buckets[bucketName].data.status = status
-
-			insightsData.bucket_insights.statuses[status].count++
-			insightsData.bucket_insights.statuses[status].buckets.push( bucketName )
-
-
 			var scoreValues = [];
 			var scoreWeights = [];
-			var statusScoreValues = [];
 			var weightedScoreDisplay = "";
+			var positives = [];
+			var negatives = [];
+			var neutrals = [];
+			var mappingsStatus = ""
 
 			/**
 			 *
-			 * Category Pictures
 			 * SET BUCKET INSIGHTS
 			 * 
 			*/
-
 
 			$.each ( bucket.meta.order, function( count, category ) {
 
@@ -226,15 +192,7 @@ FT.insights = {
 					
 						scoreValues.push(metric.metricScore)
 						scoreWeights.push(metric.weight)
-
-						if ( status == 'positive') {
-							statusScoreValues.push(1)
-						} else {
-							statusScoreValues.push(0)	
-						}
-
 					}
-
 
 				} )
 
@@ -242,17 +200,37 @@ FT.insights = {
 				weightedScoreDisplay = (weightedScore * 100).toFixed(0) 
 			
 				FT.data.buckets[bucketName].data.totalScore = weightedScoreDisplay;
-		
+
+
+				/* Get the number of positive and negative metrics */
+
+				positives = FT.insights.filter(FT.insights.data.platform_insights.buckets[bucketName], 'status', 'positive')
+				negatives = FT.insights.filter(FT.insights.data.platform_insights.buckets[bucketName], 'status', 'negative')
+				neutrals = FT.insights.filter(FT.insights.data.platform_insights.buckets[bucketName], 'status', 'neutral')
+				var totalMappingsCount = positives.length + negatives.length + neutrals.length
+				var bucketPerformance = positives.length / totalMappingsCount
+				bucketPerformancePercentage = bucketPerformance * 100;
+
+				console.log(bucketPerformancePercentage)
+				if ( bucketPerformancePercentage > 50 ) {
+					mappingsStatus = 'positive'	
+				} else if ( bucketPerformancePercentage < 50 ) {
+					mappingsStatus = 'negative'	
+				} else {
+					mappingsStatus = 'neutral'	
+				}
+
 			} )			
 
 			insightsData.bucket_insights.buckets.push({
 				name : bucketName,
-				status : status,
-				percentage : bucketPerformancePercentage,
 				scoreValues : scoreValues,
-				statusScoreValues : statusScoreValues,
 				scoreWeights : scoreWeights,
-				totalScore : weightedScoreDisplay
+				totalScore : weightedScoreDisplay,
+				positiveMappingsCount : positives.length,
+				negativeMappingsCount : negatives.length,
+				neutralMappingsCount : neutrals.length,
+				mappingsStatus : mappingsStatus
 			})
 
 
@@ -272,96 +250,6 @@ FT.insights = {
 
 	arrangeBucketInsights : function() {
 
-	
-		/**
-		 *
-		 * this is not how we want to do the headline. The below is looking at the number of positive metrics and negative metrics to determine
-		 * if the bucket is "good" or "bad". 
-		 * we should be looking at the score and how it compares historically.
-		 * GO TO SCORES BELOW
-		 * 
-		*/
-
-		var pictureTips = [];
-
-		FT.insights.sort(FT.insights.data.bucket_insights.buckets, 'bucketInsights' )
-
-		var positives = FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'status', 'positive')
-		var negatives = FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'status', 'negative')
-		var neutrals = FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'status', 'neutral')
-
-		pictureTips = [];
-		var tip = []
-		
-		makeInsightSentences = function( list ) {
-
-			if ( list.length > 0 ) {
-
-				$.each ( list, function(index, bucket) {
-
-					var bucketLabel = FT.data.buckets[bucket.name].meta.label
-
-					//tip.push( '<span class="insight-name insight-label">' + bucketLabel + '</span>')
-
-					tip.push(bucketLabel)
-
-					if ( index+2 < list.length ) {
-						tip.push( ',' )
-					} 
-
-					if ( index+2 == list.length ) {
-
-						if ( list.length > 2) tip.push( ',' ) //oxford comma, yo
-						tip.push( 'and' )
-					} 
-
-				})
-
-				areOrIs = ( list.length == 1 ) ? 'is' : 'are';
-				tip.push(areOrIs)
-				
-
-			}
-
-		}
-
-		
-		$.each( [ positives, negatives, neutrals ], function( index, list ) {
-
-			if ( list.length > 0 ) {
-	
-				makeInsightSentences(list)
-		
-				if ( index == 0 ) {
-					var action = FT.utilities.shuffle(FT.phrases.bites.group_verbs.positive.slice(0))
-					//tip.push( '<span class="insight-modifier insight-positive">' + action[0] + '</span>')
-					tip.push( action[0] + '.'  )
-				} else if ( index == 1 ) {
-					var action = FT.utilities.shuffle(FT.phrases.bites.group_verbs.negative.slice(0))
-					//tip.push( '<span class="insight-modifier insight-negative">' + action[0] + '</span>')
-					tip.push( action[0] + '.'  )
-				} else if ( index == 2 ) {
-					var action = FT.utilities.shuffle(FT.phrases.bites.group_verbs.neutral.slice(0))
-					//tip.push( '<span class="insight-modifier insight-neutral">' + action[0] + '</span>')
-					tip.push( action[0] + '.' )
-				}
-
-			}
-
-		})
-		
-		pictureTips.push( tip.join(' ') );
-		
-		var sentences = pictureTips.join('</li><li>')
-
-		// remove spaces before any commas
-		sentences = sentences.replace(/\s*,\s*/g, ", ");
-
-		$('.insights-content').append('<h2 class="headline">' + sentences + '</h2>');
-
-		FT.insights.data.bucket_insights.headline = sentences
-
-
 		/**
 		 *
 		 * Scores
@@ -380,6 +268,8 @@ FT.insights = {
 			pictureTips.push(bucketLabel + ' Score is: ' + " " + score)
 
 		})
+
+		FT.insights.data.bucket_insights.headline = "Temporary Headline"
 
 		var sentences = pictureTips.join('. ')
 		

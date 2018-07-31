@@ -2,51 +2,6 @@ var FT = FT || {};
 
 FT.phrases = {
 
-	bites : {
-
-		delta_verbs : {
-			positive : [
-				'increase'
-			],
-
-			negative : [
-				'decrease',
-			],
-
-			neutral : [
-				'same'
-			]
-		},
-
-		leadins : [
-			'there was',
-		],
-
-		joiners : [
-			'of',
-			'in',
-		],
-
-		/*verbs : {
-			positive : [ 'drove', 'grabbed', 'had', 'boasted' ],
-			negative : [ 'had', 'drove' ]
-		},*/
-
-		verbs : {
-			positive : [ 'had' ],
-			negative : [ 'had' ]
-		},
-
-		group_verbs : {
-			positive : [ 'performing well', 'in good shape', 'up' ],
-			negative : [ 'underperforming', 'something to look at', 'down' ],
-			neutral : [ 'staying the course', 'unchanged', 'about the same' ],
-		}
-	
-	
-	},
-
-
 	phrases : [],
 	insights : [],
 

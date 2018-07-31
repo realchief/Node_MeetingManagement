@@ -61,7 +61,7 @@ FT.app = {
 
 	doAll : function() {
 
-		$.each( ['reset', 'platform', 'buckets', 'dataSources', 'metricsEditor'], function( index, endpoint ) {
+		$.each( ['reset', 'platform', 'metricsEditor'], function( index, endpoint ) {
 			FT.process[endpoint]()
 		})
 
@@ -189,17 +189,17 @@ FT.app = {
 				summary: "In-Page Test",
 				subject: 'MeetBrief for',
 				headline: FT.insights.data.bucket_insights.headline,
-				interest_change: FT.data.buckets['user_interest'].data.positiveMappingsCount - FT.data.buckets['user_interest'].data.negativeMappingsCount,
-				interest_score: FT.data.buckets['user_interest'].data.totalScore,
-				interest_status: FT.data.buckets['user_interest'].data.status,
+				interest_change: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
+				interest_score: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
+				interest_status: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,
 				interest_chart: 'chart-1.png',
-				engagement_change: FT.data.buckets['user_engagement'].data.positiveMappingsCount - FT.data.buckets['user_engagement'].data.negativeMappingsCount,
-				engagement_score: FT.data.buckets['user_engagement'].data.totalScore,
-				engagement_status: FT.data.buckets['user_engagement'].data.status,
+				engagement_change: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_engagement')[0].positiveMappingsCount - FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_engagement')[0].negativeMappingsCount,
+				engagement_score: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_engagement')[0].totalScore,
+				engagement_status: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'user_engagement')[0].mappingsStatus,
 				engagement_chart: 'chart-2.png',
-				demand_change: FT.data.buckets['demand'].data.positiveMappingsCount - FT.data.buckets['demand'].data.negativeMappingsCount,
-				demand_score: FT.data.buckets['demand'].data.totalScore,
-				demand_status: FT.data.buckets['demand'].data.status,
+				demand_change: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'demand')[0].positiveMappingsCount - FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'demand')[0].negativeMappingsCount,
+				demand_score: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'demand')[0].totalScore,
+				demand_status: FT.insights.filter(FT.insights.data.bucket_insights.buckets, 'name', 'demand')[0].mappingsStatus,
 				demand_chart: 'chart-2.png',
 				action_items: FT.insights.data.action_items,
 				talking_points: FT.insights.data.talking_points
@@ -223,10 +223,8 @@ FT.app = {
 			}).fail( function(response) {
 				console.log('FAIL FROM EMAILER:', response)
 			})
-	
+		
 		});
-
-		//FT.dates.setDatePickers();
 
 	},
 

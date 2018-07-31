@@ -328,13 +328,6 @@ $.each( FT.data.data_sources.google_analytics.fields, function(fieldName, field)
 })
 
 
-/**
- *
- * Google Analytics : Equations
- *
- */
-
-
  /**
  *
  * Google Analytics - Timeframes

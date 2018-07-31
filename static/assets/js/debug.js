@@ -167,7 +167,6 @@ FT.debug = {
 
 		$('.debug-listing').html("")
 		
-
 		$.each( FT.insights.data.platform_insights.buckets, function( bucketName, bucket ) {
 
 			$('.debug-listing').append('<li class="header">' + FT.data.buckets[bucketName].meta.label + ' Platform Insights ' + "</li>")
@@ -189,7 +188,7 @@ FT.debug = {
 				var totalPercentDelta = metric.data.values.percentDelta
 				var weightedPercentDelta = metric.data.values.weightedPercentDelta
 				var rolledUpPercentDelta =  metric.data.values.rolledUpPercentDelta
-				var weight =  metric.data.values.weight
+				var weight =  metric.weight
 				var metricScore = metric.metricScore
 				var label = metric.label;
 				var trend = ( typeof metric.trend === 'undefined' ) ? 'higher' : 'lower'
@@ -294,7 +293,7 @@ FT.debug = {
 				moreOrLess = ( totalDelta > 0 ) ? 'less' : 'more';
 				wereOrWas = ( currentTotal == 1 ) ? 'was' : 'were';
 
-				var leadin = FT.phrases.bites.leadins[0];
+				var leadin = "There was"
 
 				phrase.push(FT.utilities.capitalize(leadin))
 				
@@ -317,10 +316,26 @@ FT.debug = {
 						phrase.push('<em>' + 'x' + weight + '</em>' )
 						phrase.push('</span>')
 
-						var actionVerb = FT.utilities.shuffle(FT.phrases.bites.delta_verbs[verbStatus].slice(0))
+						var actionVerb = ""
+		
+						switch ( verbStatus ) {
 
-						phrase.push(actionVerb[0])
-				
+							case 'positive' : 
+								actionVerb = 'increase'
+							break
+
+							case 'negative' :
+								actionVerb = 'decrease'
+							break
+
+							case 'neutral' :
+								actionVerb = 'change'
+							break
+
+						}
+
+						phrase.push(actionVerb)
+					
 					break
 
 				}
@@ -415,13 +430,14 @@ FT.debug = {
 			var totalPercentDelta = metric.data.values.percentDelta
 			var weightedPercentDelta = metric.data.values.weightedPercentDelta
 			var rolledUpPercentDelta =  metric.data.values.rolledUpPercentDelta
-			var weight =  metric.data.values.weight
+			var weight =  metric.weight
 			var metricScore = metric.metricScore
 			var label = metric.label;
 			var trend = ( typeof metric.trend === 'undefined' ) ? 'higher' : 'lower'
 			var tags = [];
 			var verbStatus = "";
 			var status = "";
+			var actionVerb = ""
 
 			var parentBucket = FT.data.buckets[FT.utilities.getBucket(metric.name)].meta.shortLabel;
 
@@ -520,8 +536,7 @@ FT.debug = {
 			moreOrLess = ( totalDelta > 0 ) ? 'less' : 'more';
 			wereOrWas = ( currentTotal == 1 ) ? 'was' : 'were';
 
-			var leadin = FT.phrases.bites.leadins[0];
-
+			var leadin = "there was"
 			phrase.push(FT.utilities.capitalize(leadin))
 			
 			switch ( status ) {
@@ -543,10 +558,26 @@ FT.debug = {
 					phrase.push('<em>' + 'x' + weight + '</em>' )
 					phrase.push('</span>')
 
-					var actionVerb = FT.utilities.shuffle(FT.phrases.bites.delta_verbs[verbStatus].slice(0))
+					var actionVerb = ""
+		
+					switch ( verbStatus ) {
 
-					phrase.push(actionVerb[0])
-			
+						case 'positive' : 
+							actionVerb = 'increase'
+						break
+
+						case 'negative' :
+							actionVerb = 'decrease'
+						break
+
+						case 'neutral' :
+							actionVerb = 'change'
+						break
+
+					}
+
+					phrase.push(actionVerb)
+
 				break
 
 			}

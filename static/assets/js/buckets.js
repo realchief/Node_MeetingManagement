@@ -25,9 +25,7 @@ FT.data.buckets.user_interest.meta = {
 };
 
 FT.data.buckets.user_interest.meta.mappings = {}
-FT.data.buckets.user_interest.metrics = {}
 FT.data.buckets.user_interest.weight = 1
-FT.data.buckets.user_interest.equations = {}
 FT.data.buckets.user_interest.data = {}
 FT.data.buckets.user_interest.meta.mappings.all = []
 
@@ -61,9 +59,7 @@ FT.data.buckets.demand.meta = {
 };
 
 FT.data.buckets.demand.meta.mappings = {}
-FT.data.buckets.demand.metrics = {}
 FT.data.buckets.demand.weight = 1
-FT.data.buckets.demand.equations = {}
 FT.data.buckets.demand.data = {}
 FT.data.buckets.demand.meta.mappings.all = [ ]
 
@@ -92,9 +88,7 @@ FT.data.buckets.user_engagement.meta = {
 };
 
 FT.data.buckets.user_engagement.meta.mappings = {}
-FT.data.buckets.user_engagement.metrics = {}
 FT.data.buckets.user_engagement.weight = 1
-FT.data.buckets.user_engagement.equations = {}
 FT.data.buckets.user_engagement.data = {}
 FT.data.buckets.user_engagement.meta.mappings.all = []
 

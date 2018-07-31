@@ -209,123 +209,15 @@ FT.process = {
 	},
 
 
-	buckets: function() {
+	dataSources: function() {
 
-	
 		/**
 		 *
-		 * buckets
+		 * I DONT THINK THIS IS NEEDED ANYMORE
+		 * AS WE'RE NOT USING EQUATIONS RIGHT NOW
 		 *
  		*/
 
-		$.each ( FT.data.buckets, function( bucketName, bucket ) {
-			
-		
-			bucket.data.totalMappingsCount = 0;
-			bucket.data.positiveMappingsCount = 0;
-			bucket.data.negativeMappingsCount = 0;
-			bucket.data.evenMappingsCount = 0;
-			bucket.data.positiveMappings = [];
-			bucket.data.negativeMappings = [];
-			bucket.data.evenMappings = [];
-			bucket.data.totalScore = 0;
-
-			$.each ( bucket.meta.order, function( count, category ) {
-
-				var currentTotal = 0;
-				var comparedTotal = 0;
-				
-
-				if ( bucket.meta.mappings[category].length <= 0 ) return;
-			
-				$.each ( bucket.meta.mappings[category], function( index, metric ) {
-
-					var activatedBucketMapping = false;
-
-					$.each ( [ 'metrics', 'equations' ], function( index, metricParent ) {
-
-						if ( typeof FT.data.platform[category][metricParent][metric] == "undefined") { 
-							return 
-						}
-
-						activatedBucketMapping = true;
-
-						/**
-						 * grab the totals over the mapped metrics and equations within platform
-						*/
-
-						if ( typeof FT.data.platform[category][metricParent][metric].data !== "undefined") {
-
-							trend = FT.data.platform[category][metricParent][metric].trend || "higher";
-							var isPositive = false;
-							var isNegative = false;
-
-							totalDelta = FT.data.platform[category][metricParent][metric].data.values.delta;
-							bucket.data.totalMappingsCount = bucket.data.totalMappingsCount+1
-
-							switch ( trend ) {
-
-								default : 
-
-									isPositive = totalDelta > 0
-									isNegative = totalDelta < 0 
-
-								break
-		
-
-								case 'lower' :
-
-									isPositive = totalDelta < 0
-									isNegative = totalDelta > 0 
-
-								break
-
-							}
-
-							if ( isPositive ) {
-
-								bucket.data.positiveMappingsCount = bucket.data.positiveMappingsCount+1
-								bucket.data.positiveMappings.push(metric)
-								
-							} else if ( isNegative ) {
-
-								bucket.data.negativeMappingsCount = bucket.data.negativeMappingsCount+1
-								bucket.data.negativeMappings.push(metric)
-								
-							} else {
-
-								bucket.data.evenMappingsCount = bucket.data.evenMappingsCount+1
-								bucket.data.evenMappings.push(metric)
-
-								}
-
-
-
-						} else {
-
-							console.log('bucket MAPPING HAS NO DATA >>>>', bucketName, category, metric)
-						}
-						
-						
-
-			
-					})
-
-					if ( !activatedBucketMapping ) {
-						console.log('bucket MAPPING NOT FOUND AS metric >>>>', bucketName, category, metric)
-					}
-
-				})
-	
-			})
-		
-		
-		})
-
-		
-	},
-
-	dataSources: function() {
 
 		$.each ( FT.data.data_sources, function( dataSourceName, dataSource ) {
 			

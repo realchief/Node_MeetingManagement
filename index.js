@@ -14,6 +14,7 @@ var helpers = require('./helpers');
 var routes = require('./routes/index');
 var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
+var passport = require('passport');
 
 var establishSecurePort = false;
 

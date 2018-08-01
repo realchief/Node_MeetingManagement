@@ -90,6 +90,66 @@ FT.connector.facebook = {
 
 	},
 
+	displayAccounts : function(response) {
+
+		/**
+		 *
+		 * pages
+		 *
+		*/
+
+		//console.log('ACCOUNTS>>>', response)
+
+		$('.facebook-accounts').html("")
+		var html = "";
+		var html = "<h4 class='label'>Facebook Page Accounts for (" + response.name + ") </h4>"
+
+		//console.log('>>>>>> FACEBOOK RESPONSE', response)
+		
+
+		 /**
+		 *
+		 * metrics
+		 *
+ 		*/
+
+		html += "<ul>"
+		
+
+		if ( typeof response.accounts == 'undefined') {
+
+			html += "<li class='fb-account'>"
+				html += "This Facebook User does not have any pages for insights"
+    			html += "</li>"
+
+		} else {
+
+			$.each(response.accounts.data, function(index, account) {
+
+				html += "<li class='fb-account'"
+				html += " data-id='" + account.id + "' data-token='" + account.access_token + "'"
+				html += ' data-name="' + account.global_brand_page_name + ' (' + account.id + ')' + '"'
+				html += " >"
+				html += account.global_brand_page_name + " (" + account.id + ") "
+				html += "<span class='property-chooser'>" + "Use" + "</span>"
+    			html += "</li>"
+
+    		})
+							    		
+
+			html += "</ul>"
+
+		}
+
+		$('.facebook-accounts').append(html)
+
+
+		if ( FT.defaults.chooseWhenPropertyListed ) {
+		    $('[data-id=' + FT.defaults.facebookPropertyId + ']').trigger('click')
+		   }
+
+	},
+
 
 	getAccounts : function(){
 
@@ -112,69 +172,7 @@ FT.connector.facebook = {
 				console.log(response.error)
 	  		} else {
 
-	  			 /**
-				 *
-				 * pages
-				 *
-				*/
-
-				//console.log('ACCOUNTS>>>', response)
-
-	  			$('.facebook-accounts').html("")
-				var html = "";
-				var html = "<h4 class='label'>Facebook Page Accounts for (" + response.name + ") </h4>"
-
-				//console.log('>>>>>> FACEBOOK RESPONSE', response)
-				
-
-				 /**
-				 *
-				 * metrics
-				 *
-		 		*/
-
-
-	  			//need to call 
-	  			// /{page-id}/insights/{metric}
-	  			// /{post-id}/insights/{metric} (Posts on a Page only)*
-
-				var metrics = 
-
-				html += "<ul>"
-				
-
-				if ( typeof response.accounts == 'undefined') {
-
-					html += "<li class='fb-account'>"
-						html += "This Facebook User does not have any pages for insights"
-		    			html += "</li>"
-
-				} else {
-
-					$.each(response.accounts.data, function(index, account) {
-
-						html += "<li class='fb-account'"
-						html += " data-id='" + account.id + "' data-token='" + account.access_token + "'"
-						html += ' data-name="' + account.global_brand_page_name + ' (' + account.id + ')' + '"'
-						html += " >"
-						html += account.global_brand_page_name + " (" + account.id + ") "
-						html += "<span class='property-chooser'>" + "Use" + "</span>"
-		    			html += "</li>"
-
-		    		})
-									    		
-
-	    			html += "</ul>"
-
-	    		}
-
-	    		$('.facebook-accounts').append(html)
-
-
-	    		if ( FT.defaults.chooseWhenPropertyListed ) {
-				    $('[data-id=' + FT.defaults.facebookPropertyId + ']').trigger('click')
-				   }
-
+	  			 FT.connector.facebook.displayAccounts(response)
 			}
 
 		})
@@ -183,8 +181,7 @@ FT.connector.facebook = {
 
 	getMetrics : function(account_name, id, token, timeframe) {
 
-		$('.fb-table').html('')
-
+	
 		console.log('*********** CALLED FACEBOOK APIS ****')
 
 		/**
@@ -256,9 +253,6 @@ FT.connector.facebook = {
 
 		//console.log( '+++', timeframe, ' **** Since', since, until)
 		//console.log( '+++', timeframe, ' **** Until', since, until)
-
-
-		
 
 		/**
 		 *
@@ -353,7 +347,7 @@ FT.connector.facebook = {
 
 		FB.api(id + "/insights", {
 			access_token : token,
-			metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds',
+			metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
 			period : 'day',
 			date_preset : FT.defaults.facebookDatePreset,
 			since : since,
@@ -486,7 +480,7 @@ FT.connector.facebook = {
 		       		var postObject = {
 				    	access_token : token,
 				    	period : 'lifetime',
-				   		metric : 'post_impressions_unique,post_engaged_users,post_stories_by_action_type,post_story_adds,post_video_avg_time_watched,post_video_length,post_video_views,post_video_view_time,post_consumptions_by_type_unique,post_consumptions,post_impressions_paid_unique,post_stories',
+				   		metric : 'post_impressions_unique,post_engaged_users,post_stories_by_action_type,post_video_avg_time_watched,post_video_length,post_video_views,post_video_view_time,post_consumptions_by_type_unique,post_consumptions,post_impressions_paid_unique,post_stories',
 						show_description_from_api_doc : 'true',
 						include_headers: 'false'
 					}
@@ -661,10 +655,6 @@ FT.connector.facebook = {
 
 		$.when.apply($, dfds).done( function( current, compared ) {
 
-			$('.fb-table').html('')
-			$('.fb-table').html("<h4>" + name + "</h4>")
-
-
 			var insightGroups = [ 'pageInfo', 'insights', 'insightsWithDay', 'lifetimeInsights' ]
 
 			if ( FT.defaults.numDays == 28 ) {
@@ -678,11 +668,7 @@ FT.connector.facebook = {
 			$.each ( insightGroups, function( index, insightGroup ) {
 
 				var basedIndex = index+1;
-				$('.fb-table').append("<h4>" + 'Group: ' + insightGroup + ' report ' + basedIndex + "</h4>")
-
-				// SAVE DATA SOMEWHERE //
-				//console.log('FB SAVEcurrent', insightGroup, current )
-
+			
 				FT.connector.facebook.processMetrics(current, compared, insightGroup);
 			
 			})
@@ -713,22 +699,14 @@ FT.connector.facebook = {
 
 			case "pageInfo" :
 
-				var table = [];
 				var response = current[insightGroup].response
-				//console.log(response)
-		     	var values = [response.name + ' Fan Count', "fan_count", response.engagement.count, "&nbsp;", "&nbsp;",  "&nbsp;", current[insightGroup].aggregationPeriod];
-		     	table.push('<tr><td>', values.join('</td><td>'), '</td>');
-         		table.push('</tr>');
-         		rows.push(table.join(''));
-
+	
 		    break
 
 		 }
 
     	$.each( current[insightGroup].response.data, function(index, metric) {
     		
-    		var table = [];
-
     		/**
 			 * compared and current values
 	 		*/
@@ -758,10 +736,6 @@ FT.connector.facebook = {
 
 		        	if ( typeof value == 'object') {
 
-
-		        		values = [metric.title, metric.name, "&nbsp", "&nbsp", "&nbsp", "&nbsp", "&nbsp"];
-			        	table.push('<tr><td>', values.join('</td><td>'), '</td>');
-		        		table.push('</tr>');
 
 		        		 // sum of individual action ONLY IF we are aggregating by day
 
@@ -823,12 +797,6 @@ FT.connector.facebook = {
 					 		*/
 
 		        		 	var comparedTypeValue = comparedValue[name] 
-
-		        		 	values = [];
-		    		 	 	values = ["&nbsp;", name, typeSum[name] + " (" + typeValue + ") ", date, comparedTypeSum[name] + " (" + comparedTypeValue + ") ", comparedDate, aggregationPeriod];
-		    			 	table.push('<tr><td>', values.join('</td><td>'), '</td>');
-		    			 	table.push('</tr>');
-
 		    			 	var noSpaceName = name.replace(' ', '_');
 		    			 	FT.process.setFieldValue('facebook', metric.name+'__'+noSpaceName, 'current', typeSum[name])
 					 		FT.process.setFieldValue('facebook', metric.name+'__'+noSpaceName, 'compared', comparedTypeSum[name])
@@ -864,10 +832,6 @@ FT.connector.facebook = {
 
 			        		 })
 
-		        			values = ['&nbsp;', '&nbsp;', sum, 'total', comparedSum, 'total', 'period']
-        					table.push('<tr class="summary"><td>', values.join('</td><td>'), '</td>');
-		        			table.push('</tr>');
-
 		        			/**
 							 *
 							 * REAL DATA RIGHT HERE
@@ -901,11 +865,7 @@ FT.connector.facebook = {
 
 				 		}
 
-				 	 	values = [metric.title, metric.name, value, date, comparedValue, comparedDate, aggregationPeriod];
-						table.push('<tr><td>', values.join('</td><td>'), '</td>');
-		        		table.push('</tr>');
-
-		        		if ( aggregationPeriod == 'day' ) {
+				 		if ( aggregationPeriod == 'day' ) {
 
 		        			sum = 0;
 		        			comparedSum = 0;
@@ -953,11 +913,7 @@ FT.connector.facebook = {
 							 *
 					 		*/
 
-					 	 	values = ['&nbsp;', '&nbsp;', sum, 'total', comparedSum, 'total', 'period']
-    						table.push('<tr class="summary"><td>', values.join('</td><td>'), '</td>');
-	        				table.push('</tr>');
-
-		        		 }
+						 }
 
 		        		
 		        		FT.process.setFieldValue('facebook', metric.name, 'current', sum)
@@ -970,37 +926,14 @@ FT.connector.facebook = {
 
 		    }
 
-      	    rows.push(table.join(''));
-
        	 })
 
-	    var output = [];
-	
-		//output.push("<h4>" + current.pageInfo.account_name + "</h4>")
-		var table = ['<table>'];
-		var headers = ['Descriptor', 'Metric Title', 'Value', 'Through', "Compared Value", "Through", 'Period']
-		table.push('<tr><th>', headers.join('</th><th>'), '</th>');
-		table.push('</tr>');
-
-
-		output.push(table.join(''));
-		output.push(rows.join(''));
-	    $('.fb-table').append(output.join(''));
-
-
+	 
 	},
 
 	listPosts : function( current, compared ) {
 
 		var insightTotals = {};
-		var output = [];
-		output.push("<h4>" + 'Posts' + "</h4>")
-		var table = ['<table>'];
-		var rows = [];
-		var headers = ['Date', 'Link', 'Message', 'Type']
-		headers.push('Total Reach', 'Engaged Users', 'Likes', 'Comments', 'Shares', "Clicks", "Link Clicks", "Eng. Rate", "Engagements", "Video Metrics")
-		table.push('<tr><th>', headers.join('</th><th>'), '</th>');
-		table.push('</tr>');
 
 		console.log('RESET FACEBOOK POSTS DATA META')
 		FT.data.data_sources.facebook.metric_assets.posts = {};
@@ -1018,8 +951,6 @@ FT.connector.facebook = {
 			 *
 	 		*/
 
-			rows.push('<tr><td colspan="', headers.length, '">', timeframe.window,  ' <strong>Total Posts: ', totalPosts, '</strong>', '</td></tr>');
-			
 			FT.process.setFieldValue('facebook', 'total_posts', timeframeWindow, totalPosts)
 
 			FT.data.data_sources.facebook.metric_assets.posts[timeframeWindow] = {};
@@ -1030,9 +961,7 @@ FT.connector.facebook = {
 				var insights = JSON.parse(postInsights[index].body).data;
 				var insightMetrics = {}
 				
-
 				// initialize these so we don't get undefineds //
-
 				$.each( [ 'post_impressions_unique', 'post_engaged_users', 'like', 'comment', 'share', 'post_consumptions', 'link clicks', 'engagements', 'post_stories'], function( index, name) {
 					insightMetrics[name] = 0;
 				})
@@ -1099,12 +1028,7 @@ FT.connector.facebook = {
 
 				var link = '<a href="' + post.permalink_url + '" class="post-link" target="_blank">link</a>';
 
-
 				insightMetrics['engagements'] = parseInt(insightMetrics['post_stories']) + parseInt(insightMetrics['post_consumptions'])
-
-				values = [ postDate, link, message, post.type, insightMetrics['post_impressions_unique'], insightMetrics['post_engaged_users'], insightMetrics['like'], insightMetrics['comment'], insightMetrics['share'], insightMetrics['post_consumptions'], insightMetrics['link clicks'], engagementRate + "%", insightMetrics['engagements'], videoMetrics.join('') ]
-		        rows.push('<tr><td>', values.join('</td><td>'), '</td>');
-				rows.push('</tr>');
 
 				FT.data.data_sources.facebook.metric_assets.posts[timeframeWindow].total = totalPosts
 				FT.data.data_sources.facebook.metric_assets.posts[timeframeWindow].list.push( {
@@ -1130,11 +1054,6 @@ FT.connector.facebook = {
 			FT.defaults.facebookCalls = parseInt(FT.defaults.facebookCalls) + parseInt(FT.data.data_sources.facebook.metric_assets.posts[timeframeWindow].total);
 		
 		})
-
-		
-		output.push(table.join(''));
-		output.push(rows.join(''));
-	    $('.fb-table').append(output.join(''));
 
     	$.each ( [ 'current', 'compared' ], function( index, timeframeWindow ) {
 

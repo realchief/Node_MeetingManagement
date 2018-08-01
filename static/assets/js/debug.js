@@ -2,6 +2,85 @@ var FT = FT || {};
 
 FT.debug = {
 
+	allPhrases : function() {
+
+		var insightsHTMLTarget = $('.insights-content')
+		insightsHTMLTarget.html('')
+		
+		var sentences = [];
+
+		$.each(FT.insights.data.bucket_insights.buckets, function( index, bucket ) {
+			sentences.push(bucket.scorePhrase)
+		})
+
+		insightsHTMLTarget.append('<h3>' + sentences.join(" ") + '</h3>');
+
+		var phraseList = FT.insights.data.all_phrases;
+		var bigPictureSentences = phraseList.join('</li><li>');
+		$(insightsHTMLTarget).append('<ul class="lines"><li>' + bigPictureSentences + '</li></ul>')
+
+	},
+
+	displayFacebookAccounts : function(response) {
+
+		/**
+		 *
+		 * pages
+		 *
+		*/
+
+		//console.log('ACCOUNTS>>>', response)
+
+		$('.facebook-accounts').html("")
+		var html = "";
+		var html = "<h4 class='label'>Facebook Page Accounts for (" + response.name + ") </h4>"
+
+		//console.log('>>>>>> FACEBOOK RESPONSE', response)
+		
+
+		 /**
+		 *
+		 * metrics
+		 *
+ 		*/
+
+		html += "<ul>"
+		
+
+		if ( typeof response.accounts == 'undefined') {
+
+			html += "<li class='fb-account'>"
+				html += "This Facebook User does not have any pages for insights"
+    			html += "</li>"
+
+		} else {
+
+			$.each(response.accounts.data, function(index, account) {
+
+				html += "<li class='fb-account'"
+				html += " data-id='" + account.id + "' data-token='" + account.access_token + "'"
+				html += ' data-name="' + account.global_brand_page_name + ' (' + account.id + ')' + '"'
+				html += " >"
+				html += account.global_brand_page_name + " (" + account.id + ") "
+				html += "<span class='property-chooser'>" + "Use" + "</span>"
+    			html += "</li>"
+
+    		})
+							    		
+
+			html += "</ul>"
+
+		}
+
+		$('.facebook-accounts').append(html)
+
+
+		if ( FT.defaults.chooseWhenPropertyListed ) {
+		    $('[data-id=' + FT.defaults.facebookPropertyId + ']').trigger('click')
+		   }
+
+	},
+
 	dataSources : function() {
 
 		$('.debug-listing').html("")

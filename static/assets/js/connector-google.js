@@ -72,17 +72,91 @@ FT.connector.google = {
 
 	},
 
+
+	displayAccounts : function(response) {
+
+		$('.google-accounts').html("")
+	    var html = "";
+	    var html = "<h5 class='label ga-user'>GA Accounts (" + response.result.username + ") </h5>"
+	
+	    /**
+		 *
+		 * accounts
+		 *
+ 		*/
+
+	    $.each( response.result.items, function(index, account) {
+
+	    	html += "<h4 class='label ga-account'>"
+    		html += account.name + " (" + account.id + ") "
+    		html += "</h4>"
+	    		/**
+				 *
+				 * properties
+				 *
+		 		*/
+	    		
+	    	
+	    		$.each( account.webProperties, function(index, property) {
+	    			
+	    			//console.log('PROPERTY>>>', property)
+
+	    			html += "<h5 class='label ga-property' "
+	    			html += " data-id='" + property.id + "' data-internalId='" + property.internalWebPropertyId + "'"
+					html += ">"
+	    			html += "Property: ";
+	    			html += property.name + " (" + property.id + ") " + "(" + property.internalWebPropertyId + ")" + " (" + property.websiteUrl + ")"
+	    			html += "</h5>"
+
+
+	    			
+	    				/**
+						 *
+						 * profiles
+						 *
+				 		*/
+
+		    			html += "<ul>"
+		    			$.each( property.profiles, function(index, profile) {
+		    				
+		    				html += "<li class='ga-account ga-view'"
+							html += " data-id='" + profile.id + "'"
+							html += " data-internal-web-property-id='" + property.internalWebPropertyId + "'"
+							html += " data-web-property-id='" + property.id + "'"
+							html += " data-account-id='" + account.id+ "'"
+							html += " data-property-name='" + property.name + " - " + profile.name + " (" + profile.id + ")" + "'"
+							html += " >"
+			    				html += profile.name + " (" + profile.id + ") " 
+			    				html += "<span class='property-chooser'>" + "Use" + "</span>"
+
+			    				
+			    				html += "</li>"
+			    		})
+			    
+			    		html += "</ul>"
+	    			
+	    			html += "</li>"
+	    		})
+	    		
+	 		
+        })
+
+    
+    	$('.google-accounts').append(html)
+
+    	if ( FT.defaults.chooseWhenPropertyListed ) {
+    		$('[data-id=' + FT.defaults.googleAnalyticsProfileId + ']').trigger('click')
+    	}
+
+	},
+
 	getAccounts : function() {
-
-
 
 		// Load the Google Analytics client library.
 		gapi.client.load('analytics', 'v3').then(function() {
 
-
 			gapi.client.analytics.metadata.columns.list({ 'reportType' : 'ga'}).then( function(response) {
 
-				
 				FT.connector.google.gaColumns = {}
 
 				$.each( response.result.items, function(index, column) {
@@ -92,7 +166,6 @@ FT.connector.google = {
 					FT.connector.google.gaColumns[column.id] = column.attributes;
 
 				})
-
 
 			})
 
@@ -105,83 +178,7 @@ FT.connector.google = {
 			gapi.client.analytics.management.accountSummaries.list().then( function(response) {
 
 				if (response && !response.error) {
-
-					//console.log('*** ALL GA ACCOUNTS', response)
-
-					 $('.google-accounts').html("")
-					    var html = "";
-					    var html = "<h5 class='label ga-user'>GA Accounts (" + response.result.username + ") </h5>"
-					
-					    /**
-						 *
-						 * accounts
-						 *
-				 		*/
-
-					    $.each( response.result.items, function(index, account) {
-
-					    	html += "<h4 class='label ga-account'>"
-				    		html += account.name + " (" + account.id + ") "
-				    		html += "</h4>"
-					    		/**
-								 *
-								 * properties
-								 *
-						 		*/
-					    		
-					    	
-					    		$.each( account.webProperties, function(index, property) {
-					    			
-					    			//console.log('PROPERTY>>>', property)
-
-					    			html += "<h5 class='label ga-property' "
-					    			html += " data-id='" + property.id + "' data-internalId='" + property.internalWebPropertyId + "'"
-									html += ">"
-					    			html += "Property: ";
-					    			html += property.name + " (" + property.id + ") " + "(" + property.internalWebPropertyId + ")" + " (" + property.websiteUrl + ")"
-					    			html += "</h5>"
-
-
-					    			
-					    				/**
-										 *
-										 * profiles
-										 *
-								 		*/
-
-						    			html += "<ul>"
-						    			$.each( property.profiles, function(index, profile) {
-						    				
-						    				html += "<li class='ga-account ga-view'"
-											html += " data-id='" + profile.id + "'"
-											html += " data-internal-web-property-id='" + property.internalWebPropertyId + "'"
-											html += " data-web-property-id='" + property.id + "'"
-											html += " data-account-id='" + account.id+ "'"
-											html += " data-property-name='" + property.name + " - " + profile.name + " (" + profile.id + ")" + "'"
-											html += " >"
-							    				html += profile.name + " (" + profile.id + ") " 
-							    				html += "<span class='property-chooser'>" + "Use" + "</span>"
-
-							    				
-							    				html += "</li>"
-							    		})
-							    
-							    		html += "</ul>"
-					    			
-					    			html += "</li>"
-					    		})
-					    		
-					 		
-				        })
-
-				    
-				    	$('.google-accounts').append(html)
-
-				    	if ( FT.defaults.chooseWhenPropertyListed ) {
-				    		$('[data-id=' + FT.defaults.googleAnalyticsProfileId + ']').trigger('click')
-				    	}
-
-
+					 FT.connector.google.displayAccounts(response)
 				} else {
 					console.log('There was an error: ' + response.message);
 				}
@@ -789,9 +786,6 @@ FT.connector.google = {
 
 		$.when.apply($, dfds).done( function( both ) {
 
-			$('.ga-data').html('')
-			$('.ga-data').html("<h4>" + property + "</h4>")
-
 			//console.log(both)
 	
 			var insightGroups = FT.connector.google.defaults.insightGroups;
@@ -808,8 +802,7 @@ FT.connector.google = {
 
 						var reportName = "";
 						var basedIndex = index+1;
-						$('.ga-data').append("<h4>" + 'Group: ' + insightGroup + ' report ' + basedIndex + "</h4>")
-
+				
 						if ( typeof reportNames[insightGroup] !== 'undefined') {
 							if ( typeof reportNames[insightGroup][index] !== 'undefined') {
 								reportName = reportNames[insightGroup][index];
@@ -831,9 +824,7 @@ FT.connector.google = {
 			//console.log('*** Google Analytics: DO ALL ***')
 			FT.app.doAll();
 
-			//$('.fb-table').append(current.output.join(''));
-			//$('.fb-table').append(compared.output.join(''));
-
+	
 		})
 
 	},
@@ -841,7 +832,6 @@ FT.connector.google = {
 
 	processMetrics : function(report, index, reportName, insightGroup) {
 		
-	 	 var output = [];
 	 	 var dimensionsCount = 0;
 	 	 var aggregatedByDate = false;
 	 	 var valueTypes = [];
@@ -857,27 +847,15 @@ FT.connector.google = {
 	 	if (report.data.rows && report.data.rows.length) {
         
 	    	var justTotals = false;
-	    	var table = ['<table>'];
-
-        	// Put headers in table.
-
-        	table.push('<tr>');
 
         	if ( typeof report.columnHeader.dimensions != 'undefined') {
 		 		
-
-        		$.each( report.columnHeader.dimensions, function(index, dimension) {
-
-        			table.push('<th>', FT.connector.google.gaColumns[dimension].uiName, '</th>')
+				$.each( report.columnHeader.dimensions, function(index, dimension) {
         			dimensionNames.push(dimension.split('ga:')[1]);
-
         		})
 
-		 		//table.push('<th>', report.columnHeader.dimensions.join('</th><th>'), '</th>');
 		 		dimensionsCount = report.columnHeader.dimensions.length
         		aggregatedByDate = report.columnHeader.dimensions.indexOf('ga:date') >= 0;
-
-
         	
         	} else {
 
@@ -885,26 +863,16 @@ FT.connector.google = {
 
         	} 
 
-        	table.push('<th>Date range</th>');
-
         	if ( typeof report.columnHeader.metricHeader.metricHeaderEntries != 'undefined') {
 
 	        	$.each( report.columnHeader.metricHeader.metricHeaderEntries, function( index, header ) {
 	        		 valueTypes.push(header.type)
 	        		 fieldNames.push(header.name.split("ga:")[1])
-
-	        		 if ( typeof FT.connector.google.gaColumns[header.name] !== 'undefined') {
-	        		 	table.push('<th>', FT.connector.google.gaColumns[header.name].uiName, '</th>');	        		
-        			} else {
-        				table.push('<th>', FT.data.data_sources.google_analytics.metric_assets.goals[index].name, '</th>');	        
-        			}
-
 	        	} )
 
 	        }
 
-        	table.push('</tr>');
-
+        
         	if ( report.columnHeader.dimensions ) {
 		 	 	var dimensionHeader = report.columnHeader.dimensions[0].split('ga:')[1] + "_" + fieldNames.join("_");
 
@@ -921,19 +889,12 @@ FT.connector.google = {
 		 	 	var dimensionHeader = report.columnHeader.dimensions[0].split('ga:')[1] + '_' + report.columnHeader.dimensions[1].split('ga:')[1] + "_" + fieldNames.join("_");
 		 	 }
 
-		 	 //console.log(insightGroup, 'Google Analytics Report:', index, report, dimensionHeader)
 			 var currentReport = dimensionHeader;
 
 			 if ( reportName ) {
 			 	currentReport = reportName
 			 }
 
-
-			 if ( reportName == 'hostname') {
-
-			 	//console.log('HOSTNAME HOSTNAME')
-
-			 }
 
         	/**
 			 *
@@ -945,7 +906,6 @@ FT.connector.google = {
 		 		
 		 		$.each( report.data.totals, function( index, dateRange ) {
 		 			
-		 			var label = "";
 		 			var dateIndex = index;
 		 			var timeframe = ( dateIndex == 0 ) ? 'current' : 'compared';
 
@@ -955,24 +915,7 @@ FT.connector.google = {
         				comparedRange = report.data.totals[0].values
         			}
 
-        			table.push('<tr class="n-summary">')
-
-		 			for ( i = 0; i <= dimensionsCount-1; i++) {
-		 				
-		 				if ( i == 0 ) {
-		 					if ( index == 0 ) {
-		 						label = "Totals:";
-		 					}
-		 				} else {
-		 					label = "&nbsp;"
-		 				}
-
-		 				table.push('<td>', label, '</td>');	        		
-		        	}
-
-	 				if ( typeof dateRange.values != 'undefined') {
-
-    	            	table.push('<td>', FT.defaults.dateWindowReadable[index], '</td>')
+        			if ( typeof dateRange.values != 'undefined') {
 
     	            	$.each ( dateRange.values, function( index, value ) {
 
@@ -999,10 +942,7 @@ FT.connector.google = {
 										totalPercentDelta = 0;
 									};
 
-									valueToShow = parseFloat(value).toFixed(2) + "%" + "<span class='percent'>" + "(" + totalPercentDelta + ")" + "</span>"
-    	            			
-
-    	            			break
+				    			break
 
     	            			case "time" :
     	            				var value = Math.round(value)
@@ -1017,9 +957,7 @@ FT.connector.google = {
 										totalPercentDelta = 0;
 									};
 
-							
-    	            				valueToShow = FT.utilities.secondsToHMS(value) + "<span class='percent'>" + "(" + totalPercentDelta + ") (" + totalDelta + ")</span>"
-    	            			break
+				      			break
 
     	            			case "currency" :
     	            				var value = value
@@ -1034,9 +972,7 @@ FT.connector.google = {
 										totalPercentDelta = 0;
 									};
 
-									valueToShow = "$" + value +  "<span class='percent'>" + "(" + totalPercentDelta + ")" + "</span>"
-    	            			
-
+						
     	            			break
 
     	            			default : 
@@ -1052,15 +988,9 @@ FT.connector.google = {
 										totalPercentDelta = 0;
 									};
 
-										valueToShow = value + "<span class='percent'>" + "(" + totalPercentDelta + ") (" + totalDelta + ")</span>";
-
-    	            					//valueToShow = value;
     	            			break
 
     	            		}
-
-    	            		table.push('<td>', valueToShow, '</td>')
-
 
     	            		/**
 							 *
@@ -1083,9 +1013,7 @@ FT.connector.google = {
 
     	           }
 
-   		      		table.push('</tr>')
-
-
+   		      
 	        	})
 		 	}
 
@@ -1103,14 +1031,8 @@ FT.connector.google = {
 
         		if ( justTotals ) return;
 
-        		var label = "";
-
-        		if ( aggregatedByDate) {
-
-        			
+        	  	if ( aggregatedByDate) {
         			// PULLED ALL THE AGGREGATED BY DATE STUFF FOR NOW. 
-
-	       
         		} else {
 
         			/**
@@ -1154,38 +1076,11 @@ FT.connector.google = {
 					 		FT.data.data_sources.google_analytics.metric_assets[currentReport][timeframe].list = [];
 					 	}
 	        	
-	        			table.push('<tr>')
-	        			if ( typeof row.dimensions != 'undefined') {
-
-	        				//console.log( 'How many dimensions?', row.dimensions.length )
-	        			
-	        				
-	        				// if the first of two timeframes
-	        				if ( index == 0 ) {
-	        					// Put dimension values
-	           					table.push('<td>', row.dimensions.join('</td><td>'), '</td>');
-
-	           		  		
-			          		} else {
-			          		
-			          			for ( i = 0; i <= dimensionsCount-1; i++) {
-			          				label = "&nbsp;"
-			          				table.push('<td>', label, '</td>');	  
-			          			}
-			          		
-			          		}
-
-			           	}
-
-			           	if ( typeof dateRange.values != 'undefined') {
+	        	       	if ( typeof dateRange.values != 'undefined') {
 
 			           		var metric = "";
 			           		var dateIndex = index;
 			           		metric = FT.defaults.dateWindowReadable[index];
-
-			           
-			            	// Put metric values for the current date range
-			           		table.push('<td>', metric, '</td>')
 
 			           		$.each ( dateRange.values, function( index, value ) {
 
@@ -1212,8 +1107,7 @@ FT.connector.google = {
 										};
 
 										totalDelta = "";
-										valueToShow = parseFloat(value).toFixed(2) + "%" + "<span class='percent'>" + "(" + totalPercentDelta + ")" + "</span>"
-
+					
 	    	            			break
 
 	    	            			case "time" :
@@ -1229,9 +1123,7 @@ FT.connector.google = {
 											totalPercentDelta = 0;
 										};
 
-							
-	    	            				valueToShow = FT.utilities.secondsToHMS(value) + "<span class='percent'>" + "(" + totalPercentDelta + ") (" + totalDelta + ")</span>"
-	    	            			break
+					    			break
 
 	    	            			case "currency" :
 	    	            				var value = value
@@ -1246,10 +1138,7 @@ FT.connector.google = {
 											totalPercentDelta = 0;
 										};
 
-										valueToShow = "$" + value + "<span class='percent'>" + "(" + totalPercentDelta + ")" + "</span>"
-	    	            			
-
-	    	            			break
+					    			break
 
 	    	            			default : 
 	    	            				var percentOfTotal = value / report.data.totals[dateIndex].values[index]
@@ -1269,8 +1158,7 @@ FT.connector.google = {
 											totalPercentDelta = 0;
 										};
 
-										valueToShow = value + "<span class='percent'>(<em>" + percentOfTotal + "</em>) (" + totalPercentDelta + ") (" + totalDelta + ")</span>";
-		    	           			break
+						   			break
 
     	            			}
 
@@ -1281,13 +1169,6 @@ FT.connector.google = {
 					 			
 					 			dataRow[fieldName+'_deltaChange'] = totalDelta;
 					 			dataRow[fieldName+'_percentChange'] = totalPercentDeltaRaw;
-
-					 			/*if ( typeof percentOfTotal != "undefined") {
-					 				dataRow['percentOfTotal'].push( { field: fieldName, delta: percentOfTotalRaw })
-					 			}*/
-
-	    	            		table.push('<td>', valueToShow, '</td>')
-
 	    	            		
 	    	            		/**
 								 *
@@ -1334,10 +1215,6 @@ FT.connector.google = {
 			           	}
 
 
-			           	table.push('</tr>')
-
-
-
 	        		})
 
         		}
@@ -1346,19 +1223,11 @@ FT.connector.google = {
 
         	})
 
-	    	 table.push('</table>');
-	    	 output.push(table.join(''));
-
     	} else {
-       		output.push('<p>No rows found.</p>');
+    		// NO ROWS FOUND
       	}
 
-	 	  outputToPage(output.join(''));
-
-		function outputToPage(output) {
-  			$('.ga-data').append(output)
-  		}
-
+	
 	},
 
 

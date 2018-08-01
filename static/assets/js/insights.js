@@ -33,9 +33,6 @@ FT.insights = {
 
 		//console.log('### make', FT.insights.data)
 		
-		var insightsHTMLTarget = $('.insights-content')
-		insightsHTMLTarget.html("")
-
 		FT.insights.data.bucket_insights = {}
 		FT.insights.data.bucket_insights.buckets = []
 	
@@ -259,24 +256,15 @@ FT.insights = {
 		 * 
 		*/
 
-		var pictureTips = []
-		
 		$.each(FT.insights.data.bucket_insights.buckets, function( index, bucket ) {
 
 			var bucketLabel = FT.data.buckets[bucket.name].meta.label
 			var score = bucket.totalScore
-			
 			FT.data.buckets[bucket.name].data.totalScore = score;
-
-			pictureTips.push(bucketLabel + ' Score is: ' + " " + score)
-
+			bucket.scorePhrase = bucketLabel + ' Score is: ' + " " + score
 		})
 
 		FT.insights.data.bucket_insights.headline = "Temporary Headline"
-
-		var sentences = pictureTips.join('. ')
-		
-		$('.insights-content').append('<h3>' + sentences + '</h3>');
 
 	},
 
@@ -322,7 +310,6 @@ FT.insights = {
 
 	arrangePlatformInsights : function() {
 	
-		var insightsHTMLTarget = $('.insights-content')
 		var factorList = []
 		var phraseList = []
 	
@@ -341,10 +328,11 @@ FT.insights = {
 			var inlineStyle = FT.utilities.getInlineStyle('status', metric.status);
 
 			if ( typeof metric.insightsPhrases[0] !== 'undefined') {
-
 				var bucketTag = '<span class="bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
-
-				phraseList.push(metric.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag)
+				var completePhrase = metric.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag;
+				phraseList.push(completePhrase)
+				// write newly used combined phrase back to the metric
+				metric.completePhrase = completePhrase
 
 			} else {
 
@@ -355,17 +343,14 @@ FT.insights = {
 
 					var asset = assetInsight.meta
 					//console.log('Asset Insight:', factor)
-
 					var inlineStyle = FT.utilities.getInlineStyle('status', asset.status);
-
 					var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
-
 					if ( typeof asset.pointsPhrases !== 'undefined') {
 						var phraseToUse = FT.insights.getUniquePhrase(asset.pointsPhrases)
-						phraseList.push('<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>')
+						var completePhrase = '<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>'
+						phraseList.push(completePhrase)			
 					}
-
-
+					asset.completePhrase = completePhrase
 				})
 
 		})
@@ -373,13 +358,13 @@ FT.insights = {
 
 		/* FOR EMAIL */
 
+		FT.insights.data.all_phrases = phraseList
 		FT.insights.data.action_items = phraseList.slice(0,3)
 		FT.insights.data.talking_points = phraseList.slice(3,6)
 
 		/* /// FOR EMAIL */
 
-		var bigPictureSentences = phraseList.join('</li><li>');
-		$(insightsHTMLTarget).append('<ul class="lines"><li>' + bigPictureSentences + '</li></ul>')
+		FT.debug.allPhrases()
 
 	},
 

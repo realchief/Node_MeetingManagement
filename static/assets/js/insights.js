@@ -202,8 +202,12 @@ FT.insights = {
 				FT.data.buckets[bucketName].data.totalScore = weightedScoreDisplay;
 
 
-				/* Get the number of positive and negative metrics */
-
+				/**
+				 *
+				 * Get the number of positive and negative metrics
+				 * 
+				*/
+			
 				positives = FT.insights.filter(FT.insights.data.platform_insights.buckets[bucketName], 'status', 'positive')
 				negatives = FT.insights.filter(FT.insights.data.platform_insights.buckets[bucketName], 'status', 'negative')
 				neutrals = FT.insights.filter(FT.insights.data.platform_insights.buckets[bucketName], 'status', 'neutral')
@@ -211,7 +215,6 @@ FT.insights = {
 				var bucketPerformance = positives.length / totalMappingsCount
 				bucketPerformancePercentage = bucketPerformance * 100;
 
-				console.log(bucketPerformancePercentage)
 				if ( bucketPerformancePercentage > 50 ) {
 					mappingsStatus = 'positive'	
 				} else if ( bucketPerformancePercentage < 50 ) {

@@ -205,7 +205,7 @@ FT.app = {
 				talking_points: FT.insights.data.talking_points
 			}
 
-			console.log(replacements)
+			console.log('Email test replacements:', replacements)
 
 			var toSend = {
 				to : $('.recipients').val(),

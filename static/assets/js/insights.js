@@ -934,7 +934,7 @@ FT.insights = {
 
 	afterInsights : function() {
 
-		FT.debug.metrics()
+		//FT.debug.metrics()
 
 		//console.log('PHRASES ARRAY>>>', FT.phrases.phrases)
 		//var filter = [ "platform", "positive", "google_analytics" ]

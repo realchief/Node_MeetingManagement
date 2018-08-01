@@ -296,7 +296,7 @@ FT.connector.google = {
         
         ]
 
-        var aggregationPeriod = 'day';
+        var aggregationPeriod = 'timeframe';
 
 
         var dfd1 = new $.Deferred();
@@ -809,13 +809,14 @@ FT.connector.google = {
 							}
 						}					
 
+						//console.log('GA REPORT>>>', reportName, index, insightGroup, report)
 						FT.connector.google.processMetrics(report, index, reportName, insightGroup)
-
+						//FT.debug.googleOutput(report, index, reportName, insightGroup)
 					})
 
 				} else {
 
-					console.log('There was an error: ' + a.response.message);
+					console.log('There was an error: ' + response.message);
 
 				}
 

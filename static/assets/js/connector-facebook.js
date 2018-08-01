@@ -480,7 +480,7 @@ FT.connector.facebook = {
 		       		var postObject = {
 				    	access_token : token,
 				    	period : 'lifetime',
-				   		metric : 'post_impressions_unique,post_engaged_users,post_stories_by_action_type,post_video_avg_time_watched,post_video_length,post_video_views,post_video_view_time,post_consumptions_by_type_unique,post_consumptions,post_impressions_paid_unique,post_stories',
+				   		metric : 'post_impressions_unique,post_engaged_users,post_video_avg_time_watched,post_video_length,post_video_views,post_video_view_time,post_impressions_paid_unique,post_clicks,post_clicks_by_type_unique,post_activity,post_activity_by_action_type',
 						show_description_from_api_doc : 'true',
 						include_headers: 'false'
 					}
@@ -670,11 +670,13 @@ FT.connector.facebook = {
 				var basedIndex = index+1;
 			
 				FT.connector.facebook.processMetrics(current, compared, insightGroup);
-			
+				//FT.debug.facebookOutput(current, compared, insightGroup)
+
 			})
 
 			FT.connector.facebook.listPosts(current.postListing, compared.postListing);
-			
+			//FT.debug.facebookAssetsOutput(current.postListing, compared.postListing)
+
 			//console.log('*** Facebook: DO ALL ***')
 			FT.app.doAll();
 
@@ -962,7 +964,7 @@ FT.connector.facebook = {
 				var insightMetrics = {}
 				
 				// initialize these so we don't get undefineds //
-				$.each( [ 'post_impressions_unique', 'post_engaged_users', 'like', 'comment', 'share', 'post_consumptions', 'link clicks', 'engagements', 'post_stories'], function( index, name) {
+				$.each( [ 'post_impressions_unique', 'post_engaged_users', 'like', 'comment', 'share', 'post_clicks', 'link clicks', 'engagements', 'post_activity'], function( index, name) {
 					insightMetrics[name] = 0;
 				})
 
@@ -988,6 +990,8 @@ FT.connector.facebook = {
 
 							insightMetrics[name] = typeValue
 							insightTotals[timeframeWindow][name] += typeValue
+
+							console.log('insight metric object', metric.name, name, typeValue)
 						})
 
 					} else {
@@ -1007,9 +1011,13 @@ FT.connector.facebook = {
 
 						insightMetrics[metric.name] = value
 						insightTotals[timeframeWindow][metric.name] += value
+
+						console.log('insight metric', metric.name, insightMetrics[metric.name])
 					}
 				
 				})
+
+				console.log('insight metrics', insightMetrics)
 
 
 				var postDate = moment(post.created_time).format("ddd MMM. DD, YYYY<br />hh:mm a")
@@ -1028,7 +1036,7 @@ FT.connector.facebook = {
 
 				var link = '<a href="' + post.permalink_url + '" class="post-link" target="_blank">link</a>';
 
-				insightMetrics['engagements'] = parseInt(insightMetrics['post_stories']) + parseInt(insightMetrics['post_consumptions'])
+				insightMetrics['engagements'] = parseInt(insightMetrics['post_activity']) + parseInt(insightMetrics['post_clicks'])
 
 				FT.data.data_sources.facebook.metric_assets.posts[timeframeWindow].total = totalPosts
 				FT.data.data_sources.facebook.metric_assets.posts[timeframeWindow].list.push( {
@@ -1041,8 +1049,8 @@ FT.connector.facebook = {
 					likes : insightMetrics['like'],
 					comments : insightMetrics['comment'],
 					shares : insightMetrics['share'],
-					stories : insightMetrics['post_stories'],
-					clicks : insightMetrics['post_consumptions'],
+					activities : insightMetrics['post_activity'],
+					clicks : insightMetrics['post_clicks'],
 					link_clicks : insightMetrics['link clicks'],
 					engagement_rate : engagementRateRaw,
 					engagements : insightMetrics['engagements'],

@@ -39,7 +39,7 @@ FT.data.platform.all.metrics.organic_reach.asset_links = [
 	}
 ]
 
-FT.data.platform.all.metrics.organic_reach.asset_links = [ 
+FT.data.platform.all.metrics.paid_reach.asset_links = [ 
 	{ 
 		'source' : 'facebook',
 		'field' : 'paid_reach',

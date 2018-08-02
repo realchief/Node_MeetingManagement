@@ -15,7 +15,7 @@ var routes = require('./routes/index');
 var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
 
-require('./passport.js')(passport);
+require('./passport.js');
 
 var establishSecurePort = false;
 

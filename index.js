@@ -15,6 +15,7 @@ var routes = require('./routes/index');
 var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
 var passport = require('passport');
+var auth = require('./routes/auth.js');
 
 require('./passport.js')(passport);
 
@@ -46,6 +47,8 @@ app.engine('handlebars', exphbs({
     partialsdir: __dirname + '/views/partials/'
   }));
 app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
 
 
 app.use(bodyParser.json());

@@ -14,7 +14,6 @@ var helpers = require('./helpers');
 var routes = require('./routes/index');
 var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
-var passport = require('passport');
 
 var establishSecurePort = false;
 
@@ -99,7 +98,6 @@ app.use('/', parseRoutes)
 
 // route incoming requests to the correct pages
 app.use('/api', apiRoutes)
-
 
 // lastly, handle any errors 
 app.use(function(req, res, next){

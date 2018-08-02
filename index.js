@@ -14,8 +14,9 @@ var helpers = require('./helpers');
 var routes = require('./routes/index');
 var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
+var passport = require('passport');
 
-require('./passport.js');
+require('./passport.js')(passport);
 
 var establishSecurePort = false;
 
@@ -50,6 +51,8 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
 
 if ( secureRedirect ) {
 

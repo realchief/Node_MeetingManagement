@@ -991,7 +991,7 @@ FT.connector.facebook = {
 							insightMetrics[name] = typeValue
 							insightTotals[timeframeWindow][name] += typeValue
 
-							console.log('insight metric object', metric.name, name, typeValue)
+							// console.log('insight metric object', metric.name, name, typeValue)
 						})
 
 					} else {
@@ -1012,12 +1012,12 @@ FT.connector.facebook = {
 						insightMetrics[metric.name] = value
 						insightTotals[timeframeWindow][metric.name] += value
 
-						console.log('insight metric', metric.name, insightMetrics[metric.name])
+						// console.log('insight metric', metric.name, insightMetrics[metric.name])
 					}
 				
 				})
 
-				console.log('insight metrics', insightMetrics)
+				//console.log('insight metrics', insightMetrics)
 
 
 				var postDate = moment(post.created_time).format("ddd MMM. DD, YYYY<br />hh:mm a")

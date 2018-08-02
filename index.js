@@ -15,6 +15,8 @@ var routes = require('./routes/index');
 var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
 
+require('./passport.js')(passport);
+
 var establishSecurePort = false;
 
 if (  typeof process.env.PRIVATE_KEY_PATH != 'undefined' && 

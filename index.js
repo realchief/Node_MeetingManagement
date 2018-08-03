@@ -106,6 +106,7 @@ app.use('/', parseRoutes)
 
 // route incoming requests to the correct pages
 app.use('/api', apiRoutes)
+app.use('/auth', auth);
 
 // lastly, handle any errors 
 app.use(function(req, res, next){

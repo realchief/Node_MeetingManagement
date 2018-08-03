@@ -44,9 +44,8 @@ var comparison = handlebarsHelpers.comparison();
 app.engine('handlebars', exphbs({
     defaultLayout: process.env.HOME_VERSION,
     layoutsdir: __dirname + '/views/layouts/',
-    partialsdir: __dirname + '/views/partials/',
-    authdir: __dirname + '/views/auth/'
-  }));
+    partialsdir: __dirname + '/views/partials/'
+}));
 app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());

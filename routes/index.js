@@ -13,7 +13,6 @@ var Model = require('../model.js');
 router.get('/', function (req, res) {
 
     req.session.currentVersion = process.env.HOME_VERSION
-
     res.render(process.env.HOME_VERSION, {
     	version: process.env.HOME_VERSION,
         layout: process.env.HOME_VERSION + '.handlebars',
@@ -25,7 +24,7 @@ router.get('/signin', function(req, res, next) {
     if (req.isAuthenticated()) {
         res.redirect('/');
     } else {
-        res.render('signin', { title: 'Sign In' });
+        res.render('signin', { title: 'Sign In', layout: false });
     }
 });
 
@@ -57,7 +56,7 @@ router.get('/signup', function(req, res, next) {
     if (req.isAuthenticated()) {
         res.redirect('/');
     } else {
-        res.render('signup', { title: 'Sign Up' });
+        res.render('signup', { title: 'Sign Up', layout: false });
     }
 });
 

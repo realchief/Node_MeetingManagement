@@ -1,3 +1,5 @@
+// const Model = require('./models')
+
 var config           = require('./config.js'),
     LocalStrategy    = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,

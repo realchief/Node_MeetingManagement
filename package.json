@@ -41,6 +41,7 @@
     "pg": "^7.4.3",
     "request": "^2.81.0",
     "request-promise": "^4.2.2",
+    "sequelize": "^4.38.0",
     "util-inspect": "^0.1.8"
   }
 }

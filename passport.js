@@ -5,7 +5,7 @@ var config           = require('./config.js'),
     FacebookStrategy = require('passport-facebook').Strategy,
     TwitterStrategy  = require('passport-twitter').Strategy,
     GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy,
-    Model            = require('./model.js'),
+    Model            = require('./models/models.js'),
     bcrypt           = require('bcrypt-nodejs'),
     User             = Model.User;
 

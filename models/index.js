@@ -1,6 +1,3 @@
-// export {
-//     User: require('./user.js')
-// }
 
 var UserMeta = require('./user.js'),
     connection = require('../sequelize.js')

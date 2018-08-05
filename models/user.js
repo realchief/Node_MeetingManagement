@@ -20,6 +20,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
     }
   });
+
+  User.beforeCreate(function (user, options) {
+    bcrypt.hash(user.password, 10, function (err, hash) {
+        if (!err)
+            user.password = hash;
+    });
+  });
   return User;
 };
 

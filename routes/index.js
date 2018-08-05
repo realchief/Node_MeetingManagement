@@ -66,7 +66,7 @@ router.post('/signup', function(req, res) {
     console.log(user.body);
     // Before making the account, try and fetch a username to see if it already exists.
     try {
-        var newUser = new Model.User(user);
+        var newUser = Model.User.create(user);
         newUser.save(function (err, user) {
             if (err) {
                 res.render('signup', { errorMessage: 'Can not signup' })

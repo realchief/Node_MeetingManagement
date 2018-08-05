@@ -6,7 +6,7 @@ var config           = require('./config/passport.js'),
     TwitterStrategy  = require('passport-twitter').Strategy,
     GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy,
     Model            = require('./models'),
-    bcrypt           = require('bcrypt-nodejs'),
+    bcrypt           = require('bcrypt'),
     User             = Model.User;
 
 module.exports = function(passport) {
@@ -21,13 +21,17 @@ module.exports = function(passport) {
     });
 
     passport.use(new LocalStrategy(function(username, password, done) {
-        new Model.User({username: username}).fetch().then(function(data) {
+        console.log(username, password);
+        Model.User.findOne({
+            $or: [{username: username}, {email: username}]
+        }).then(function (data) {
             var user = data;
             if (user === null) {
                 return done(null, false, { message: 'Invalid username or password' });
             } else {
                 user = data.toJSON();
-                if (!bcrypt.compareSync(password, user.password)) {
+                console.log(user);
+                if (!bcrypt.compare(password, user.password)) {
                     return done(null, false, { message: 'Invalid password' });
                 } else {
                     return done(null, user);

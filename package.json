@@ -12,7 +12,7 @@
   "dependencies": {
     "@sendgrid/inbound-mail-parser": "^6.2.1",
     "@sendgrid/mail": "^6.2.1",
-    "bcrypt-nodejs": "0.0.3",
+    "bcrypt": "^3.0.0",
     "body-parser": "^1.17.2",
     "bookshelf": "^0.13.3",
     "cookie-parser": "^1.4.3",

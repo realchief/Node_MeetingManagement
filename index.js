@@ -151,6 +151,5 @@ models.sequelize.sync().then(function() {
     https.createServer(options, app).listen(securePort, function() {
       console.log('Express secure server listening on port ' + securePort);
     });
-
   }
 })

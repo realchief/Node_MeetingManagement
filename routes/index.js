@@ -8,7 +8,7 @@ var bcrypt = require('bcrypt-nodejs');
 
 // Bookshelf postgres db ORM object. Basically it makes 
 // it simple and less error port to insert/query the db.
-var Model = require('../model.js');
+var Model = require('../models');
 
 router.get('/', function (req, res) {
 
@@ -60,29 +60,24 @@ router.get('/signup', function(req, res, next) {
     }
 });
 
-router.post('/signup', function(req, res, next) {
+router.post('/signup', function(req, res) {
     // Here, req.body is { username, password }
     var user = req.body;
-
+    console.log(user.body);
     // Before making the account, try and fetch a username to see if it already exists.
-    var usernamePromise = new Model.User({ username: user.username }).fetch();
-
-    return usernamePromise.then(function(model) {
-        if (model) {
-            res.render('signup', { title: 'signup', errorMessage: 'username already exists' });
-        } else {
-            var password = user.password;
-            var hash = bcrypt.hashSync(password);
-
-            // Make a new postgres db row of the account
-            var signUpUser = new Model.User({ username: user.username, password: hash });
-
-            signUpUser.save({}, {method: 'insert'}).then(function(model) {
-                // Sign in the newly registered uesr
-                res.redirect(307, '/signin');
-            });
-        }
-    });
+    try {
+        var newUser = new Model.User(user);
+        newUser.save(function (err, user) {
+            if (err) {
+                res.render('signup', { errorMessage: 'Can not signup' })
+            }
+            res.render('signin');
+        });
+    }
+    catch (ex){
+        console.log(ex);
+    }
+    
 });
 
 router.get('/signout', function(req, res, next) {

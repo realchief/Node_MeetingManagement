@@ -1,11 +1,11 @@
 // const Model = require('./models')
 
-var config           = require('./config.js'),
+var config           = require('./config/passport.js'),
     LocalStrategy    = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
     TwitterStrategy  = require('passport-twitter').Strategy,
     GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy,
-    Model            = require('./models/models.js'),
+    Model            = require('./models'),
     bcrypt           = require('bcrypt-nodejs'),
     User             = Model.User;
 

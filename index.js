@@ -16,6 +16,7 @@ var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
 var passport = require('passport');
 var auth = require('./routes/auth.js');
+var models = require('./models');
 
 require('./passport.js')(passport);
 
@@ -127,28 +128,29 @@ app.use(function(req, res, next){
 
 
 // start the server
+models.sequelize.sync().then(function() {
+  var port = process.env.PORT || 3000;
+  var server = http.createServer(app).listen(port, function() {
+    console.log('Express server listening on port ' + port);
+  });
 
-var port = process.env.PORT || 3000;
-var server = http.createServer(app).listen(port, function() {
-  console.log('Express server listening on port ' + port);
-});
+  /* FOR HTTPS */
 
-/* FOR HTTPS */
+  if ( establishSecurePort) {
 
-if ( establishSecurePort) {
+    var options = {
+      key: fs.readFileSync( process.env.PRIVATE_KEY_PATH, 'utf8' ),
+      cert: fs.readFileSync( process.env.CERTIFICATE_PATH, 'utf8' ),
+    };
 
-      var options = {
-        key: fs.readFileSync( process.env.PRIVATE_KEY_PATH, 'utf8' ),
-        cert: fs.readFileSync( process.env.CERTIFICATE_PATH, 'utf8' ),
-      };
+    if ( typeof process.env.CA_PATH !== 'undefined' ) {
+      options.ca = fs.readFileSync( process.env.CA_PATH, 'utf8' )
+    }
 
-      if ( typeof process.env.CA_PATH !== 'undefined' ) {
-        options.ca = fs.readFileSync( process.env.CA_PATH, 'utf8' )
-      }
+    var securePort = process.env.SECURE_PORT || 3443;
+    https.createServer(options, app).listen(securePort, function() {
+      console.log('Express secure server listening on port ' + securePort);
+    });
 
-      var securePort = process.env.SECURE_PORT || 3443;
-      https.createServer(options, app).listen(securePort, function() {
-        console.log('Express secure server listening on port ' + securePort);
-      });
-
-}
+  }
+})

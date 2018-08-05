@@ -16,5 +16,6 @@ module.exports = {
         'clientID'      : '456789',
         'clientSecret'  : 'abc789',
         'callbackURL'   : 'http://localhost:' + port + '/auth/google/callback'
-    }
+    },
+    
 };

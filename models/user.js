@@ -1,46 +1,25 @@
-var Sequelize = require('sequelize')
-
-var attributes = {
-    administratorName: {
-        type: Sequelize.STRING,
-        },
-    email: {
-        type: Sequelize.STRING,
-        validate: {
-            isEmail: true
-        }
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  var User = sequelize.define('User', {
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
     },
-    companyName: {
-        type: Sequelize.STRING,
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    company_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     password: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
+        allowNull: false,
     }
-}
-var options = {
-  freezeTableName: true
-}
-module.exports.attributes = attributes
-module.exports.options = options
-
-// const Sequelize = require('sequelize');
-
-// const User = sequelize.define('user', {
-//     administratorName: {
-//         type: Sequelize.STRING,
-//     },    
-//     email: {
-//         type: Sequelize.STRING,
-//         validate: {
-//             isEmail: true
-//         }
-//     },
-//     companyName: {
-//         type: Sequelize.STRING,
-//     },
-//     password: {
-//         type: Sequelize.STRING,
-//     }
-// }); 
-
+  });
+  return User;
+};
 

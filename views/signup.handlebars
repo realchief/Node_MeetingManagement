@@ -41,16 +41,29 @@
             opacity:1;
         }
 
-        /* Extra styles for the cancel button */
-        .cancelbtn {
-            padding: 14px 20px;
-            background-color: #f44336;
+        .cancelbtn:hover {
+            opacity:1;
         }
+       
+        .cancelbtn {
+            padding: 14px 20px;           
+            background-color: #4CAF50;
+            color: white;           
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-decoration: none;
+            opacity: 0.9;             
+        }     
+      
 
         /* Float cancel and signup buttons and add an equal width */
         .cancelbtn, .signupbtn {
-        float: left;
-        width: 50%;
+            float: left;
+            width: 50%;
+            font-size: 14px;  
+            text-align: center;        
         }
 
         /* Add padding to container elements */
@@ -145,7 +158,7 @@
                     <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
 
                     <div class="clearfix">
-                        <button type="button" class="cancelbtn">Cancel</button>
+                        <a href="/signin" class="cancelbtn">Cancel</a>
                         <button type="submit" class="signupbtn">Sign Up</button>
                     </div>
                 </div>

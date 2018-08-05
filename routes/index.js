@@ -2,12 +2,7 @@ var express = require('express');
 var router = express.Router();
 var request = require('request')
 var passport = require('passport');
-
-// Used to encrypt user password before adding it to db.
 var bcrypt = require('bcrypt');
-
-// Bookshelf postgres db ORM object. Basically it makes 
-// it simple and less error port to insert/query the db.
 var Model = require('../models');
 
 router.get('/', function (req, res) {
@@ -37,11 +32,9 @@ router.post('/signin', function(req, res, next) {
         if (err) {
             return res.render('signin', { title: 'Sign In', errorMessage: err.message });
         }
-
         if (!user) {
             return res.render('signin', { title: 'Sign In', errorMessage: info.message });
         }
-
         return req.logIn(user, function(err) {
             if (err) {
                 return res.render('signin', { title: 'Sign In', errorMessage: err.message });
@@ -89,7 +82,6 @@ router.post('/signup', function(req, res) {
     catch (ex){
         console.log(ex);
     }
-    
 });
 
 router.get('/signout', function(req, res, next) {

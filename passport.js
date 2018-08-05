@@ -20,25 +20,51 @@ module.exports = function(passport) {
         });
     });
 
-    passport.use(new LocalStrategy(function(username, password, done) {
-        console.log(username, password);
-        Model.User.findOne({
-            $or: [{username: username}, {email: username}]
-        }).then(function (data) {
-            var user = data;
-            if (user === null) {
-                return done(null, false, { message: 'Invalid username or password' });
-            } else {
-                user = data.toJSON();
-                console.log(user);
-                if (!bcrypt.compare(password, user.password)) {
-                    return done(null, false, { message: 'Invalid password' });
-                } else {
-                    return done(null, user);
+    // passport.use(new LocalStrategy(
+    //     function(username, password, done) {
+    //         console.log(username, password);
+    //         Model.User.findOne({
+    //             $or: [{username: username}, {email: username}]
+    //         }).then(function (data) {
+    //             var user = data;
+    //             if (user === null) {
+    //                 return done(null, false, { message: 'Invalid username or password' });
+    //             } else {
+    //                 user = data.toJSON();
+    //                 console.log(user);
+    //                 if (!bcrypt.compare(password, user.password)) {
+    //                     return done(null, false, { message: 'Invalid password' });
+    //                 } else {
+    //                     return done(null, user);
+    //                 }
+    //         }
+    //     });
+    // }));
+
+    passport.use(new LocalStrategy(
+        function(email, password, done) {
+            console.log('===Username and Password===');
+            console.log(email, password);   
+            console.log('=======hashedPassword=====');
+            console.log(bcrypt.hashSync(password, salt));         
+            Model.User.findOne({
+                where: {
+                    'email': email
                 }
-            }
-        });
-    }));
+            }).then(function (user) {
+                if (user == null) {
+                return done(null, false, { message: 'Incorrect credentials.' })
+                }
+                var hashedPassword = bcrypt.hashSync(password, salt)
+                console.log('=======hashedPassword=====');
+                console.log(hashedPassword);
+                if (user.password === hashedPassword) {
+                    return done(null, user)
+                }
+                return done(null, false, { message: 'Incorrect credentials.' })
+            })
+        }
+    ))
 
     passport.use(new FacebookStrategy({
         clientID        : config.facebookAuth.clientID,

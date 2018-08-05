@@ -5,8 +5,8 @@
 
 DB_NAME = "testdb"
 USERNAME = 'postgres'
-PASSWORD = ''
-HOSTNAME = 'localhost:5432'
+PASSWORD = 'postgres'
+HOSTNAME = 'localhost'
 
 const Sequelize = require('sequelize')
 const sequelize = new Sequelize(

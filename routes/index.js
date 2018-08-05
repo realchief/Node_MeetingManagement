@@ -4,7 +4,7 @@ var request = require('request')
 var passport = require('passport');
 
 // Used to encrypt user password before adding it to db.
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
 
 // Bookshelf postgres db ORM object. Basically it makes 
 // it simple and less error port to insert/query the db.

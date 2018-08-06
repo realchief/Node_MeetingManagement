@@ -57,11 +57,19 @@ module.exports = function(passport) {
                 }
                 var hashedPassword = bcrypt.hashSync(password, salt)
                 console.log('=======hashedPassword=====');
+                console.log(password)
                 console.log(hashedPassword);
-                if (user.password === hashedPassword) {
+                // if (user.password === hashedPassword) {
+                //     return done(null, user)
+                // }
+                // return done(null, false, { message: 'Incorrect credentials.' })
+                if(bcrypt.compareSync(password, hash)) {
+                    console.log("success!");
                     return done(null, user)
-                }
-                return done(null, false, { message: 'Incorrect credentials.' })
+                   } 
+                else {
+                    return done(null, false, { message: 'Incorrect credentials.' })
+                   }
             })
         }
     ))

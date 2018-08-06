@@ -55,33 +55,15 @@ router.get('/signup', function(req, res, next) {
 
 router.post('/signup', function(req, res) {
     // Here, req.body is { username, password }
-    var user = req.body;
-    console.log(req.body);
-    console.log('====================');
-    console.log(user.username);   
-    
+    var newUser = req.body;
 
-    try {
-        var newUser = new Model.User(user);
-        bcrypt.genSalt(10, function(err, salt) {
-            if (err) return next(err);
-            bcrypt.hash(req.body.password, salt, function(err, hash) {
-                if (err) return next(err);
-                newUser.password = hash; // Or however suits your setup
-
-                // Store the user to the database, then send the response
-                newUser.save(function (err, user) {
-                    if (err) {
-                        res.render('signup', { title: 'Sign Up', layout: false }, { errorMessage: 'Can not signup' })
-                    }
-                    res.render('signin');
-                });
-            });
-        });
-    }
-    catch (ex){
-        console.log(ex);
-    }
+    Model.User.create(newUser).then(function (user) {
+        console.log(user);
+        res.redirect('signin');
+    }).catch(function (err) {
+        console.log(err);
+        res.render('signup', {errorMessage: 'Can not signup!'});
+    });
 });
 
 router.get('/signout', function(req, res, next) {

@@ -43,33 +43,23 @@ module.exports = function(passport) {
 
     passport.use(new LocalStrategy(
         function(email, password, done) {
-            console.log('===Username and Password===');
-            console.log(email, password);   
-            console.log('=======hashedPassword=====');
-            console.log(bcrypt.hashSync(password, salt));         
             Model.User.findOne({
                 where: {
                     'email': email
                 }
             }).then(function (user) {
-                if (user == null) {
-                return done(null, false, { message: 'Incorrect credentials.' })
+                if (!user) {
+                    console.log(user);
+                    return done(null, false, { message: 'Incorrect credentials.' })
                 }
-                var hashedPassword = bcrypt.hashSync(password, salt)
-                console.log('=======hashedPassword=====');
-                console.log(password)
-                console.log(hashedPassword);
-                // if (user.password === hashedPassword) {
-                //     return done(null, user)
-                // }
-                // return done(null, false, { message: 'Incorrect credentials.' })
-                if(bcrypt.compareSync(password, hash)) {
+                
+                if (bcrypt.compareSync(password, user.password)) {
                     console.log("success!");
                     return done(null, user)
                    } 
                 else {
                     return done(null, false, { message: 'Incorrect credentials.' })
-                   }
+                }
             })
         }
     ))

@@ -24,26 +24,10 @@ router.get('/signin', function(req, res, next) {
 });
 
 // Add user to database.
-router.post('/signin', function(req, res, next) {
-    passport.authenticate('local', {
-                         successRedirect: '/',
-                         failureRedirect: '/signin'
-    }, function(err, user, info) {
-        if (err) {
-            return res.render('signin', { title: 'Sign In', errorMessage: err.message });
-        }
-        if (!user) {
-            return res.render('signin', { title: 'Sign In', errorMessage: info.message });
-        }
-        return req.logIn(user, function(err) {
-            if (err) {
-                return res.render('signin', { title: 'Sign In', errorMessage: err.message });
-            } else {
-                return res.redirect('/');
-            }
-        });
-    })(req, res, next);
-});
+router.post('/signin', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/signin'
+}));
 
 router.get('/signup', function(req, res, next) {
     if (req.isAuthenticated()) {

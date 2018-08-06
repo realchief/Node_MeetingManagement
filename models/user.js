@@ -23,10 +23,12 @@ module.exports = (sequelize, DataTypes) => {
         }
     });
 
-    User.beforeCreate((user, options) => {
-        return bcrypt.hash(user.password, 10).then(function (hash) {
-            user.password = hash;
-        })
+    User.beforeSave((user, options) => {
+        if (user.changed('password'))
+            return bcrypt.hash(user.password, 10).then(function (hash) {
+                user.password = hash;
+            })
+        else Promise.resolve();
     });
     
     return User;

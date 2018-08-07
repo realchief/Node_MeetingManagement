@@ -14,76 +14,76 @@ const EmailContent = require('../components/EmailContent.js')
 
 router.get('/ical', function (req, res) {
 
- var insightType = 'test';
-var recipients = [];
+  var insightType = 'test';
+  var recipients = [];
   
   console.log( '----- NEW TEST EVENT FILE PARSE' );
 
-          //var ical_data = ical.parseFile('./uploads/iCal-20180619-172902-1529454543514.ics')
-         // console.log(ical_data)
+  //var ical_data = ical.parseFile('./uploads/iCal-20180619-172902-1529454543514.ics')
+  // console.log(ical_data)
 
-          parseIcal = ical_data[Object.keys(ical_data)[0]]
-          if ( parseIcal.type == "VTIMEZONE") {
-            console.log("**** FROM ICAL")
-            parseIcal = ical_data[Object.keys(ical_data)[1]]
-          }
-    
-          console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
-          console.log( 'Start:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
-          console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-          console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-          console.log( 'Summary:', parseIcal.summary)
+  parseIcal = ical_data[Object.keys(ical_data)[0]]
+  if ( parseIcal.type == "VTIMEZONE") {
+    console.log("**** FROM ICAL")
+    parseIcal = ical_data[Object.keys(ical_data)[1]]
+  }
 
-          /* =====  replace "to" response with calendar attendees */
-             var toArray = [];
-             var flatRecipients = [];
-            _.forEach(parseIcal.attendee, function(value) {
+  console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
+  console.log( 'Start:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
+  console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+  console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+  console.log( 'Summary:', parseIcal.summary)
 
-               if ( typeof value.val !== 'undefined' ) {
-               var attendee = value.val.toLowerCase()
-               console.log('Attendee:', attendee, "Attendee Email:", attendee.split(':')[1])
-               
-                var recipient = attendee.split(':')[1];
+  /* =====  replace "to" response with calendar attendees */
+      var toArray = [];
+      var flatRecipients = [];
+    _.forEach(parseIcal.attendee, function(value) {
 
-                if ( recipient.indexOf('meetbrief') < 0 ) {
-                  toArray.push( { email : recipient } )
-                  flatRecipients.push(recipient)
-                } 
-              }
+        if ( typeof value.val !== 'undefined' ) {
+        var attendee = value.val.toLowerCase()
+        console.log('Attendee:', attendee, "Attendee Email:", attendee.split(':')[1])
+        
+        var recipient = attendee.split(':')[1];
 
-            })
-         
-          var organizer = ""
+        if ( recipient.indexOf('meetbrief') < 0 ) {
+          toArray.push( { email : recipient } )
+          flatRecipients.push(recipient)
+        } 
+      }
 
-          if ( typeof parseIcal.organizer.val !== undefined ) {
-            if ( parseIcal.organizer.val.toLowerCase().indexOf('mailto:') >= 0 ) {
-              organizer = parseIcal.organizer.val.toLowerCase().split('mailto:')[1]
-            } else {
-              organizer = parseIcal.organizer.val
-            }
-          } else {
-            organizer = "Someone"
-          }
+    })
+  
+  var organizer = ""
 
-          console.log('Organizer:', organizer)
+  if ( typeof parseIcal.organizer.val !== undefined ) {
+    if ( parseIcal.organizer.val.toLowerCase().indexOf('mailto:') >= 0 ) {
+      organizer = parseIcal.organizer.val.toLowerCase().split('mailto:')[1]
+    } else {
+      organizer = parseIcal.organizer.val
+    }
+  } else {
+    organizer = "Someone"
+  }
 
-          if ( flatRecipients.indexOf(organizer) < 0 ) {
-              toArray.push( { email : organizer } )
-          }
+  console.log('Organizer:', organizer)
 
-          sender = organizer
-          emailDomain = organizer.replace(/.*@/, "").split('.')[0];
-          summary = parseIcal.summary
-          meeting_time = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
-          meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+  if ( flatRecipients.indexOf(organizer) < 0 ) {
+      toArray.push( { email : organizer } )
+  }
 
-           console.log( '----- END EVENT FILE PARSE' );
+  sender = organizer
+  emailDomain = organizer.replace(/.*@/, "").split('.')[0];
+  summary = parseIcal.summary
+  meeting_time = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
+  meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
-          console.log('email domain:', emailDomain)
-          console.log('to array:', toArray)
+    console.log( '----- END EVENT FILE PARSE' );
+
+  console.log('email domain:', emailDomain)
+  console.log('to array:', toArray)
 
 
-           res.send('test in console')
+    res.send('test in console')
 })
 
 

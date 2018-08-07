@@ -54,7 +54,7 @@ router.post('/signup', function(req, res) {
 
 router.get('/signout', function(req, res, next) {
     if (!req.isAuthenticated()) {
-        res.redirect('/', { errorMessage: 'You are not logged in' });
+        res.redirect('/signin', { errorMessage: 'You are not logged in' });
     } else {
         req.logout();
         res.redirect('/signin');

@@ -49,32 +49,30 @@ FT.connector.google = {
 			var button = $('.google-authorize-button')
 		  	//console.log('***** Google API initial response', response)
 		  
-		  if (response.error) {
-		  
-		  	button.find('.title').html('Connect Google Analytics')
-		  	console.log('****** NOT AUTHORIZED for Google API **********')
+			if (response.error) {
+			
+				button.find('.title').html('Connect Google Analytics')
+				console.log('****** NOT AUTHORIZED for Google API **********')
 		 
-		  }
-		  else {
+			}
+			else {
 
-		  	console.log("GOOGLE AUTHORIZE>>>", response)
-		 
-		  	button.find('.title').html('Google Analytics Connected')
-	   	  	$('.google-manage-button').css({
-	   	  		'display' : 'inline-block'
-	   	  	})
-	   	  	console.log('****** AUTHORIZED for Google API **********')
-		    FT.connector.google.getAccounts();
-		 
-		  }
+				console.log("GOOGLE AUTHORIZE>>>", response)
+			
+				button.find('.title').html('Google Analytics Connected')
+				$('.google-manage-button').css({
+					'display' : 'inline-block'
+				})
+				console.log('****** AUTHORIZED for Google API **********')
+				FT.connector.google.getAccounts();
+			
+			}
 		});
 
 
 	},
 
 	getAccounts : function() {
-
-
 
 		// Load the Google Analytics client library.
 		gapi.client.load('analytics', 'v3').then(function() {
@@ -310,10 +308,7 @@ FT.connector.google = {
 	      method: 'POST',
 	      body: {
 	        reportRequests: [
-	         
-	        	
-	         
-	         {
+	        {
 	            "viewId" : viewId,
 	            "dateRanges" : dateRanges,
 	            "dimensions" : [],
@@ -333,10 +328,8 @@ FT.connector.google = {
 	             "orderBys" : [],
 	           
 			  pageSize : 1
-	          },
-
-
-	          {
+	        },
+	        {
 	            "viewId" : viewId,
 	            "dateRanges" : dateRanges,
 	            "dimensions" : [

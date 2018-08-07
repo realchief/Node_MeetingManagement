@@ -20,27 +20,6 @@ module.exports = function(passport) {
         });
     });
 
-    // passport.use(new LocalStrategy(
-    //     function(username, password, done) {
-    //         console.log(username, password);
-    //         Model.User.findOne({
-    //             $or: [{username: username}, {email: username}]
-    //         }).then(function (data) {
-    //             var user = data;
-    //             if (user === null) {
-    //                 return done(null, false, { message: 'Invalid username or password' });
-    //             } else {
-    //                 user = data.toJSON();
-    //                 console.log(user);
-    //                 if (!bcrypt.compare(password, user.password)) {
-    //                     return done(null, false, { message: 'Invalid password' });
-    //                 } else {
-    //                     return done(null, user);
-    //                 }
-    //         }
-    //     });
-    // }));
-
     passport.use(new LocalStrategy(
         function(email, password, done) {
             Model.User.findOne({

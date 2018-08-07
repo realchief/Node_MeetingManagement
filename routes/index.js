@@ -38,7 +38,7 @@ router.get('/signup', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res) {
-    // Here, req.body is { username, password }
+    
     var newUser = req.body;
 
     Model.User.create(newUser).then(function (user) {

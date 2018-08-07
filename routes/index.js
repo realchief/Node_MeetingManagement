@@ -5,14 +5,16 @@ var passport = require('passport');
 var bcrypt = require('bcrypt');
 var Model = require('../models');
 
-router.get('/', function (req, res) {
-
-    req.session.currentVersion = process.env.HOME_VERSION
-    res.render(process.env.HOME_VERSION, {
-    	version: process.env.HOME_VERSION,
-        layout: process.env.HOME_VERSION + '.handlebars',
-        register_version: 'none'
-    });
+router.get('/',  function (req, res) {
+    if (req.isAuthenticated()) {
+        req.session.currentVersion = process.env.HOME_VERSION
+        res.render(process.env.HOME_VERSION, {
+            version: process.env.HOME_VERSION,
+            layout: process.env.HOME_VERSION + '.handlebars',
+            register_version: 'none'
+        });
+    }
+    else res.redirect('/signin');
 });
 
 router.get('/signin', function(req, res, next) {

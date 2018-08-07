@@ -52,8 +52,7 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(passport.initialize());
-app.use(passport.session());
+
 
 if ( secureRedirect ) {
 
@@ -86,6 +85,9 @@ app.use(session({
   saveUninitialized: false,
   cookie: cookieOptions
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // serves up static files from the public folder. Anything in static/ will just be served up as the file it is
 app.use(express.static(path.join(__dirname, 'static')));

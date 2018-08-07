@@ -10,13 +10,14 @@ var config           = require('./config/passport.js'),
     User             = Model.User;
 
 module.exports = function(passport) {
+
     passport.serializeUser(function(user, done) {
         done(null, user.id);
     });
 
     passport.deserializeUser(function(id, done) {
-        Model.grabUserCredentials(id, function(err, user) {
-            done(err, user);
+        Model.User.findById(id).then(function (user) {
+            done(null, user);
         });
     });
 
@@ -28,7 +29,6 @@ module.exports = function(passport) {
                 }
             }).then(function (user) {
                 if (!user) {
-                    console.log(user);
                     return done(null, false, { message: 'Incorrect credentials.' })
                 }
                 

@@ -20,6 +20,14 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        facebook_token: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        google_token: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     });
 

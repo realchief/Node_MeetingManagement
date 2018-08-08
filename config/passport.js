@@ -1,4 +1,4 @@
-var port = 3000;
+let port = 3000;
 
 module.exports = {
     'port' : port,
@@ -13,8 +13,8 @@ module.exports = {
         'callbackURL'   : 'http://localhost:' + port + '/auth/twitter/callback'
     },
     'googleAuth' : {
-        'clientID'      : '456789',
-        'clientSecret'  : 'abc789',
+        'clientID'      : '99296634860-u2knilp22cb05ohusdqivfooc9gbanh2.apps.googleusercontent.com',
+        'clientSecret'  : 'dr_K-nlseXq77BhasPvWFg0e',
         'callbackURL'   : 'http://localhost:' + port + '/auth/google/callback'
     },
     

@@ -54,7 +54,11 @@ module.exports = function(passport) {
         process.nextTick(function() {
             Async.waterfall([
                 function (cb) {
-                    Model.Facebook.findOne({ profile_id: profile.id }).then(function(fbUser) {
+                    Model.Facebook.findOne({
+                        where: {
+                            profile_id: profile.id
+                        }
+                    }).then(function(fbUser) {
                         cb(null, fbUser);
                     });
                 }, function (fbUser, cb) {
@@ -102,10 +106,16 @@ module.exports = function(passport) {
         clientSecret : config.googleAuth.clientSecret,
         callbackURL  : config.googleAuth.callbackURL
     }, function(req, token, refreshToken, profile, done) {
+        console.log('profile:', profile);
+        console.log('refresh_token:', refreshToken);
         process.nextTick(function() {
             Async.waterfall([
                 function (cb) {
-                    Model.Google.findOne({ profile_id: profile.id }).then(function(goUser) {
+                    Model.Google.findOne({
+                        where: {
+                            profile_id: profile.id
+                        }
+                    }).then(function(goUser) {
                         cb(null, goUser);
                     });
                 }, function (goUser, cb) {
@@ -114,8 +124,8 @@ module.exports = function(passport) {
                     }
                     else {
                         let newGoUser = {
-                            token           : token,
-                            refresh_token   : refreshToken,
+                            token           : refreshToken.access_token,
+                            refresh_token   : refreshToken.id_token,
                             profile_id      : profile.id,
                             email           : profile.emails[0].value,
                             display_name    : profile.displayName

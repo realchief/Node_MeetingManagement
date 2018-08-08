@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
 
     User.associate = function(models) {
         models.User.belongsTo(models.Facebook);
+        models.User.belongsTo(models.Google);
     };
 
     return User;

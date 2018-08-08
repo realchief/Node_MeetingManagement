@@ -1,10 +1,10 @@
 module.exports = {
     development: {
         database: 'testdb',
-        username: 'root',
-        password: 'root',
+        username: 'postgres',
+        password: 'postgres',
         host: 'localhost',
-        dialect: 'mysql',
+        dialect: 'postgres',
     
         pool: {
         max: 5,

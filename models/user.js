@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         },
         password: {
-<<<<<<< HEAD
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -24,9 +23,6 @@ module.exports = (sequelize, DataTypes) => {
         google_token: {
             type: DataTypes.STRING,
             allowNull: true
-=======
-            type: DataTypes.STRING
->>>>>>> e19b43d5d9aacded054caee66553cfbf92c5cd22
         }
     });
 

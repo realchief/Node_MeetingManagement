@@ -1,25 +1,19 @@
 'use strict';
-var bcrypt = require('bcrypt');
+let bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
-    var User = sequelize.define('User', {
+    const User = sequelize.define('User', {
         username: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
+            type: DataTypes.STRING
         },
         email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
+            type: DataTypes.STRING
         },
         company_name: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            type: DataTypes.STRING
         },
         password: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            type: DataTypes.STRING
         }
     });
 
@@ -27,10 +21,14 @@ module.exports = (sequelize, DataTypes) => {
         if (user.changed('password'))
             return bcrypt.hash(user.password, 10).then(function (hash) {
                 user.password = hash;
-            })
+            });
         else Promise.resolve();
     });
-    
+
+    User.associate = function(models) {
+        models.User.belongsTo(models.Facebook);
+    };
+
     return User;
 };
 

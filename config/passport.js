@@ -1,10 +1,10 @@
-var port = 3001;
+var port = 3000;
 
 module.exports = {
     'port' : port,
     'facebookAuth' : {
-        'clientID'      : '123456',
-        'clientSecret'  : 'abc123',
+        'clientID'      : '860749457453507',
+        'clientSecret'  : 'e2fd5e0b3e81e4e9061bb325859b56f1',
         'callbackURL'   : 'http://localhost:' + port + '/auth/facebook/callback'
     },
     'twitterAuth' : {

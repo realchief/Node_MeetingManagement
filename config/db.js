@@ -1,10 +1,10 @@
 module.exports = {
     development: {
         database: 'testdb',
-        username: 'postgres',
-        password: 'postgres',
+        username: 'root',
+        password: 'root',
         host: 'localhost',
-        dialect: 'postgres',
+        dialect: 'mysql',
     
         pool: {
         max: 5,
@@ -12,10 +12,7 @@ module.exports = {
         acquire: 30000,
         idle: 10000
         },
-    
-        // SQLite only
-        storage: 'path/to/database.sqlite',
-    
+
         // http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
         operatorsAliases: false
     },

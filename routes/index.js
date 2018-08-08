@@ -1,16 +1,16 @@
-var express = require('express');
-var router = express.Router();
-var request = require('request')
-var passport = require('passport');
-var bcrypt = require('bcrypt');
-var Model = require('../models');
+let express = require('express');
+let router = express.Router();
+let request = require('request')
+let passport = require('passport');
+let bcrypt = require('bcrypt');
+let Model = require('../models');
 
 router.get('/',  function (req, res) {
     if (req.isAuthenticated()) {
-        req.session.currentVersion = process.env.HOME_VERSION
-        res.render(process.env.HOME_VERSION, {
-            version: process.env.HOME_VERSION,
-            layout: process.env.HOME_VERSION + '.handlebars',
+        req.session.currentVersion = 'fingertips'
+        res.render('fingertips', {
+            version: 'fingertips',
+            layout: 'fingertips.handlebars',
             register_version: 'none'
         });
     }
@@ -24,6 +24,10 @@ router.get('/signin', function(req, res, next) {
         res.render('signin', { title: 'Sign In', layout: false });
     }
 });
+
+router.get('/auth/facebook', passport.authenticate('facebook', {scope : ['email']}));
+router.get('/auth/facebook/callback',
+    passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/signin' }));
 
 // Add user to database.
 router.post('/signin', passport.authenticate('local', {
@@ -41,7 +45,7 @@ router.get('/signup', function(req, res, next) {
 
 router.post('/signup', function(req, res) {
     
-    var newUser = req.body;
+    let newUser = req.body;
 
     Model.User.create(newUser).then(function (user) {
         console.log(user);

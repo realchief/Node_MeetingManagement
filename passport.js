@@ -7,7 +7,8 @@ var config           = require('./config/passport.js'),
     GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy,
     Model            = require('./models'),
     bcrypt           = require('bcrypt'),
-    User             = Model.User;
+    User             = Model.User,
+    Async            = require('async');
 
 module.exports = function(passport) {
 
@@ -41,41 +42,112 @@ module.exports = function(passport) {
                 }
             })
         }
-    ))
+    ));
 
     passport.use(new FacebookStrategy({
         clientID        : config.facebookAuth.clientID,
         clientSecret    : config.facebookAuth.clientSecret,
-        callbackURL     : config.facebookAuth.callbackURL
-    }, function(token, refreshToken, profile, done) {
-        console.log(profile);
+        callbackURL     : config.facebookAuth.callbackURL,
+        profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl']
+    }, function(req, token, refreshToken, profile, done) {
+        console.log('profile: ', profile);
         process.nextTick(function() {
-            new Model.Facebook({ facebook_id: profile.id }).fetch().then(function(fbUser) {
-                if (fbUser) {
-                    // TODO: Handle case where there IS user, but no facebook user
-                    return done(null, fbUser);
-                } else {
-                    // If there is no user found, then create one
-                    new User().save().then(function(user) {
-                        var newUserId = user.toJSON().id;
-
-                        var newFBUser = {
-                            id          : newUserId,
+            Async.waterfall([
+                function (cb) {
+                    Model.Facebook.findOne({ profile_id: profile.id }).then(function(fbUser) {
+                        cb(null, fbUser);
+                    });
+                }, function (fbUser, cb) {
+                    if (fbUser) {
+                        cb(null, fbUser)
+                    }
+                    else {
+                        let newFBUser = {
                             token       : token,
-                            facebook_id : profile.id,
+                            profile_id : profile.id,
                             email       : profile.emails[0].value,
-                            name        : profile.name.givenName + ' ' + profile.name.familyName
+                            given_name  :  profile.name.givenName,
+                            family_name : profile.name.familyName
                         };
-
-                        // Create new Facebook user with token.
-                        new Model.Facebook(newFBUser).save({}, { method: 'insert' }).then(function(facebook) {
-                            return done(null, newFBUser);
+                        Model.Facebook.create(newFBUser).then(function(fbUser) {
+                            if (!fbUser) {
+                                cb({error: 'can not create new facebook user'})
+                            }
+                            else cb(null, fbUser);
                         });
+                    }
+                }, function (fbUser, cb) {
+                    if (req.user) {
+                        don(null, req.user, fbUser);
+                    }
+                    else {
+                        User.create({}).then(function(user) {
+                            if (!user)cb({error: 'can not create new user'})
+                            else cb(null, user, fbUser)
+                        });
+                    }
+                }, function (user, fbUser, cb) {
+                    user.setFacebook(fbUser).then(function () {
+                        cb(null, user);
                     });
                 }
+            ], function (err, user) {
+                return done(null, user);
             });
         });
     }));
+
+    passport.use(new GoogleStrategy({
+        clientID     : config.googleAuth.clientID,
+        clientSecret : config.googleAuth.clientSecret,
+        callbackURL  : config.googleAuth.callbackURL
+    }, function(req, token, refreshToken, profile, done) {
+        process.nextTick(function() {
+            Async.waterfall([
+                function (cb) {
+                    Model.Google.findOne({ profile_id: profile.id }).then(function(goUser) {
+                        cb(null, goUser);
+                    });
+                }, function (goUser, cb) {
+                    if (goUser) {
+                        cb(null, goUser)
+                    }
+                    else {
+                        let newGoUser = {
+                            token           : token,
+                            refresh_token   : refreshToken,
+                            profile_id      : profile.id,
+                            email           : profile.emails[0].value,
+                            display_name    : profile.displayName
+                        };
+                        Model.Google.create(newGoUser).then(function(goUser) {
+                            if (!goUser) {
+                                cb({error: 'can not create new google user'})
+                            }
+                            else cb(null, goUser);
+                        });
+                    }
+                }, function (goUser, cb) {
+                    if (req.user) {
+                        don(null, req.user, goUser);
+                    }
+                    else {
+                        User.create({}).then(function(user) {
+                            if (!user) cb({error: 'can not create new user'})
+                            else cb(null, user, goUser)
+                        });
+                    }
+                }, function (user, goUser, cb) {
+                    user.setGoogle(goUser).then(function () {
+                        cb(null, user);
+                    });
+                }
+            ], function (err, user) {
+                return done(null, user);
+            });
+        });
+    }));
+
 
     passport.use(new TwitterStrategy({
         consumerKey    : config.twitterAuth.consumerKey,
@@ -102,34 +174,6 @@ module.exports = function(passport) {
                         // Create new Facebook user with token.
                         new Model.Twitter(newTWUser).save({}, { method: 'insert' }).then(function(newlyMadeTWUser) {
                             return done(null, newTWUser);
-                        });
-                    });
-                }
-            });
-        });
-    }));
-
-    passport.use(new GoogleStrategy({
-        clientID     : config.googleAuth.clientID,
-        clientSecret : config.googleAuth.clientSecret,
-        callbackURL  : config.googleAuth.callbackURL
-    }, function(token, refreshToken, profile, done) {
-        process.nextTick(function() {
-            new Model.Google({google_id: profile.id}).fetch().then(function(goUser) {
-                if (goUser) {
-                    return done(null, goUser);
-                } else {
-                    Model.createNewUser(function(newUserId) {
-                        var newGOUser = {
-                            id           : newUserId,
-                            token        : token,
-                            google_id    : profile.id,
-                            email        : profile.emails[0].value,
-                            display_name : profile.displayName
-                        };
-
-                        new Model.Google(newGOUser).save({}, { method: 'insert' }).then(function(newlyMadeGOUser) {
-                            return done(null, newGOUser);
                         });
                     });
                 }

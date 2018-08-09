@@ -56,10 +56,16 @@ button:hover {
 
 p.alert {
     text-align: left;
-    font-size: 12px;
+    font-size: 14px;
     font-style: italic;
-    color: #691;
+    color: #e44;
     margin-top: 0px;
+    margin-bottom: 22px;
+}
+
+input.error {
+    margin-bottom: 5px;
+    border-color: solid 1px #e44;
 }
 
 /* Float cancel and signup buttons and add an equal width */

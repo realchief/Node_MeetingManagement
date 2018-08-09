@@ -5,20 +5,21 @@ var express = require('express'),
 router.get('/facebook', passport.authenticate('facebook', {scope : ['email']}));
 
 router.get('/facebook/callback',
-    passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/signin' }));
+    passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/signin'}));
 
     
 router.get('/google', passport.authenticate('google', {scope : ['email']}));
 
 router.get('/google/callback',
-    passport.authenticate('google', { successRedirect: '/', failureRedirect: '/signin' }));
+    passport.authenticate('google', { successRedirect: '/', failureRedirect: '/signin'}));
 
-router.get('/twitter', passport.authenticate('twitter'));
+router.get('/twitter', passport.authenticate('twitter'));   
 
 router.get('/twitter/callback',
     passport.authenticate('twitter', {
         successRedirect: '/',
-        failureRedirect: '/signin'
+        failureRedirect: '/signin',
+        failureFlash: true
     })
 );
 

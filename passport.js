@@ -23,15 +23,21 @@ module.exports = function(passport) {
         });
     });
 
-    passport.use(new LocalStrategy(
-        function(email, password, done) {
+    passport.use('local', new LocalStrategy(
+        {
+            usernameField : 'email',
+            passwordField : 'password',
+            passReqToCallback : true 
+        },
+        function(req, email, password, done) {
             Model.User.findOne({
                 where: {
                     'email': email
                 }
             }).then(function (user) {
                 if (!user) {
-                    return done(null, false, { message: 'Incorrect credentials.' })
+                    console.log('Username or password is incorrect');
+                    return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
                 }
                 
                 if (bcrypt.compareSync(password, user.password)) {
@@ -39,7 +45,7 @@ module.exports = function(passport) {
                     return done(null, user)
                    } 
                 else {
-                    return done(null, false, { message: 'Incorrect credentials.' })
+                    return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
                 }
             })
         }

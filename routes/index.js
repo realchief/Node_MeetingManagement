@@ -19,23 +19,21 @@ router.get('/signin', function(req, res, next) {
     if (req.isAuthenticated()) {
         res.redirect('/');
     } else {
-        res.render('signin', { title: 'Sign In', layout: false });
+        res.render('signin', { title: 'Sign In', layout: false, errorMessage: req.flash('errMessage') });
     }
 });
 
 // Add user to database.
 router.post('/signin', passport.authenticate('local', {
     successRedirect: '/',
-    failureRedirect: '/signin'
+    failureRedirect: '/signin',
+    failureFlash : true
 }));
 
 router.get('/signup', function(req, res, next) {
     if (req.isAuthenticated()) {
         res.redirect('/');
     } else {
-        console.log('======req=====');
-        console.log(req.User);
-        console.log('=======req.body========');
         res.render('signup', { title: 'Sign Up', layout: false });
     }
 });

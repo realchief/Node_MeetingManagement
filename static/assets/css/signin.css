@@ -126,6 +126,15 @@ input[type=submit]:hover {
     background-color: #666666;
 }
 
+p.alert {
+    text-align: left;
+    font-size: 14px;
+    font-style: italic;
+    color: #e44;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
 /* Responsive layout - when the screen is less than 650px wide, make the two columns stack on top of each other instead of next to each other */
 
 @media screen and (max-width: 650px) {

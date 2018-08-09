@@ -17,6 +17,7 @@ var parseRoutes = require('./routes/parse');
 var passport = require('passport');
 var auth = require('./routes/auth.js');
 var models = require('./models');
+var flash = require('connect-flash');
 
 require('./passport.js')(passport);
 
@@ -88,6 +89,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 // serves up static files from the public folder. Anything in static/ will just be served up as the file it is
 app.use(express.static(path.join(__dirname, 'static')));
@@ -131,7 +133,7 @@ app.use(function(req, res, next){
 
 // start the server
 models.sequelize.sync().then(function() {
-  var port = process.env.PORT || 3000;
+  var port = process.env.PORT || 3001;
   var server = http.createServer(app).listen(port, function() {
     console.log('Express server listening on port ' + port);
   });

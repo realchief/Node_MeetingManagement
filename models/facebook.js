@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         },
         refresh_token: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
         profile_id: {
             type: DataTypes.STRING

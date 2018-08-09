@@ -38,7 +38,7 @@ router.post('/signin', passport.authenticate('local', {
 router.get('/signup', function(req, res, next) {
     if (req.isAuthenticated()) {
         res.redirect('/');
-    } else {
+    } else {        
         res.render('signup', { title: 'Sign Up', layout: false });
     }
 });

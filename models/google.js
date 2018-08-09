@@ -1,10 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
     let Google = sequelize.define('Google', {
         token: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
         refresh_token: {
-            type: DataTypes.STRING
+            type: DataTypes.TEXT
         },
         profile_id: {
             type: DataTypes.STRING
@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         display_name: {
             type: DataTypes.STRING
+        },
+        expiry_date: {
+            type: DataTypes.DATE
         }
     });
 

@@ -1,6 +1,6 @@
 // const Model = require('./models')
 
-var config           = require('./config/passport.js'),
+var auth             = require('./config/auth.js'),
     LocalStrategy    = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
     TwitterStrategy  = require('passport-twitter').Strategy,
@@ -45,10 +45,11 @@ module.exports = function(passport) {
     ));
 
     passport.use(new FacebookStrategy({
-        clientID        : config.facebookAuth.clientID,
-        clientSecret    : config.facebookAuth.clientSecret,
-        callbackURL     : config.facebookAuth.callbackURL,
-        profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl']
+        clientID        : auth.facebookAuth.clientID,
+        clientSecret    : auth.facebookAuth.clientSecret,
+        callbackURL     : auth.facebookAuth.callbackURL,
+        profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl'],
+        passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
         console.log('profile: ', profile);
         process.nextTick(function() {
@@ -102,12 +103,11 @@ module.exports = function(passport) {
     }));
 
     passport.use(new GoogleStrategy({
-        clientID     : config.googleAuth.clientID,
-        clientSecret : config.googleAuth.clientSecret,
-        callbackURL  : config.googleAuth.callbackURL
+        clientID     : auth.googleAuth.clientID,
+        clientSecret : auth.googleAuth.clientSecret,
+        callbackURL  : auth.googleAuth.callbackURL,
+        passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
-        console.log('profile:', profile);
-        console.log('refresh_token:', refreshToken);
         process.nextTick(function() {
             Async.waterfall([
                 function (cb) {
@@ -123,12 +123,14 @@ module.exports = function(passport) {
                         cb(null, goUser)
                     }
                     else {
+                        const expiry_date = moment().add(refreshToken.expires_in, "s").format("X");
                         let newGoUser = {
                             token           : refreshToken.access_token,
                             refresh_token   : refreshToken.id_token,
                             profile_id      : profile.id,
                             email           : profile.emails[0].value,
-                            display_name    : profile.displayName
+                            display_name    : profile.displayName,
+                            expiry_date     : expiry_date
                         };
                         Model.Google.create(newGoUser).then(function(goUser) {
                             if (!goUser) {
@@ -160,9 +162,9 @@ module.exports = function(passport) {
 
 
     passport.use(new TwitterStrategy({
-        consumerKey    : config.twitterAuth.consumerKey,
-        consumerSecret : config.twitterAuth.consumerSecret,
-        callbackURL    : config.twitterAuth.callbackURL
+        consumerKey    : auth.twitterAuth.consumerKey,
+        consumerSecret : auth.twitterAuth.consumerSecret,
+        callbackURL    : auth.twitterAuth.callbackURL
     }, function(token, tokenSecret, profile, done) {
         process.nextTick(function() {
             new Model.Twitter({twitter_id: profile.id}).fetch().then(function(twUser) {

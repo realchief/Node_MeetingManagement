@@ -54,6 +54,13 @@ button:hover {
     opacity: 0.9;             
 }     
 
+p.alert {
+    text-align: left;
+    font-size: 12px;
+    font-style: italic;
+    color: #691;
+    margin-top: 0px;
+}
 
 /* Float cancel and signup buttons and add an equal width */
 .cancelbtn, .signupbtn {

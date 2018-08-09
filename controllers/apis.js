@@ -102,3 +102,22 @@ exports.checkGoogleToken =  (req, res, next) => {
         else next();
     });
   };
+
+exports.checkFacebookToken = (req, res, next) => {
+    if (!req.user) {
+        return next();
+    }
+    req.user.getFacebook().then(function (fUser) {
+        graph.extendAccessToken({
+            "access_token":     fUser.token
+          , "client_id":      auth.facebookAuth.ClientId
+          , "client_secret":  conf.facebookAuth.clientSecret
+        }, function (err, facebookRes) {
+            fUser.updateAttributes({
+                token: facebookRes.token
+            }).then(function (result) {
+                next();
+            });
+        });
+    });
+};

@@ -8,7 +8,8 @@ var auth             = require('./config/auth.js'),
     Model            = require('./models'),
     bcrypt           = require('bcrypt'),
     User             = Model.User,
-    Async            = require('async');
+    Async            = require('async'),
+    moment           = require('moment');
 
 module.exports = function(passport) {
 
@@ -83,7 +84,7 @@ module.exports = function(passport) {
                     }
                 }, function (fbUser, cb) {
                     if (req.user) {
-                        don(null, req.user, fbUser);
+                        done(null, req.user, fbUser);
                     }
                     else {
                         User.create({}).then(function(user) {
@@ -106,7 +107,6 @@ module.exports = function(passport) {
         clientID     : auth.googleAuth.clientID,
         clientSecret : auth.googleAuth.clientSecret,
         callbackURL  : auth.googleAuth.callbackURL,
-        passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
         process.nextTick(function() {
             Async.waterfall([
@@ -141,7 +141,7 @@ module.exports = function(passport) {
                     }
                 }, function (goUser, cb) {
                     if (req.user) {
-                        don(null, req.user, goUser);
+                        done(null, req.user, goUser);
                     }
                     else {
                         User.create({}).then(function(user) {

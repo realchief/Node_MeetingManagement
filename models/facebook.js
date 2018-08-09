@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         family_name: {
             type: DataTypes.STRING
+        },
+        expiry_date: {
+            type: DataTypes.INTEGER
         }
     });
 

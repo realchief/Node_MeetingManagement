@@ -25,11 +25,15 @@
 
                     <label for="psw-repeat"><b>Repeat Password</b></label>
                     <input type="password" placeholder="Repeat Password" name="confirm_password" id="confirm_password" required>
-                    <span id='message'></span>
+                     {{#if errorMessage}}
+                        {{#if errorMessage.password_match}}
+                        <p>{{ errorMessage.password_match }}</p>
+                        {{/if}}
+                    {{/if}}
+
                     <label>
                         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
                     </label>
-                    <ul class="errorMessages"></ul>
                     <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
                     
                     <div class="clearfix">

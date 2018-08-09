@@ -68,12 +68,15 @@ module.exports = function(passport) {
                         cb(null, fbUser)
                     }
                     else {
+                        const expiry_date = moment().format('X');
+
                         let newFBUser = {
                             token       : token,
                             profile_id : profile.id,
                             email       : profile.emails[0].value,
                             given_name  :  profile.name.givenName,
-                            family_name : profile.name.familyName
+                            family_name : profile.name.familyName,
+                            expiry_date : expiry_date
                         };
                         Model.Facebook.create(newFBUser).then(function(fbUser) {
                             if (!fbUser) {

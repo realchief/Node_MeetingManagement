@@ -38,10 +38,8 @@ router.post('/signin', passport.authenticate('local', {
 router.get('/signup', function(req, res, next) {
     if (req.isAuthenticated()) {
         res.redirect('/');
-    } else {
-        console.log('======req=====');
-        console.log(req.User);
-        console.log('=======req.body========');
+    } else {     
+        console.log(req.User);   
         res.render('signup', { title: 'Sign Up', layout: false });
     }
 });
@@ -67,8 +65,6 @@ router.post('/signup', function(req, res) {
             }
         }).then(function (user) {
             if (user) {
-                console.log('=====duplicated user============');
-                console.log(user);
                 res.render('signup', {errorMessage: { email:'Duplicated User, This email was already used. Use other email.'}, layout: false} );
             }
             else {

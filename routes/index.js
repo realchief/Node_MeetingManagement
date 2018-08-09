@@ -1,8 +1,6 @@
 let express = require('express');
 let router = express.Router();
-let request = require('request')
 let passport = require('passport');
-let bcrypt = require('bcrypt');
 let Model = require('../models');
 
 router.get('/',  function (req, res) {
@@ -24,10 +22,6 @@ router.get('/signin', function(req, res, next) {
         res.render('signin', { title: 'Sign In', layout: false });
     }
 });
-
-router.get('/auth/facebook', passport.authenticate('facebook', {scope : ['email']}));
-router.get('/auth/facebook/callback',
-    passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/signin' }));
 
 // Add user to database.
 router.post('/signin', passport.authenticate('local', {

@@ -57,7 +57,7 @@ router.post('/signup', function(req, res) {
 
     if (new_password != new_confirm_password) {
         console.log('Not matched');
-        res.render('signup', {errorMessage: { password_match:'Password is not matched'}, layout: false} );
+        res.render('signup', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
     }
 
     else {
@@ -69,7 +69,7 @@ router.post('/signup', function(req, res) {
             if (user) {
                 console.log('=====duplicated user============');
                 console.log(user);
-                res.render('signup', {errorMessage: { email:'Duplicated User'}, layout: false} );
+                res.render('signup', {errorMessage: { email:'Duplicated User, This email was already used. Use other email.'}, layout: false} );
             }
             else {
                 Model.User.create(newUser).then(function (user) {

@@ -108,16 +108,18 @@ exports.checkFacebookToken = (req, res, next) => {
         return next();
     }
     req.user.getFacebook().then(function (fUser) {
-        graph.extendAccessToken({
-            "access_token":     fUser.token
-          , "client_id":      auth.facebookAuth.ClientId
-          , "client_secret":  conf.facebookAuth.clientSecret
-        }, function (err, facebookRes) {
-            fUser.updateAttributes({
-                token: facebookRes.token
-            }).then(function (result) {
-                next();
+        if (fUser && moment().subtract(gUser.expiry_date, "s").format("X") > -86400) {
+            graph.extendAccessToken({
+                "access_token":     fUser.token,
+                "client_id":      auth.facebookAuth.ClientId,
+                "client_secret":  conf.facebookAuth.clientSecret
+            }, function (err, facebookRes) {
+                fUser.updateAttributes({
+                    token: facebookRes.token
+                }).then(function (result) {
+                    next();
+                });
             });
-        });
+        }
     });
 };

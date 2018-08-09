@@ -44,6 +44,7 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.2",
     "sequelize": "^4.38.0",
-    "util-inspect": "^0.1.8"
+    "util-inspect": "^0.1.8",
+    "validate-js": "^2.0.1"
   }
 }

@@ -63,3 +63,4 @@ uploads/*
 .ebextensions
 
 config/db.js
+package-lock.json

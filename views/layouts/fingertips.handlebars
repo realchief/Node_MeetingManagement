@@ -37,9 +37,9 @@
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
 
 								<ul class="connectors-list">
-									<li class="google google-authorize-button button"><i class="fab fa-google"></i> <span class="title">Connect Google Analytics</span></li>
-									<!--<li class="google google-deauthorize-button"><i class="fab fa-google"></i> Disconnect Google Analytics</li>-->
-									<li class="google google-manage-button button"><a href="https://myaccount.google.com/permissions" target="_blank">Manage Apps</a> <i class="fas fa-external-link-alt"></i></li>
+									{{#unless google_token }}
+										<li class="google google-authorize-button button"><i class="fab fa-google"></i> <a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									{{/unless}}
 								</ul>
 
 								<div class="google-accounts"></div>
@@ -55,8 +55,9 @@
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
 
 								<ul class="connectors-list">
-									<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <span class="title">Connect Facebook Account</span></li>
-									<li class="facebook facebook-deauthorize-button button"><i class="fab fa-facebook"></i> Disconnect Facebook Account</li>
+									{{#unless facebook_token }}
+									<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+									{{/unless}}
 								</ul>
 
 								<div class="facebook-accounts"></div>

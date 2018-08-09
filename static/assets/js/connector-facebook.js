@@ -1164,9 +1164,9 @@ FT.connector.facebook = {
 
 		// Add an event listener to the 'auth-button'.
 
-		$( 'body' ).on( "click", ".facebook-authorize-button", function(e) {
-			FT.connector.facebook.login(e)
-		});
+		// $( 'body' ).on( "click", ".facebook-authorize-button", function(e) {
+		// 	FT.connector.facebook.login(e)
+		// });
 
 		$( 'body' ).on( "click", ".fb-account", function(e) {
 		

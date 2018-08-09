@@ -1384,9 +1384,9 @@ FT.connector.google = {
 
 		// Add an event listener to the 'auth-button'.
 
-		$( 'body' ).on( "click", ".google-authorize-button", function(e) {
-			FT.connector.google.authorize(e)
-		});
+		// $( 'body' ).on( "click", ".google-authorize-button", function(e) {
+		// 	FT.connector.google.authorize(e)
+		// });
 
 		$( 'body' ).on( "click", ".google-deauthorize-button", function(e) {
 			FT.connector.google.signOut(e)

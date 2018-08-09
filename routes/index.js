@@ -2,14 +2,38 @@ let express = require('express');
 let router = express.Router();
 let passport = require('passport');
 let Model = require('../models');
+let Async = require('async');
 
 router.get('/',  function (req, res) {
+    console.log('dashboard');
     if (req.isAuthenticated()) {
-        req.session.currentVersion = 'fingertips'
-        res.render('fingertips', {
-            version: 'fingertips',
-            layout: 'fingertips.handlebars',
-            register_version: 'none'
+        Async.parallel({
+            google_token: function (cb) {
+                req.user.getGoogle().then(function (gUser) {
+                    if (gUser) {
+                        cb(null, gUser.token);
+                    }
+                    else cb(null, false);
+                });
+            },
+            facebook_token: function (cb) {
+                req.user.getFacebook().then(function (fUser) {
+                  if (fUser) {
+                      cb(null, fUser.token);
+                  }
+                  else cb(null, false);
+                })
+            }
+        }, function (err, results) {
+            console.log('tokens: ', results);
+            req.session.currentVersion = 'fingertips'
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'fingertips.handlebars',
+                register_version: 'none',
+                google_token: results.google_token,
+                facebook_token: results.facebook_token
+            });
         });
     }
     else res.redirect('/signin');

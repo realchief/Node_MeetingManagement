@@ -58,8 +58,8 @@ module.exports = function(passport) {
         profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl'],
         passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
-        console.log('profile: ', profile);
         process.nextTick(function() {
+            console.log('facebook: ', req.user);
             Async.waterfall([
                 function (cb) {
                     Model.Facebook.findOne({
@@ -116,7 +116,11 @@ module.exports = function(passport) {
         clientID     : auth.googleAuth.clientID,
         clientSecret : auth.googleAuth.clientSecret,
         callbackURL  : auth.googleAuth.callbackURL,
+        passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
+        console.log('google: ', req.user);
+        console.log('token: ', token);
+        console.log('refreshToken: ', refreshToken);
         process.nextTick(function() {
             Async.waterfall([
                 function (cb) {
@@ -132,15 +136,25 @@ module.exports = function(passport) {
                         cb(null, goUser)
                     }
                     else {
-                        const expiry_date = moment().add(refreshToken.expires_in, "s").format("X");
-                        let newGoUser = {
-                            token           : refreshToken.access_token,
-                            refresh_token   : refreshToken.id_token,
-                            profile_id      : profile.id,
-                            email           : profile.emails[0].value,
-                            display_name    : profile.displayName,
-                            expiry_date     : expiry_date
-                        };
+                        let newGoUser = {}
+                        if (refreshToken)
+                            newGoUser = {
+                                token           : refreshToken.access_token,
+                                refresh_token   : refreshToken.id_token,
+                                profile_id      : profile.id,
+                                email           : profile.emails[0].value,
+                                display_name    : profile.displayName,
+                                expiry_date     : moment().add(refreshToken.expires_in, "s").format("X")
+                            };
+                        else 
+                            newGoUser = {
+                                token           : token,
+                                refresh_token   : '',
+                                profile_id      : profile.id,
+                                email           : profile.emails[0].value,
+                                display_name    : profile.displayName,
+                                expiry_date     : moment().format("X")
+                            }
                         Model.Google.create(newGoUser).then(function(goUser) {
                             if (!goUser) {
                                 cb({error: 'can not create new google user'})

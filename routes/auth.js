@@ -8,7 +8,7 @@ router.get('/facebook/callback',
     passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/signin'}));
 
     
-router.get('/google', passport.authenticate('google', {scope : ['https://www.googleapis.com/auth/analytics.readonly']}));
+router.get('/google', passport.authenticate('google', {scope : ['https://www.googleapis.com/auth/analytics.readonly', 'email']}));
 
 router.get('/google/callback',
     passport.authenticate('google', { successRedirect: '/', failureRedirect: '/signin'}));

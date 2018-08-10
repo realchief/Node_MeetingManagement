@@ -12,9 +12,9 @@ exports.getFacebook = (req, res, next) => {
                 req.user.getFacebook().then(function (fUser) {
                     if (fUser)
                         cb(null, fUser);
-                    else cb({error: 'facebook token is required'});
+                    else cb(req.flash('error', 'facebook token is required'));
                 });
-            else cb({error: 'login required'});
+            else cb(req.flash('error', 'login required'));
         }, function (fUser, cb) {
             const token = fUser.token;
             graph.setAccessToken(token);
@@ -46,7 +46,7 @@ exports.getFacebook = (req, res, next) => {
     });
 };
 
-exports.getGoogle = (req, res, next) => {
+exports.getGoogleMatrics = (req, res, cb) => {
     Async.waterfall([
         function (cb) {
             if (req.user)
@@ -62,10 +62,32 @@ exports.getGoogle = (req, res, next) => {
                 auth.googleAuth.clientSecret,
                 auth.googleAuth.callbackURL
             );
-
+            google.options({
+                auth: oauth2Client
+            });
+            google.analytics('v3').data.ga.get({
+                'start-date': 'yesterday',
+                'end-date': 'today',    
+                'metrics': [ 
+                    'ga:pageviews' ,
+                    'ga:users' ,
+                    'ga:entrances' ,
+                    'ga:sessions' ,
+                    'ga:exits' ,
+                    'ga:bounceRate' ,
+                    'ga:avgSessionDuration' ,
+                    'ga:sessionDuration' ,
+                    'ga:avgTimeOnPage' ,
+                    'ga:timeOnPage' 
+                ]
+            }).then(function (response) {
+                console.log(response);
+                cb(null, response)
+            });
         }
 
     ], function (err, data) {
+        console.log('result: ', response);
         if (err) {
             if ('google' in err.error) {
                 res.redirect('/auth/google');

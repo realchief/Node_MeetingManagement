@@ -3,9 +3,9 @@ let router = express.Router();
 let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
+let apiControllers = require('../controllers/apis');
 
 router.get('/',  function (req, res) {
-    console.log('dashboard');
     if (req.isAuthenticated()) {
         Async.parallel({
             google_token: function (cb) {
@@ -25,15 +25,17 @@ router.get('/',  function (req, res) {
                 })
             }
         }, function (err, results) {
-            console.log('tokens: ', results);
-            req.session.currentVersion = 'fingertips'
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'fingertips.handlebars',
-                register_version: 'none',
-                google_token: results.google_token,
-                facebook_token: results.facebook_token
+            apiControllers.getGoogleMatrics(req, res, function (err, result) {
+                req.session.currentVersion = 'fingertips'
+                res.render('fingertips', {
+                    version: 'fingertips',
+                    layout: 'fingertips.handlebars',
+                    register_version: 'none',
+                    google_token: results.google_token,
+                    facebook_token: results.facebook_token
+                });
             });
+            
         });
     }
     else res.redirect('/signin');

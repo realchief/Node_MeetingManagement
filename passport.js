@@ -36,13 +36,11 @@ module.exports = function(passport) {
                 }
             }).then(function (user) {
                 if (!user) {
-                    console.log('Username or password is incorrect');
                     return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
                 }
                 
                 if (bcrypt.compareSync(password, user.password)) {
-                    console.log("success!");
-                    return done(null, user)
+                    return done(null, user);
                    } 
                 else {
                     return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
@@ -59,7 +57,7 @@ module.exports = function(passport) {
         passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
         process.nextTick(function() {
-            console.log('facebook: ', req.user);
+            
             Async.waterfall([
                 function (cb) {
                     Model.Facebook.findOne({
@@ -74,7 +72,6 @@ module.exports = function(passport) {
                         cb(null, fbUser)
                     }
                     else {
-                        const expiry_date = moment().format('X');
 
                         let newFBUser = {
                             token       : token,
@@ -82,32 +79,39 @@ module.exports = function(passport) {
                             email       : profile.emails[0].value,
                             given_name  :  profile.name.givenName,
                             family_name : profile.name.familyName,
-                            expiry_date : expiry_date
+                            expiry_date : moment().format('X')
                         };
                         Model.Facebook.create(newFBUser).then(function(fbUser) {
                             if (!fbUser) {
-                                cb({error: 'can not create new facebook user'})
+                                cb(req.flash('error', 'can not create new facebook user'));
                             }
                             else cb(null, fbUser);
                         });
                     }
                 }, function (fbUser, cb) {
                     if (req.user) {
-                        done(null, req.user, fbUser);
+                        cb(null, req.user, fbUser);
                     }
                     else {
-                        User.create({}).then(function(user) {
-                            if (!user)cb({error: 'can not create new user'})
-                            else cb(null, user, fbUser)
+                        fbUser.getUser().then(function (user) {
+                            if (! user) {
+                                User.create({}).then(function(user) {
+                                    if (!user) cb(req.flash('error', 'can not create new user'));
+                                    else cb(null, user, fbUser);
+                                });
+                            }
+                            else cb(null, user, fbUser);
                         });
+                        
                     }
                 }, function (user, fbUser, cb) {
-                    user.setFacebook(fbUser).then(function () {
+                    user.setFacebook(fbUser).then(function (user) {
                         cb(null, user);
                     });
                 }
             ], function (err, user) {
-                return done(null, user);
+                console.log('err:', err);
+                return done(err, user);
             });
         });
     }));
@@ -118,9 +122,6 @@ module.exports = function(passport) {
         callbackURL  : auth.googleAuth.callbackURL,
         passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
-        console.log('google: ', req.user);
-        console.log('token: ', token);
-        console.log('refreshToken: ', refreshToken);
         process.nextTick(function() {
             Async.waterfall([
                 function (cb) {
@@ -133,10 +134,10 @@ module.exports = function(passport) {
                     });
                 }, function (goUser, cb) {
                     if (goUser) {
-                        cb(null, goUser)
+                        cb(null, goUser);
                     }
                     else {
-                        let newGoUser = {}
+                        let newGoUser = {};
                         if (refreshToken)
                             newGoUser = {
                                 token           : refreshToken.access_token,
@@ -157,19 +158,22 @@ module.exports = function(passport) {
                             }
                         Model.Google.create(newGoUser).then(function(goUser) {
                             if (!goUser) {
-                                cb({error: 'can not create new google user'})
+                                cb(req.flash('error', 'can not create new google user'));
                             }
                             else cb(null, goUser);
                         });
                     }
                 }, function (goUser, cb) {
                     if (req.user) {
-                        done(null, req.user, goUser);
+                        cb(null, req.user, goUser);
                     }
                     else {
-                        User.create({}).then(function(user) {
-                            if (!user) cb({error: 'can not create new user'})
-                            else cb(null, user, goUser)
+                        goUser.getUser().then(function (user) {
+                            if (user) cb(null, user, goUser);
+                            else User.create({}).then(function(user) {
+                                if (!user) cb(req.flash('error', 'can not create new user'));
+                                else cb(null, user, goUser);
+                            });
                         });
                     }
                 }, function (user, goUser, cb) {
@@ -178,7 +182,7 @@ module.exports = function(passport) {
                     });
                 }
             ], function (err, user) {
-                return done(null, user);
+                return done(err, user);
             });
         });
     }));

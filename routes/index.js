@@ -8,34 +8,36 @@ let apiControllers = require('../controllers/apis');
 router.get('/',  function (req, res) {
     if (req.isAuthenticated()) {
         Async.parallel({
-            google_token: function (cb) {
+            google_data: function (cb) {
                 req.user.getGoogle().then(function (gUser) {
                     if (gUser) {
-                        cb(null, gUser.token);
+                        apiControllers.getGoogleMatrics(gUser, function (err, data) {
+                            cb(null, data);
+                        });
                     }
                     else cb(null, false);
                 });
             },
-            facebook_token: function (cb) {
+            facebook_data: function (cb) {
                 req.user.getFacebook().then(function (fUser) {
-                  if (fUser) {
-                      cb(null, fUser.token);
-                  }
-                  else cb(null, false);
+                    if (fUser) {
+                        apiControllers.getFacebook(fUser, function (err, data) {
+                            cb(null, data);
+                        });
+                    }
+                    else cb(null, false);
                 })
             }
         }, function (err, results) {
-            apiControllers.getGoogleMatrics(req, res, function (err, result) {
-                req.session.currentVersion = 'fingertips'
-                res.render('fingertips', {
-                    version: 'fingertips',
-                    layout: 'fingertips.handlebars',
-                    register_version: 'none',
-                    google_token: results.google_token,
-                    facebook_token: results.facebook_token
-                });
+            req.session.currentVersion = 'fingertips'
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'fingertips.handlebars',
+                register_version: 'none',
+                google_data: results.google_data,
+                facebook_data: results.facebook_data
             });
-            
+        
         });
     }
     else res.redirect('/signin');

@@ -17,7 +17,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         expiry_date: {
             type: DataTypes.INTEGER
-        }
+        },
+        id_token: {
+            type: DataTypes.TEXT
+        },
+        token_type: {
+            type: DataTypes.STRING
+        },
+
     });
 
     Google.associate = function(models) {

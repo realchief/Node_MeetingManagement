@@ -36,11 +36,11 @@
 
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
 
-								<ul class="connectors-list">
-									{{#unless google_token }}
+								{{#unless google_data }}
+									<ul class="connectors-list">
 										<li class="google google-authorize-button button"><i class="fab fa-google"></i> <a class="title" href='/auth/google'>Connect Google Analytics</a></li>
-									{{/unless}}
-								</ul>
+									</ul>
+								{{/unless}}
 
 								<div class="google-accounts"></div>
 						
@@ -54,11 +54,11 @@
 
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
 
-								<ul class="connectors-list">
-									{{#unless facebook_token }}
-									<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
-									{{/unless}}
-								</ul>
+								{{#unless facebook_data }}
+									<ul class="connectors-list">
+										<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+									</ul>
+								{{/unless}}
 
 								<div class="facebook-accounts"></div>
 						
@@ -77,7 +77,18 @@
 						<h2 class="location-toggle with-line">Data Editor</h2>
 
 						<div class="two-col cols">
-							<div class="metrics-editor"></div>
+							<div class="metrics-editor">
+								{{#if google_data}}
+									<div class="col bordered">
+										{{> g_metrics_table }}
+									</div>
+								{{/if}}
+								{{#if facebook_data}}
+									<div class="col bordered">
+										{{> f_metrics_table }}
+									</div>
+								{{/if}}
+							</div>
 						</div>
 
 						
@@ -87,11 +98,10 @@
 					
 
 					<div class="row clearfix debug-listing insights-listing" id="debug">
+						{{#if debug_data}}
+							{{> debug_list}}
+						{{/if}}
 					</div>
-
-
-
-					
 				</div>
 
 			</div>

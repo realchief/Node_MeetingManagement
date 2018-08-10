@@ -18,6 +18,7 @@ var passport = require('passport');
 var auth = require('./routes/auth.js');
 var models = require('./models');
 var flash = require('connect-flash');
+var apisControllers = require('./controllers/apis');
 
 require('./passport.js')(passport);
 
@@ -101,6 +102,9 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
+
+app.use(apisControllers.checkGoogleToken);
+app.use(apisControllers.checkFacebookToken);
 
 // route incoming requests to the correct pages
 app.use('/', routes)

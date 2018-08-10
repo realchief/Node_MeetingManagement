@@ -873,10 +873,9 @@ FT.connector.google = {
 
         	
         	} else {
-
         		justTotals = true;
 
-        	} 
+        	}
 
         	table.push('<th>Date range</th>');
 

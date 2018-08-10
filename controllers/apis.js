@@ -1,102 +1,70 @@
 'use strict';
-const Async = require('Async');
+const Async = require('async');
 const graph = require('fbgraph');
 const {google} = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const moment = require("moment");
+const auth = require('../config/auth');
 
-exports.getFacebook = (req, res, next) => {
-    Async.waterfall([
-        function (cb) {
-            if (req.user)
-                req.user.getFacebook().then(function (fUser) {
-                    if (fUser)
-                        cb(null, fUser);
-                    else cb(req.flash('error', 'facebook token is required'));
-                });
-            else cb(req.flash('error', 'login required'));
-        }, function (fUser, cb) {
-            const token = fUser.token;
-            graph.setAccessToken(token);
-            Async.parallel({
-                    getMyProfile: (done) => {
-                        graph.get(`${req.user.facebook}?fields=id,name,email,first_name,last_name,gender,link,locale,timezone`, (err, me) => {
-                            done(err, me);
-                        });
-                    },
-                    getMyFriends: (done) => {
-                        graph.get(`${req.user.facebook}/friends`, (err, friends) => {
-                            done(err, friends.data);
-                        });
-                    }
+let oauth2Client = new OAuth2(
+    auth.googleAuth.clientID,
+    auth.googleAuth.clientSecret,
+    auth.googleAuth.callbackURL
+);
+
+exports.getFacebook = (fUser, cb) => {
+        const token = fUser.token;
+        graph.setAccessToken(token);
+        Async.parallel({
+                getMyProfile: (done) => {
+                    graph.get(`${req.user.facebook}?fields=id,name,email,first_name,last_name,gender,link,locale,timezone`, (err, me) => {
+                        done(err, me);
+                    });
                 },
-                (err, data) => {
-                    cb(null, data);
-                });
-        }
-    ], function (err, data) {
-        if (err) {
-            if ('facebook' in err.error) {
-                res.redirect('/auth/facebook');
-            }
-            else {
-                res.redirect('/signin');
-            }
-        }
-    });
+                getMyFriends: (done) => {
+                    graph.get(`${req.user.facebook}/friends`, (err, friends) => {
+                        done(err, friends.data);
+                    });
+                }
+            },
+            (err, data) => {
+                cb(null, data);
+            });
 };
 
-exports.getGoogleMatrics = (req, res, cb) => {
-    Async.waterfall([
-        function (cb) {
-            if (req.user)
-                req.user.getGoogle().then(function (gUser) {
-                    if (gUser)
-                        cb(null, gUser);
-                    else cb({error: 'google token is required'});
-                });
-            else cb({error: 'login required'});
-        }, function (gUser, cb) {
-            const oauth2Client = new OAuth2(
-                auth.googleAuth.clientID,
-                auth.googleAuth.clientSecret,
-                auth.googleAuth.callbackURL
-            );
-            google.options({
-                auth: oauth2Client
-            });
-            google.analytics('v3').data.ga.get({
-                'start-date': 'yesterday',
-                'end-date': 'today',    
-                'metrics': [ 
-                    'ga:pageviews' ,
-                    'ga:users' ,
-                    'ga:entrances' ,
-                    'ga:sessions' ,
-                    'ga:exits' ,
-                    'ga:bounceRate' ,
-                    'ga:avgSessionDuration' ,
-                    'ga:sessionDuration' ,
-                    'ga:avgTimeOnPage' ,
-                    'ga:timeOnPage' 
-                ]
-            }).then(function (response) {
-                console.log(response);
-                cb(null, response)
-            });
-        }
+exports.getGoogleMatrics = (gUser, cb) => {
 
-    ], function (err, data) {
-        console.log('result: ', response);
-        if (err) {
-            if ('google' in err.error) {
-                res.redirect('/auth/google');
-            }
-            else {
-                res.redirect('/signin');
-            }
-        }
+    oauth2Client.credentials = {
+        refresh_token: gUser.refresh_token,
+        expiry_date: gUser.expiry_date,
+        access_token: gUser.token,
+        token_type: gUser.token_type,
+        id_token: gUser.id_token
+    }
+    google.options({
+        auth: oauth2Client
     });
+    Async.parallel({
+        users: function (done) {
+            google.analytics('v3').management.accountSummaries.list(function (response) {
+                done(null, response);
+            });
+        },
+        gaColumns: function (done) {
+            google.analytics('v3').metadata.columns.list({ 'reportType' : 'ga'}, function (response) {
+                let gaColumns = {};
+                for (var i = 0;i < response.result.items.length;i ++) {
+                    let column = response.result.items[i];
+                    gaColumns[column.id] = column.attributes;
+                }
+                done(null, gaColumns);
+            });
+        }
+    }, function (err, data) {
+        cb(null, data)
+    });
+    
+    
 };
 
 exports.checkGoogleToken =  (req, res, next) => {

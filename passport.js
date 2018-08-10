@@ -121,7 +121,7 @@ module.exports = function(passport) {
         clientSecret : auth.googleAuth.clientSecret,
         callbackURL  : auth.googleAuth.callbackURL,
         passReqToCallback: true
-    }, function(req, token, refreshToken, profile, done) {
+    }, function(req, token, refreshToken, params,profile, done) {
         process.nextTick(function() {
             Async.waterfall([
                 function (cb) {
@@ -137,25 +137,17 @@ module.exports = function(passport) {
                         cb(null, goUser);
                     }
                     else {
-                        let newGoUser = {};
-                        if (refreshToken)
-                            newGoUser = {
-                                token           : refreshToken.access_token,
-                                refresh_token   : refreshToken.id_token,
-                                profile_id      : profile.id,
-                                email           : profile.emails[0].value,
-                                display_name    : profile.displayName,
-                                expiry_date     : moment().add(refreshToken.expires_in, "s").format("X")
-                            };
-                        else 
-                            newGoUser = {
-                                token           : token,
-                                refresh_token   : '',
-                                profile_id      : profile.id,
-                                email           : profile.emails[0].value,
-                                display_name    : profile.displayName,
-                                expiry_date     : moment().format("X")
-                            }
+                        let newGoUser = {
+                            token           : token,
+                            refresh_token   : refreshToken,
+                            profile_id      : profile.id,
+                            email           : profile.emails[0].value,
+                            display_name    : profile.displayName,
+                            expiry_date     : moment().add(params.expires_in, "s").format("X"),
+                            id_token        : params.id_token,
+                            token_type      : params.token_type
+                        };
+                        
                         Model.Google.create(newGoUser).then(function(goUser) {
                             if (!goUser) {
                                 cb(req.flash('error', 'can not create new google user'));

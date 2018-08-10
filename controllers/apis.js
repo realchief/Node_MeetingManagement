@@ -17,12 +17,12 @@ exports.getFacebook = (fUser, cb) => {
         graph.setAccessToken(token);
         Async.parallel({
                 getMyProfile: (done) => {
-                    graph.get(`${req.user.facebook}?fields=id,name,email,first_name,last_name,gender,link,locale,timezone`, (err, me) => {
+                    graph.get(`${fUser.profile_id}?fields=id,name,email,first_name,last_name,gender,link,locale,timezone`, (err, me) => {
                         done(err, me);
                     });
                 },
                 getMyFriends: (done) => {
-                    graph.get(`${req.user.facebook}/friends`, (err, friends) => {
+                    graph.get(`${fUser.profile_id}/friends`, (err, friends) => {
                         done(err, friends.data);
                     });
                 }
@@ -98,11 +98,11 @@ exports.checkFacebookToken = (req, res, next) => {
         return next();
     }
     req.user.getFacebook().then(function (fUser) {
-        if (fUser && moment().subtract(gUser.expiry_date, "s").format("X") > -86400) {
+        if (fUser && moment().subtract(fUser.expiry_date, "s").format("X") > -86400) {
             graph.extendAccessToken({
                 "access_token":     fUser.token,
                 "client_id":      auth.facebookAuth.ClientId,
-                "client_secret":  conf.facebookAuth.clientSecret
+                "client_secret":  auth.facebookAuth.clientSecret
             }, function (err, facebookRes) {
                 fUser.updateAttributes({
                     token: facebookRes.token

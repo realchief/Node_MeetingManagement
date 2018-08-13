@@ -3,8 +3,8 @@ var port = 3001;
 module.exports = {
     'port' : port,
     'facebookAuth' : {
-        'clientID'      : '860749457453507',
-        'clientSecret'  : 'e2fd5e0b3e81e4e9061bb325859b56f1',
+        'clientID'      : '558059437903012',
+        'clientSecret'  : 'b11fe91db9aebf8f5c437974ac990e58',
         'callbackURL'   : 'http://localhost:' + port + '/auth/facebook/callback'
     },
     'twitterAuth' : {
@@ -13,8 +13,8 @@ module.exports = {
         'callbackURL'   : 'http://localhost:' + port + '/auth/twitter/callback'
     },
     'googleAuth' : {
-        'clientID'      : '99296634860-u2knilp22cb05ohusdqivfooc9gbanh2.apps.googleusercontent.com',
-        'clientSecret'  : 'dr_K-nlseXq77BhasPvWFg0e',
+        'clientID'      : '542032120426-5mi2jcld1sn6k2qprbejtt0ci4p275np.apps.googleusercontent.com',
+        'clientSecret'  : '2DuMSm4de1iXSl8jdF9sdP5Q',
         'callbackURL'   : 'http://localhost:' + port + '/auth/google/callback'
     },
     

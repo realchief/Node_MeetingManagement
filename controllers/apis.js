@@ -111,5 +111,6 @@ exports.checkFacebookToken = (req, res, next) => {
                 });
             });
         }
+        else return next();
     });
 };

@@ -9,8 +9,11 @@ module.exports = (sequelize, DataTypes) => {
         end_time: {
             type: DataTypes.DATE
         },
-        summary: {
-            type: DataTypes.TEXT
+        start_date: {
+            type: DataTypes.STRING
+        },
+        end_date: {
+            type: DataTypes.STRING
         },
         sender: {
             type: DataTypes.STRING

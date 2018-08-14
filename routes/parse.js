@@ -21,7 +21,7 @@ router.get('/ical', function (req, res) {
   
   console.log( '----- NEW TEST EVENT FILE PARSE' );
 
-  //var ical_data = ical.parseFile('./uploads/iCal-20180619-172902-1529454543514.ics')
+  var ical_data = ical.parseFile('./uploads/test/iCal-20180618-061247-1529327604623.ics')
   // console.log(ical_data)
 
   parseIcal = ical_data[Object.keys(ical_data)[0]]
@@ -80,6 +80,97 @@ router.get('/ical', function (req, res) {
   meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
     console.log( '----- END EVENT FILE PARSE' );
+
+    Model.Meeting.create({
+      to: recipients,
+      meeting_name: summary,
+      sender: organizer,
+      start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
+      end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(), 
+      start_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+      end_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+    }).then(function (meeting) {
+       /* ===== modify base email ======= */
+
+      console.log('email domain:', emailDomain)
+      console.log('insight type', insightType)
+
+      switch ( emailDomain ) {
+
+        case 'loosegrip' :
+          var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
+        break
+
+        case 'presidio' :
+          var email = JSON.parse(JSON.stringify(EmailContent.email));
+        break
+
+        case 'unilever' :
+          var email = JSON.parse(JSON.stringify(EmailContent.email_unilever))
+        break
+
+        default :
+          var email = JSON.parse(JSON.stringify(EmailContent.email));
+        break
+
+      }
+
+      email.replacements.sender = sender
+      email.replacements.summary = summary
+      email.replacements.meeting_time = meeting_time
+      email.replacements.meeting_date = meeting_date
+
+      /* ===== make and send email ======= */
+
+      var theEmail = EmailContent.processEmail(email)
+
+      theEmail.then( function(result) {
+
+          var from = "insights@meetbrief.com"
+
+          var subject = ""
+          subject = result.data.subject;
+          subject += " " + result.data.summary + " "
+          subject += " " + "(" + result.data.meeting_date + ")"         
+          
+        
+          const msg = {
+            to: toArray,
+            from: {
+              email : from,
+              name: "MeetBrief"
+            },
+            subject: subject,
+            text: result.emailToSend,
+            html: result.emailToSend
+
+          };
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minute').toDate();
+          
+          schedule.scheduleJob(date, function(data){
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+            sgMail.send(data.msg);
+            data.moment.updateAttributes({
+              is_sent: true
+            }).then(function (result) {
+              console.log('sent: ', result);
+            });
+          }.bind(null,{
+            meg: msg,
+            momnet: moment
+          }));
+
+          console.log( 'parsed email sent to: ',  toArray )
+          console.log( 'number of sends: ',  numberOfSends )
+
+          res.sendStatus(200);
+
+      })
+    });
+
+
+
+  
 
   console.log('email domain:', emailDomain)
   console.log('to array:', toArray)
@@ -368,11 +459,12 @@ router.post('/parse', cpUpload, function (req, res) {
             console.log( '----- END EVENT FILE PARSE' );
             Model.Meeting.create({
               to: recipients,
-              meeting_name: parseIcal.organizer.params.CN,
+              meeting_name: summary,
               sender: organizer,
               start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
-              end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(),
-              summary: summary
+              end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(), 
+              start_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+              end_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
             }).then(function (meeting) {
                /* ===== modify base email ======= */
 
@@ -430,6 +522,7 @@ router.post('/parse', cpUpload, function (req, res) {
                     html: result.emailToSend
 
                   };
+                  let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minute').toDate();
                   
                   schedule.scheduleJob(date, function(data){
                     sgMail.setApiKey(process.env.SENDGRID_API_KEY);

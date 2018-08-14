@@ -83,7 +83,7 @@ router.get('/ical', function (req, res) {
     console.log( '----- END EVENT FILE PARSE' );
 
     Model.Meeting.create({
-      to: recipients,
+      to: flatRecipients,
       meeting_name: summary,
       sender: organizer,
       start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
@@ -143,14 +143,14 @@ router.get('/ical', function (req, res) {
             html: result.emailToSend
 
           };
-          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minute').toDate();          
-          
-          let current_assert_date = moment().add(30, 'minutes').toDate();
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate();          
+          // let date = moment().add(5, 'minutes').toDate();
+          let current_assert_date = moment().add(5, 'minutes').toDate();
           let isAfter = moment(date).isAfter(current_assert_date);
           console.log('----isAfter-----');
           console.log(isAfter);
           if (isAfter == false) {
-            date = moment().add(2, 'minutes').toDate();;
+            date = moment().add(1, 'minutes').toDate();;
           }  
 
           console.log('====================date===========================');
@@ -166,7 +166,7 @@ router.get('/ical', function (req, res) {
               console.log('schuduled current time', moment().toDate);
             });
           }.bind(null,{
-            meg: msg,
+            msg: msg,
             meeting: meeting            
           }));
 
@@ -464,8 +464,9 @@ router.post('/parse', cpUpload, function (req, res) {
             meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
             console.log( '----- END EVENT FILE PARSE' );
+            console.log(recipients);
             Model.Meeting.create({
-              to: recipients,
+              to: flatRecipients,
               meeting_name: summary,
               sender: organizer,
               start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
@@ -529,7 +530,16 @@ router.post('/parse', cpUpload, function (req, res) {
                     html: result.emailToSend
 
                   };
-                  let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minute').toDate();
+  
+                  let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate();          
+                  // let date = moment().add(5, 'minutes').toDate();
+                  let current_assert_date = moment().add(5, 'minutes').toDate();
+                  let isAfter = moment(date).isAfter(current_assert_date);
+                  console.log('----isAfter-----');
+                  console.log(isAfter);
+                  if (isAfter == false) {
+                    date = moment().add(1, 'minutes').toDate();;
+                  }  
                   
                   schedule.scheduleJob(date, function(data){
                     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -540,7 +550,7 @@ router.post('/parse', cpUpload, function (req, res) {
                       console.log('sent: ', result);
                     });
                   }.bind(null,{
-                    meg: msg,
+                    msg: msg,
                     momnet: moment
                   }));
 

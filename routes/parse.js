@@ -143,16 +143,23 @@ router.get('/ical', function (req, res) {
             html: result.emailToSend
 
           };
-          // let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(5, 'minute').toDate();
-          let date = moment().add(5, 'minutes').toDate();
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(5, 'minute').toDate();
+          
+          let current_date = moment();
+          let current_assert_date = moment().add(5, 'minutes').toDate();
+          let isAfter = moment(date).isAfter(current_assert_date);
+          console.log('----isAfter-----');
+          console.log(isAfter);
+          if (isAfter == false) {
+            date = current_date;
+          }  
+          
           console.log('====================date===========================');
           console.log(date);
           
           schedule.scheduleJob(date, function(data){
             sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-            sgMail.send(data.msg);
-            console.log('=======scheduled data moment====');
-            console.log(data.moment);
+            sgMail.send(data.msg);           
             data.meeting.updateAttributes({
               is_sent: true
             }).then(function (result) {

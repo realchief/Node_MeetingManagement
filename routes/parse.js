@@ -25,6 +25,7 @@ router.get('/ical', function (req, res) {
   // console.log(ical_data)
 
   parseIcal = ical_data[Object.keys(ical_data)[0]]
+ 
   if ( parseIcal.type == "VTIMEZONE") {
     console.log("**** FROM ICAL")
     parseIcal = ical_data[Object.keys(ical_data)[1]]
@@ -96,7 +97,6 @@ router.get('/ical', function (req, res) {
       console.log('insight type', insightType)
 
       switch ( emailDomain ) {
-
         case 'loosegrip' :
           var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
         break
@@ -114,7 +114,6 @@ router.get('/ical', function (req, res) {
         break
 
       }
-
       email.replacements.sender = sender
       email.replacements.summary = summary
       email.replacements.meeting_time = meeting_time
@@ -131,8 +130,7 @@ router.get('/ical', function (req, res) {
           var subject = ""
           subject = result.data.subject;
           subject += " " + result.data.summary + " "
-          subject += " " + "(" + result.data.meeting_date + ")"         
-          
+          subject += " " + "(" + result.data.meeting_date + ")"               
         
           const msg = {
             to: toArray,
@@ -145,19 +143,25 @@ router.get('/ical', function (req, res) {
             html: result.emailToSend
 
           };
-          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minute').toDate();
+          // let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(5, 'minute').toDate();
+          let date = moment().add(5, 'minutes').toDate();
+          console.log('====================date===========================');
+          console.log(date);
           
           schedule.scheduleJob(date, function(data){
             sgMail.setApiKey(process.env.SENDGRID_API_KEY);
             sgMail.send(data.msg);
-            data.moment.updateAttributes({
+            console.log('=======scheduled data moment====');
+            console.log(data.moment);
+            data.meeting.updateAttributes({
               is_sent: true
             }).then(function (result) {
               console.log('sent: ', result);
+              console.log('schuduled current time', moment().toDate);
             });
           }.bind(null,{
             meg: msg,
-            momnet: moment
+            meeting: meeting            
           }));
 
           console.log( 'parsed email sent to: ',  toArray )

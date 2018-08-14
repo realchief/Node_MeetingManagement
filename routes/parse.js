@@ -143,17 +143,16 @@ router.get('/ical', function (req, res) {
             html: result.emailToSend
 
           };
-          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(5, 'minute').toDate();
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minute').toDate();          
           
-          let current_date = moment();
-          let current_assert_date = moment().add(5, 'minutes').toDate();
+          let current_assert_date = moment().add(30, 'minutes').toDate();
           let isAfter = moment(date).isAfter(current_assert_date);
           console.log('----isAfter-----');
           console.log(isAfter);
           if (isAfter == false) {
-            date = current_date;
+            date = moment().add(2, 'minutes').toDate();;
           }  
-          
+
           console.log('====================date===========================');
           console.log(date);
           

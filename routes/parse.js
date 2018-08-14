@@ -21,8 +21,7 @@ router.get('/ical', function (req, res) {
   
   console.log( '----- NEW TEST EVENT FILE PARSE' );
 
-  var ical_data = ical.parseFile('./uploads/test/iCal-20180618-061247-1529327604623.ics')
-  // console.log(ical_data)
+  var ical_data = ical.parseFile('./uploads/test/iCal-20180618-061247-1529327604623.ics')  
 
   parseIcal = ical_data[Object.keys(ical_data)[0]]
  
@@ -143,9 +142,10 @@ router.get('/ical', function (req, res) {
             html: result.emailToSend
 
           };
-          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate();          
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate();   
+          let current_assert_date = moment().add(30, 'minutes').toDate();       
           // let date = moment().add(5, 'minutes').toDate();
-          let current_assert_date = moment().add(5, 'minutes').toDate();
+          // let current_assert_date = moment().add(5, 'minutes').toDate();
           let isAfter = moment(date).isAfter(current_assert_date);
           console.log('----isAfter-----');
           console.log(isAfter);
@@ -531,9 +531,9 @@ router.post('/parse', cpUpload, function (req, res) {
 
                   };
   
-                  let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate();          
-                  // let date = moment().add(5, 'minutes').toDate();
-                  let current_assert_date = moment().add(5, 'minutes').toDate();
+                  let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate(); 
+                  let current_assert_date = moment().add(30, 'minutes').toDate();        
+                 
                   let isAfter = moment(date).isAfter(current_assert_date);
                   console.log('----isAfter-----');
                   console.log(isAfter);

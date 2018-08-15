@@ -121,7 +121,7 @@ module.exports = function(passport) {
         clientSecret : auth.googleAuth.clientSecret,
         callbackURL  : auth.googleAuth.callbackURL,
         passReqToCallback: true
-    }, function(req, token, refreshToken, params,profile, done) {
+    }, function(req, token, refreshToken, params, profile, done) {
         process.nextTick(function() {
             Async.waterfall([
                 function (cb) {
@@ -173,7 +173,7 @@ module.exports = function(passport) {
                         cb(null, user);
                     });
                 }
-            ], function (err, user) {
+            ], function (err, user) {                
                 return done(err, user);
             });
         });

@@ -36,11 +36,11 @@
 
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
 
-								{{#unless google_data }}
 									<ul class="connectors-list">
+									{{#unless google_data }}
 										<li class="google google-authorize-button button"><i class="fab fa-google"></i> <a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									{{/unless}}
 									</ul>
-								{{/unless}}
 
 								<div class="google-accounts"></div>
 						
@@ -54,11 +54,11 @@
 
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
 
-								{{#unless facebook_data }}
 									<ul class="connectors-list">
+									{{#if facebook_data }}
+									{{/if}}
 										<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
 									</ul>
-								{{/unless}}
 
 								<div class="facebook-accounts"></div>
 						

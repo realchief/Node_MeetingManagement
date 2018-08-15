@@ -1,0 +1,116 @@
+{{> head }}
+
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+
+		<div class="below-header"><div class="below-header-inside">
+
+			<div class="container">
+
+
+					<div class="row" id="insights">
+
+						<div class="insights-content insights-listing"></div>
+						
+						<button class="emailer">Email Me!</button>
+						<input type="text" value="martymix@gmail.com" id="recipients" class="recipients" name="recipients" size="50" />
+
+						
+					</div>
+
+
+					<div class="row clearfix" id="connect-sources">
+
+						<h2 class="with-line">Connect API Sources</h2>
+
+						<div class="two-col cols">
+
+						<div class="col first">
+
+							<div class="connector">
+
+								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
+
+								{{#unless google_data }}
+									<ul class="connectors-list">
+										<li class="google google-authorize-button button"><i class="fab fa-google"></i> <a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									</ul>
+								{{/unless}}
+
+								<div class="google-accounts"></div>
+						
+							</div>
+
+						</div>
+
+						<div class="col last">
+
+							<div class="connector">
+
+								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
+
+								{{#unless facebook_data }}
+									<ul class="connectors-list">
+										<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+									</ul>
+								{{/unless}}
+
+								<div class="facebook-accounts"></div>
+						
+							</div>
+
+						</div>
+						</div>
+				
+					</div>
+
+
+					
+
+					<div class="row clearfix seditor sright data-editor" id="data-editor">
+
+						<h2 class="location-toggle with-line">Data Editor</h2>
+
+						<div class="two-col cols">
+							<div class="metrics-editor">
+
+							</div>
+						</div>
+
+						
+
+					</div>
+
+					
+
+					<div class="row clearfix debug-listing insights-listing" id="debug">
+
+					</div>
+				</div>
+
+			</div>
+
+			<div class="section gutter footer">
+				{{> footer }}
+			</div>
+
+		</div></div>
+
+		
+
+	</div>
+	
+<div class="test"></div>
+
+	
+	{{> scripts }}
+
+
+</body>
+
+</html>

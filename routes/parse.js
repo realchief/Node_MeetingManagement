@@ -14,6 +14,23 @@ var numberOfSends = 0;
 
 const EmailContent = require('../components/EmailContent.js')
 
+router.get('/testsched', function (req, res) {
+
+  var testDate = moment().add(10, 'seconds').toDate();;
+  console.log('====================testDate===========================');
+  console.log(testDate);
+
+  var content = "Email" + testDate
+  res.send('testing a date scheduler for ' + testDate)
+
+  var j = schedule.scheduleJob(testDate, function(data){
+    console.log('Schedule!', data.testDate, content);
+  }.bind(null, {
+    testDate : testDate
+  }))
+
+})
+
 router.get('/ical', function (req, res) {
 
   var insightType = 'test';
@@ -21,7 +38,7 @@ router.get('/ical', function (req, res) {
   
   console.log( '----- NEW TEST EVENT FILE PARSE' );
 
-  var ical_data = ical.parseFile('./uploads/test/iCal-20180618-061247-1529327604623.ics')  
+  var ical_data = ical.parseFile('./uploads/test/invite-1534277929098.ics')  
 
   parseIcal = ical_data[Object.keys(ical_data)[0]]
  
@@ -158,22 +175,21 @@ router.get('/ical', function (req, res) {
           
           schedule.scheduleJob(date, function(data){
             sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-            sgMail.send(data.msg);           
+            //sgMail.send(data.msg);           
+            console.log('send scheduled email', moment().toDate)
             data.meeting.updateAttributes({
               is_sent: true
             }).then(function (result) {
               console.log('sent: ', result);
               console.log('schuduled current time', moment().toDate);
+              res.sendStatus(200);
             });
           }.bind(null,{
             msg: msg,
             meeting: meeting            
           }));
 
-          console.log( 'parsed email sent to: ',  toArray )
-          console.log( 'number of sends: ',  numberOfSends )
-
-          res.sendStatus(200);
+          console.log('ALL SCHEDULED JOBS>>>>', schedule.scheduledJobs) 
 
       })
     });
@@ -517,8 +533,6 @@ router.post('/parse', cpUpload, function (req, res) {
                   subject += " " + result.data.summary + " "
                   subject += " " + "(" + result.data.meeting_date + ")"
                   
-                  
-                
                   const msg = {
                     to: toArray,
                     from: {

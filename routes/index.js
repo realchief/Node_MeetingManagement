@@ -43,6 +43,16 @@ router.get('/',  function (req, res) {
     else res.redirect('/signin');
 });
 
+
+router.get('/frontend', function(req, res, next) {
+            req.session.currentVersion = 'fingertips'
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'frontend.handlebars'
+            });
+        
+});
+
 router.get('/signin', function(req, res, next) {
     if (req.isAuthenticated()) {
         res.redirect('/');

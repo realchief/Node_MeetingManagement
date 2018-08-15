@@ -28,6 +28,8 @@ FT.connector.google = {
 
 	authorize : function(event) {
 
+		if ( !$('body').hasClass('frontend') ) return
+
 		// Handles the authorization flow.
 		// `immediate` should be false when invoked from the button click.
 

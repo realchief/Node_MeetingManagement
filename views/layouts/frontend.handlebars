@@ -1,11 +1,11 @@
 {{> head }}
 
-<body class="home">
+<body class="home frontend">
 
 	<div class="app-container">
 
 		<div class="section header clearfix">
-			{{> header }}
+			{{> header-frontend }}
 		</div>
 
 		<div class="below-header"><div class="below-header-inside">
@@ -38,7 +38,7 @@
 
 								{{#unless google_data }}
 									<ul class="connectors-list">
-										<li class="google google-authorize-button button"><i class="fab fa-google"></i> <a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+										<li class="google google-authorize-button button"><i class="fab fa-google"></i> <a class="title">Connect Google Analytics</a></li>
 									</ul>
 								{{/unless}}
 
@@ -56,7 +56,8 @@
 
 								{{#unless facebook_data }}
 									<ul class="connectors-list">
-										<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+										<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title">Connect Facebook Account</a></li>
+										<li class="facebook facebook-deauthorize-button button"><i class="fab fa-facebook"></i> Disconnect Facebook Account</li>
 									</ul>
 								{{/unless}}
 

@@ -21,6 +21,8 @@ FT.connector.facebook = {
 
 	authorize : function(response) {
 
+		if ( !$('body').hasClass('frontend') ) return
+
 		if (response.status === 'connected') {
 			//console.log('Facebook: We are authorized for facebook')
 			var uid = response.authResponse.userID;
@@ -35,13 +37,13 @@ FT.connector.facebook = {
 		} else if (response.status === 'not_authorized') {
 			console.log('Facebook: We are not authorized for facebook')
 
-			//FT.connector.facebook.onLogin();
+			FT.connector.facebook.onLogin();
 
 		} else {
 			// the user isn't logged in to Facebook.
 			console.log('Facebook: Not logged into facebook')
 
-			//FT.connector.facebook.onLogin()
+			FT.connector.facebook.onLogin();
 
 		}
 	},
@@ -1091,9 +1093,9 @@ FT.connector.facebook = {
 
 		// Add an event listener to the 'auth-button'.
 
-		// $( 'body' ).on( "click", ".facebook-authorize-button", function(e) {
-		// 	FT.connector.facebook.login(e)
-		// });
+		$( 'body' ).on( "click", ".facebook-authorize-button", function(e) {
+			FT.connector.facebook.login(e)
+		});
 
 		$( 'body' ).on( "click", ".fb-account", function(e) {
 		
@@ -1147,7 +1149,7 @@ window.fbAsyncInit = function() {
      });
   
     FB.getLoginStatus(function(response) {
-        FT.connector.facebook.authorize(response);
+      	FT.connector.facebook.authorize(response);
      });
   };
 

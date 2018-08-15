@@ -32,6 +32,7 @@ module.exports = function(passport) {
             passReqToCallback : true 
         },
         function(req, email, password, done) {
+            req.usedStrategy = 'local';
             Model.User.findOne({
                 where: {
                     'email': email
@@ -58,8 +59,8 @@ module.exports = function(passport) {
         profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl'],
         passReqToCallback: true
     }, function(req, token, refreshToken, profile, done) {
+        req.usedStrategy = 'facebook';
         process.nextTick(function() {
-            
             Async.waterfall([
                 function (cb) {
                     Model.Facebook.findOne({
@@ -124,7 +125,11 @@ module.exports = function(passport) {
         callbackURL  : auth.googleAuth.callbackURL,
         passReqToCallback: true
     }, function(req, token, refreshToken, params, profile, done) {
+
+        console.log( 'GOOGLE THINGS>>>>', 'token', token, 'refresh token', refreshToken, 'params', params)
+
         process.nextTick(function() {
+            req.usedStrategy = 'google';
             Async.waterfall([
                 function (cb) {
                     Model.Google.findOne({
@@ -188,6 +193,7 @@ module.exports = function(passport) {
         callbackURL    : auth.twitterAuth.callbackURL
     }, function(token, tokenSecret, profile, done) {
         process.nextTick(function() {
+            req.usedStrategy = 'twitter';
             new Model.Twitter({twitter_id: profile.id}).fetch().then(function(twUser) {
                 if (twUser) {
                     return done(null, twUser);

@@ -10,9 +10,51 @@ var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
 
+
+router.get('/testfb', function (req, res) {
+
+
+const Async = require('async');
+const graph = require('fbgraph');
+
+ //const token = fUser.token
+  console.log('TEST FB ACCOUNT>>>>')
+        const token = "EAAH7jVaPTKQBALeANgzauPUKKrqJcH1jcNPBPEz9WtLa6G6ZAAAuZAHbQmMWVQvOfqBtfP8u5nLTH9Ou9MihZAH3ZCxmZCiJDxfZABC2zkchiuxHK1Yns5fqnqfV6ejDxpwlPA7miAMieJ9gf5PJclck26fZA90JdEZD";
+
+        graph.setAccessToken(token);
+        Async.parallel({
+                getMyProfile: (done) => {
+                    graph.get("me/?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}", (err, me) => {
+                          console.log('get facebook data - me', me)
+
+                        done(err, me);
+                    });
+                },
+                getMyFriends: (done) => {
+                    graph.get("me/friends", (err, friends) => {
+                          console.log('get facebook data - friends', friends)
+
+                        done(err, friends.data);
+                    });
+                }
+            },
+            (err, data) => {
+               console.log('returned data>>>>', data)
+
+                res.send('testing fb ' + JSON.stringify(data))
+
+            });
+
+
+
+
+})
+
+
 var numberOfSends = 0;
 
 const EmailContent = require('../components/EmailContent.js')
+
 
 router.get('/testsched', function (req, res) {
 

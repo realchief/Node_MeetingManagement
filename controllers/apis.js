@@ -13,16 +13,20 @@ let oauth2Client = new OAuth2(
 );
 
 exports.getFacebook = (fUser, cb) => {
-        const token = fUser.token;
+        const token = fUser.token
         graph.setAccessToken(token);
         Async.parallel({
                 getMyProfile: (done) => {
-                    graph.get(`${fUser.profile_id}?fields=id,name,email,first_name,last_name,gender,link,locale,timezone`, (err, me) => {
+                    graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, me) => {
+                          console.log('get facebook data - me', me)
+
                         done(err, me);
                     });
                 },
                 getMyFriends: (done) => {
                     graph.get(`${fUser.profile_id}/friends`, (err, friends) => {
+                          console.log('get facebook data - friends', friends)
+
                         done(err, friends.data);
                     });
                 }
@@ -46,18 +50,47 @@ exports.getGoogleMatrics = (gUser, cb) => {
     });
     Async.parallel({
         users: function (done) {
-            google.analytics('v3').management.accountSummaries.list(function (response) {
-                done(null, response);
+
+            google.analytics('v3').management.accountSummaries.list(function (err, response) {
+
+                if (err) {
+                  console.log('Google API error:', err);
+                  return;
+                }
+
+              // console.log('get google data - account all', response.data)
+            
+                if (response && !response.error) {
+                   console.log('get google data - account summary', response.data)
+                    done(null, response);
+                } else {
+                   console.log('get google data - account summary error', response.data)
+                    done(null, response);
+                }
             });
         },
         gaColumns: function (done) {
-            google.analytics('v3').metadata.columns.list({ 'reportType' : 'ga'}, function (response) {
-                let gaColumns = {};
-                for (var i = 0;i < response.result.items.length;i ++) {
-                    let column = response.result.items[i];
-                    gaColumns[column.id] = column.attributes;
+            google.analytics('v3').metadata.columns.list({ 'reportType' : 'ga'}, function (err, response) {
+                
+                //console.log('get google data - columns all', response.data)
+
+                if (err) {
+                  console.log('Google API error:', err);
+                  return;
                 }
-                done(null, gaColumns);
+
+                let gaColumns = {};
+
+                if ( typeof response.items !== 'undefined') {
+
+                    for (var i = 0;i < response.items.length;i ++) {
+                        let column = response.result.items[i];
+                        gaColumns[column.id] = column.attributes;
+                    }
+
+
+                }
+                done(null, response.data);
             });
         }
     }, function (err, data) {
@@ -68,11 +101,17 @@ exports.getGoogleMatrics = (gUser, cb) => {
 };
 
 exports.checkGoogleToken =  (req, res, next) => {
+
+    console.log('checking google token')
+
     // check for user
     if (!req.user) {
       return next();
     }
     req.user.getGoogle().then(function (gUser) {
+
+        //console.log('>>>>>> refresh token:', gUser.refresh_token, 'timing', moment().subtract(gUser.expiry_date, "s").format("X"))
+
         if (gUser && moment().subtract(gUser.expiry_date, "s").format("X") > -300) {
             oauth2Client.setCredentials({
                 access_token: gUser.token,

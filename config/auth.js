@@ -13,8 +13,8 @@ module.exports = {
         'callbackURL'   : 'http://localhost:' + port + '/auth/twitter/callback'
     },
     'googleAuth' : {
-        'clientID'      : '99296634860-u2knilp22cb05ohusdqivfooc9gbanh2.apps.googleusercontent.com',
-        'clientSecret'  : 'dr_K-nlseXq77BhasPvWFg0e',
+        'clientID'      : '53991449399-gf3t1i4f26o7sqeipl1ok0crmmhptcbo.apps.googleusercontent.com',
+        'clientSecret'  : 'focTjpmNrh1FPiHo1IZU8FXf',
         'callbackURL'   : 'http://localhost:' + port + '/auth/google/callback'
     },
     

@@ -14,10 +14,12 @@ var auth             = require('./config/auth.js'),
 module.exports = function(passport) {
 
     passport.serializeUser(function(user, done) {
+         console.log('>>> serialize user')
         done(null, user.id);
     });
 
     passport.deserializeUser(function(id, done) {
+        console.log('>>> deserializeUser')
         Model.User.findById(id).then(function (user) {
             done(null, user);
         });

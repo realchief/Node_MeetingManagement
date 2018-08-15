@@ -12,7 +12,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helpers = require('./helpers');
 var routes = require('./routes/index');
-var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
 var passport = require('passport');
 var auth = require('./routes/auth.js');
@@ -88,12 +87,18 @@ app.use(session({
   cookie: cookieOptions
 }));
 
+// serves up static files from the public folder. Anything in static/ will just be served up as the file it is
+app.use(express.static(path.join(__dirname, 'static')));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-// serves up static files from the public folder. Anything in static/ will just be served up as the file it is
-app.use(express.static(path.join(__dirname, 'static')));
+// DEBUG REQUESTS
+app.use(function(req, res, next) {
+  console.log('handling request for: ' + req.url);
+  next();
+});
 
 // pass variables to our templates + all requests
 app.use((req, res, next) => {
@@ -111,7 +116,6 @@ app.use('/', routes)
 app.use('/', parseRoutes)
 
 // route incoming requests to the correct pages
-app.use('/api', apiRoutes)
 app.use('/auth', auth);
 
 // lastly, handle any errors 

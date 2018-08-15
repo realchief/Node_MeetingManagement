@@ -36,11 +36,11 @@
 
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
 
-								<ul class="connectors-list">
-									<li class="google google-authorize-button button"><i class="fab fa-google"></i> <span class="title">Connect Google Analytics</span></li>
-									<!--<li class="google google-deauthorize-button"><i class="fab fa-google"></i> Disconnect Google Analytics</li>-->
-									<li class="google google-manage-button button"><a href="https://myaccount.google.com/permissions" target="_blank">Manage Apps</a> <i class="fas fa-external-link-alt"></i></li>
-								</ul>
+								{{#unless google_data }}
+									<ul class="connectors-list">
+										<li class="google google-authorize-button button"><i class="fab fa-google"></i> <a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									</ul>
+								{{/unless}}
 
 								<div class="google-accounts"></div>
 						
@@ -54,10 +54,11 @@
 
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
 
-								<ul class="connectors-list">
-									<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <span class="title">Connect Facebook Account</span></li>
-									<li class="facebook facebook-deauthorize-button button"><i class="fab fa-facebook"></i> Disconnect Facebook Account</li>
-								</ul>
+								{{#unless facebook_data }}
+									<ul class="connectors-list">
+										<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i> <a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+									</ul>
+								{{/unless}}
 
 								<div class="facebook-accounts"></div>
 						
@@ -76,7 +77,9 @@
 						<h2 class="location-toggle with-line">Data Editor</h2>
 
 						<div class="two-col cols">
-							<div class="metrics-editor"></div>
+							<div class="metrics-editor">
+
+							</div>
 						</div>
 
 						
@@ -86,11 +89,8 @@
 					
 
 					<div class="row clearfix debug-listing insights-listing" id="debug">
+
 					</div>
-
-
-
-					
 				</div>
 
 			</div>

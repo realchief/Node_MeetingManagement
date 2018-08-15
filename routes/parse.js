@@ -7,6 +7,8 @@ const sgMail = require('@sendgrid/mail');
 var _ = require('lodash');
 var ical = require('ical')
 var moment = require('moment');
+var Model = require('../models');
+var schedule = require('node-schedule');
 
 var numberOfSends = 0;
 
@@ -14,76 +16,174 @@ const EmailContent = require('../components/EmailContent.js')
 
 router.get('/ical', function (req, res) {
 
- var insightType = 'test';
-var recipients = [];
+  var insightType = 'test';
+  var recipients = [];
   
   console.log( '----- NEW TEST EVENT FILE PARSE' );
 
-          //var ical_data = ical.parseFile('./uploads/iCal-20180619-172902-1529454543514.ics')
-         // console.log(ical_data)
+  var ical_data = ical.parseFile('./uploads/test/iCal-20180618-061247-1529327604623.ics')  
 
-          parseIcal = ical_data[Object.keys(ical_data)[0]]
-          if ( parseIcal.type == "VTIMEZONE") {
-            console.log("**** FROM ICAL")
-            parseIcal = ical_data[Object.keys(ical_data)[1]]
-          }
-    
-          console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
-          console.log( 'Start:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
-          console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-          console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-          console.log( 'Summary:', parseIcal.summary)
+  parseIcal = ical_data[Object.keys(ical_data)[0]]
+ 
+  if ( parseIcal.type == "VTIMEZONE") {
+    console.log("**** FROM ICAL")
+    parseIcal = ical_data[Object.keys(ical_data)[1]]
+  }
 
-          /* =====  replace "to" response with calendar attendees */
-             var toArray = [];
-             var flatRecipients = [];
-            _.forEach(parseIcal.attendee, function(value) {
+  console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
+  console.log( 'Start:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
+  console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+  console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+  console.log( 'Summary:', parseIcal.summary)
 
-               if ( typeof value.val !== 'undefined' ) {
-               var attendee = value.val.toLowerCase()
-               console.log('Attendee:', attendee, "Attendee Email:", attendee.split(':')[1])
-               
-                var recipient = attendee.split(':')[1];
+  /* =====  replace "to" response with calendar attendees */
+      var toArray = [];
+      var flatRecipients = [];
+    _.forEach(parseIcal.attendee, function(value) {
 
-                if ( recipient.indexOf('meetbrief') < 0 ) {
-                  toArray.push( { email : recipient } )
-                  flatRecipients.push(recipient)
-                } 
-              }
+        if ( typeof value.val !== 'undefined' ) {
+        var attendee = value.val.toLowerCase()
+        console.log('Attendee:', attendee, "Attendee Email:", attendee.split(':')[1])
+        
+        var recipient = attendee.split(':')[1];
 
-            })
-         
-          var organizer = ""
+        if ( recipient.indexOf('meetbrief') < 0 ) {
+          toArray.push( { email : recipient } )
+          flatRecipients.push(recipient)
+        } 
+      }
 
-          if ( typeof parseIcal.organizer.val !== undefined ) {
-            if ( parseIcal.organizer.val.toLowerCase().indexOf('mailto:') >= 0 ) {
-              organizer = parseIcal.organizer.val.toLowerCase().split('mailto:')[1]
-            } else {
-              organizer = parseIcal.organizer.val
-            }
-          } else {
-            organizer = "Someone"
-          }
+    })
+  
+  var organizer = ""
 
-          console.log('Organizer:', organizer)
+  if ( typeof parseIcal.organizer.val !== undefined ) {
+    if ( parseIcal.organizer.val.toLowerCase().indexOf('mailto:') >= 0 ) {
+      organizer = parseIcal.organizer.val.toLowerCase().split('mailto:')[1]
+    } else {
+      organizer = parseIcal.organizer.val
+    }
+  } else {
+    organizer = "Someone"
+  }
 
-          if ( flatRecipients.indexOf(organizer) < 0 ) {
-              toArray.push( { email : organizer } )
-          }
+  console.log('Organizer:', organizer)
 
-          sender = organizer
-          emailDomain = organizer.replace(/.*@/, "").split('.')[0];
-          summary = parseIcal.summary
-          meeting_time = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
-          meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+  if ( flatRecipients.indexOf(organizer) < 0 ) {
+      toArray.push( { email : organizer } )
+  }
 
-           console.log( '----- END EVENT FILE PARSE' );
+  sender = organizer
+  emailDomain = organizer.replace(/.*@/, "").split('.')[0];
+  summary = parseIcal.summary
+  meeting_time = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
+  meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
-          console.log('email domain:', emailDomain)
-          console.log('to array:', toArray)
+    console.log( '----- END EVENT FILE PARSE' );
+
+    Model.Meeting.create({
+      to: flatRecipients,
+      meeting_name: summary,
+      sender: organizer,
+      start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
+      end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(), 
+      start_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+      end_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+    }).then(function (meeting) {
+       /* ===== modify base email ======= */
+
+      console.log('email domain:', emailDomain)
+      console.log('insight type', insightType)
+
+      switch ( emailDomain ) {
+        case 'loosegrip' :
+          var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
+        break
+
+        case 'presidio' :
+          var email = JSON.parse(JSON.stringify(EmailContent.email));
+        break
+
+        case 'unilever' :
+          var email = JSON.parse(JSON.stringify(EmailContent.email_unilever))
+        break
+
+        default :
+          var email = JSON.parse(JSON.stringify(EmailContent.email));
+        break
+
+      }
+      email.replacements.sender = sender
+      email.replacements.summary = summary
+      email.replacements.meeting_time = meeting_time
+      email.replacements.meeting_date = meeting_date
+
+      /* ===== make and send email ======= */
+
+      var theEmail = EmailContent.processEmail(email)
+
+      theEmail.then( function(result) {
+
+          var from = "insights@meetbrief.com"
+
+          var subject = ""
+          subject = result.data.subject;
+          subject += " " + result.data.summary + " "
+          subject += " " + "(" + result.data.meeting_date + ")"               
+        
+          const msg = {
+            to: toArray,
+            from: {
+              email : from,
+              name: "MeetBrief"
+            },
+            subject: subject,
+            text: result.emailToSend,
+            html: result.emailToSend
+
+          };
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate();   
+          let current_assert_date = moment().add(30, 'minutes').toDate();       
+          // let date = moment().add(5, 'minutes').toDate();
+          // let current_assert_date = moment().add(5, 'minutes').toDate();
+          let isAfter = moment(date).isAfter(current_assert_date);
+          console.log('----isAfter-----');
+          console.log(isAfter);
+          if (isAfter == false) {
+            date = moment().add(1, 'minutes').toDate();;
+          }  
+
+          console.log('====================date===========================');
+          console.log(date);
+          
+          schedule.scheduleJob(date, function(data){
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+            sgMail.send(data.msg);           
+            data.meeting.updateAttributes({
+              is_sent: true
+            }).then(function (result) {
+              console.log('sent: ', result);
+              console.log('schuduled current time', moment().toDate);
+            });
+          }.bind(null,{
+            msg: msg,
+            meeting: meeting            
+          }));
+
+          console.log( 'parsed email sent to: ',  toArray )
+          console.log( 'number of sends: ',  numberOfSends )
+
+          res.sendStatus(200);
+
+      })
+    });
+  
+
+  console.log('email domain:', emailDomain)
+  console.log('to array:', toArray)
 
 
-           res.send('test in console')
+    res.send('test in console')
 })
 
 
@@ -321,7 +421,6 @@ router.post('/parse', cpUpload, function (req, res) {
             console.log( 'Summary:', parseIcal.summary)
 
             /* =====  replace "to" response with calendar attendees */
-             var toArray = [];
              var flatRecipients = [];
             _.forEach(parseIcal.attendee, function(value) {
 
@@ -333,7 +432,8 @@ router.post('/parse', cpUpload, function (req, res) {
 
                 if ( recipient.indexOf('meetbrief') < 0 ) {
                   toArray.push( { email : recipient } )
-                  flatRecipients.push(recipient)
+                  flatRecipients.push(recipient);
+                  recipients.push(recipient);
                 } 
               }
 
@@ -364,82 +464,109 @@ router.post('/parse', cpUpload, function (req, res) {
             meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
             console.log( '----- END EVENT FILE PARSE' );
+            console.log(recipients);
+            Model.Meeting.create({
+              to: flatRecipients,
+              meeting_name: summary,
+              sender: organizer,
+              start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
+              end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(), 
+              start_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+              end_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+            }).then(function (meeting) {
+               /* ===== modify base email ======= */
 
+              console.log('email domain:', emailDomain)
+              console.log('insight type', insightType)
+
+              switch ( emailDomain ) {
+
+                case 'loosegrip' :
+                  var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
+                break
+
+                case 'presidio' :
+                  var email = JSON.parse(JSON.stringify(EmailContent.email));
+                break
+
+                case 'unilever' :
+                  var email = JSON.parse(JSON.stringify(EmailContent.email_unilever))
+                break
+
+                default :
+                  var email = JSON.parse(JSON.stringify(EmailContent.email));
+                break
+
+              }
+
+              email.replacements.sender = sender
+              email.replacements.summary = summary
+              email.replacements.meeting_time = meeting_time
+              email.replacements.meeting_date = meeting_date
+
+              /* ===== make and send email ======= */
+
+              var theEmail = EmailContent.processEmail(email)
+
+              theEmail.then( function(result) {
+
+                  var from = "insights@meetbrief.com"
+
+                  var subject = ""
+                  subject = result.data.subject;
+                  subject += " " + result.data.summary + " "
+                  subject += " " + "(" + result.data.meeting_date + ")"
+                  
+                  
+                
+                  const msg = {
+                    to: toArray,
+                    from: {
+                      email : from,
+                      name: "MeetBrief"
+                    },
+                    subject: subject,
+                    text: result.emailToSend,
+                    html: result.emailToSend
+
+                  };
+  
+                  let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate(); 
+                  let current_assert_date = moment().add(30, 'minutes').toDate();        
+                 
+                  let isAfter = moment(date).isAfter(current_assert_date);
+                  console.log('----isAfter-----');
+                  console.log(isAfter);
+                  if (isAfter == false) {
+                    date = moment().add(1, 'minutes').toDate();;
+                  }  
+                  
+                  schedule.scheduleJob(date, function(data){
+                    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+                    sgMail.send(data.msg);
+                    data.moment.updateAttributes({
+                      is_sent: true
+                    }).then(function (result) {
+                      console.log('sent: ', result);
+                    });
+                  }.bind(null,{
+                    msg: msg,
+                    momnet: moment
+                  }));
+
+                  console.log( 'parsed email sent to: ',  toArray )
+                  console.log( 'number of sends: ',  numberOfSends )
+
+                  res.sendStatus(200);
+
+              })
+            });
 
         }
 
     }
   }
 
-
-   /* ===== modify base email ======= */
-
-
-    console.log('email domain:', emailDomain)
-  console.log('insight type', insightType)
-
-   switch ( emailDomain ) {
-
-    case 'loosegrip' :
-      var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
-    break
-
-    case 'presidio' :
-      var email = JSON.parse(JSON.stringify(EmailContent.email));
-    break
-
-    case 'unilever' :
-      var email = JSON.parse(JSON.stringify(EmailContent.email_unilever))
-    break
-
-    default :
-      var email = JSON.parse(JSON.stringify(EmailContent.email));
-    break
-
-   }
-
-
-    email.replacements.sender = sender
-  email.replacements.summary = summary
-  email.replacements.meeting_time = meeting_time
-  email.replacements.meeting_date = meeting_date
-
-   /* ===== make and send email ======= */
-
-   var theEmail = EmailContent.processEmail(email)
-
-   theEmail.then( function(result) {
-
-      var from = "insights@meetbrief.com"
-
-      var subject = ""
-      subject = result.data.subject;
-      subject += " " + result.data.summary + " "
-      subject += " " + "(" + result.data.meeting_date + ")"
-      
-     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-     
-      const msg = {
-        to: toArray,
-        from: {
-          email : from,
-          name: "MeetBrief"
-        },
-        subject: subject,
-        text: result.emailToSend,
-        html: result.emailToSend
-
-      };
-
-      
-      sgMail.send(msg);
-
-      console.log( 'parsed email sent to: ',  toArray )
-      console.log( 'number of sends: ',  numberOfSends )
-
-      res.sendStatus(200);
-
-   })
 
   console.log('requested meetbrief', 'from email:', fromEmail)
   

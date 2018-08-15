@@ -14,6 +14,13 @@ var helpers = require('./helpers');
 var routes = require('./routes/index');
 var apiRoutes = require('./routes/api');
 var parseRoutes = require('./routes/parse');
+var passport = require('passport');
+var auth = require('./routes/auth.js');
+var models = require('./models');
+var flash = require('connect-flash');
+var apisControllers = require('./controllers/apis');
+
+require('./passport.js')(passport);
 
 var establishSecurePort = false;
 
@@ -41,13 +48,13 @@ app.engine('handlebars', exphbs({
     defaultLayout: process.env.HOME_VERSION,
     layoutsdir: __dirname + '/views/layouts/',
     partialsdir: __dirname + '/views/partials/'
-  }));
+}));
 app.set('view engine', 'handlebars');
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 
 if ( secureRedirect ) {
 
@@ -81,6 +88,10 @@ app.use(session({
   cookie: cookieOptions
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
 // serves up static files from the public folder. Anything in static/ will just be served up as the file it is
 app.use(express.static(path.join(__dirname, 'static')));
 
@@ -92,13 +103,16 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(apisControllers.checkGoogleToken);
+app.use(apisControllers.checkFacebookToken);
+
 // route incoming requests to the correct pages
 app.use('/', routes)
 app.use('/', parseRoutes)
 
 // route incoming requests to the correct pages
 app.use('/api', apiRoutes)
-
+app.use('/auth', auth);
 
 // lastly, handle any errors 
 app.use(function(req, res, next){
@@ -122,28 +136,28 @@ app.use(function(req, res, next){
 
 
 // start the server
+models.sequelize.sync().then(function() {
+  var port = process.env.PORT || 3001;
+  var server = http.createServer(app).listen(port, function() {
+    console.log('Express server listening on port ' + port);
+  });
 
-var port = process.env.PORT || 3000;
-var server = http.createServer(app).listen(port, function() {
-  console.log('Express server listening on port ' + port);
-});
+  /* FOR HTTPS */
 
-/* FOR HTTPS */
+  if ( establishSecurePort) {
 
-if ( establishSecurePort) {
+    var options = {
+      key: fs.readFileSync( process.env.PRIVATE_KEY_PATH, 'utf8' ),
+      cert: fs.readFileSync( process.env.CERTIFICATE_PATH, 'utf8' ),
+    };
 
-      var options = {
-        key: fs.readFileSync( process.env.PRIVATE_KEY_PATH, 'utf8' ),
-        cert: fs.readFileSync( process.env.CERTIFICATE_PATH, 'utf8' ),
-      };
+    if ( typeof process.env.CA_PATH !== 'undefined' ) {
+      options.ca = fs.readFileSync( process.env.CA_PATH, 'utf8' )
+    }
 
-      if ( typeof process.env.CA_PATH !== 'undefined' ) {
-        options.ca = fs.readFileSync( process.env.CA_PATH, 'utf8' )
-      }
-
-      var securePort = process.env.SECURE_PORT || 3443;
-      https.createServer(options, app).listen(securePort, function() {
-        console.log('Express secure server listening on port ' + securePort);
-      });
-
-}
+    var securePort = process.env.SECURE_PORT || 3443;
+    https.createServer(options, app).listen(securePort, function() {
+      console.log('Express secure server listening on port ' + securePort);
+    });
+  }
+})

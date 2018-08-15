@@ -40,8 +40,6 @@ FT.defaults = {
 	facebookPropertyId : "165315920184098",
 	facebookCalls : 0,
 	googleCalls : 0,
-
-
 }
 
 FT.app = {
@@ -55,7 +53,6 @@ FT.app = {
 
 		FT.dates.displayAllDateChoosers();
 		this.process()
-		
 	},
 
 
@@ -97,8 +94,6 @@ FT.app = {
 
 		
 	},
-
-	
 
 	bindUI: function() {
 

@@ -6,14 +6,15 @@ let Async = require('async');
 let apiControllers = require('../controllers/apis');
 
 router.get('/',  function (req, res) {
-    if (req.isAuthenticated()) {
+    if (req.user) {
         Async.parallel({
             google_data: function (cb) {
                 req.user.getGoogle().then(function (gUser) {
                     if (gUser) {
-                        apiControllers.getGoogleMatrics(gUser, function (err, data) {
-                            cb(null, data);
-                        });
+                        // apiControllers.getGoogleMatrics(gUser, function (err, data) {
+                        //     cb(null, data);
+                        // });
+                        cb(null, true);
                     }
                     else cb(null, false);
                 });
@@ -29,6 +30,7 @@ router.get('/',  function (req, res) {
                 })
             }
         }, function (err, results) {
+            console.log('Error: ', err);
             req.session.currentVersion = 'fingertips'
             res.render('fingertips', {
                 version: 'fingertips',

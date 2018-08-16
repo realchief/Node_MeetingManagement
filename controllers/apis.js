@@ -18,14 +18,14 @@ exports.getFacebook = (fUser, cb) => {
         Async.parallel({
                 getMyProfile: (done) => {
                     graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, me) => {
-                          console.log('get facebook data - me', me)
+                       //   console.log('get facebook data - me', me)
 
                         done(err, me);
                     });
                 },
                 getMyFriends: (done) => {
                     graph.get(`${fUser.profile_id}/friends`, (err, friends) => {
-                          console.log('get facebook data - friends', friends)
+                        //  console.log('get facebook data - friends', friends)
 
                         done(err, friends.data);
                     });
@@ -61,10 +61,10 @@ exports.getGoogleMatrics = (gUser, cb) => {
               // console.log('get google data - account all', response.data)
             
                 if (response && !response.error) {
-                   console.log('get google data - account summary', response.data)
+                  // console.log('get google data - account summary', response.data)
                     done(null, response);
                 } else {
-                   console.log('get google data - account summary error', response.data)
+                  // console.log('get google data - account summary error', response.data)
                     done(null, response);
                 }
             });
@@ -111,12 +111,12 @@ exports.checkGoogleToken =  (req, res, next) => {
     req.user.getGoogle().then(function (gUser) {
 
         if ( gUser ) {
-            console.log('>>>>>> refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
+            console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
         }
 
         if (gUser && moment().subtract(gUser.expiry_date, "s").format("X") > -300) {
             // subtract current time from stored expiry_date and see if less than 5 minutes (300s) remain
-            console.log('we passed the expiry_date and trying to update access token')
+            console.log('we passed the expiry_date and trying to update google access token')
 
             oauth2Client.setCredentials({
                 access_token: gUser.token,
@@ -130,7 +130,7 @@ exports.checkGoogleToken =  (req, res, next) => {
                     return next(err);
                 }
 
-                console.log('trying to update access token', tokens)
+                console.log('trying to update google access token', tokens)
 
                 // google returns timestamp with milliseconds, so fix that //
                 var expiry_date = parseInt(tokens.expiry_date / 1000)
@@ -153,14 +153,24 @@ exports.checkFacebookToken = (req, res, next) => {
         return next();
     }
     req.user.getFacebook().then(function (fUser) {
-        if (fUser && moment().subtract(fUser.expiry_date, "s").format("X") > -86400) {
+
+        if ( fUser ) {
+            console.log('>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract(fUser.expiry_date, "s").format("X"))
+        }
+
+        if (fUser && moment().subtract(fUser.expiry_date, "s").format("X") > 86400) {
+
             graph.extendAccessToken({
-                "access_token":     fUser.token,
-                "client_id":      auth.facebookAuth.ClientId,
+                "access_token":   fUser.token,
+                "client_id":      auth.facebookAuth.clientID,
                 "client_secret":  auth.facebookAuth.clientSecret
             }, function (err, facebookRes) {
+                
+                 console.log('extend facebook access token', facebookRes)
+
                 fUser.updateAttributes({
-                    token: facebookRes.token
+                    token: facebookRes.token,
+                    expiry_date: moment().format('X')
                 }).then(function (result) {
                     next();
                 });

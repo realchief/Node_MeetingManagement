@@ -35,20 +35,14 @@ router.get('/testsocial/:company', function (req, res) {
       }
     
     let token = "";
-    let socialCreds = {}
-    socialCreds.facebook = {}
-    socialCreds.google = {}
-
+  
     Async.parallel({
 
-      retrieveFacebook : function( done ) {
+      retrieveFacebookUser : function( done ) {
 
         user.getFacebook().then(function (fUser) {
           if (fUser) {
               console.log( 'Facebook User>>>', fUser.id)
-              socialCreds.facebook.token = fUser.token
-              socialCreds.facebook.refresh_token = fUser.refresh_token
-              socialCreds.facebook.expiry_date = fUser.expiry_date
           }
 
           done( null, fUser )
@@ -57,14 +51,11 @@ router.get('/testsocial/:company', function (req, res) {
 
       },
 
-      retrieveGoogle : function ( done ) {
+      retrieveGoogleUser : function ( done ) {
 
         user.getGoogle().then(function (gUser) {
           if (gUser) {
               console.log( 'Google User>>>', "id", gUser.id )
-              socialCreds.google.token = gUser.token
-              socialCreds.google.refresh_token = gUser.refresh_token
-              socialCreds.google.expiry_date = gUser.expiry_date
           }
 
           done( null, gUser )
@@ -77,18 +68,17 @@ router.get('/testsocial/:company', function (req, res) {
 
     function ( err, results ) {
 
-            //console.log('Social Creds>>>', socialCreds)
             //console.log('Results>>>', results)
             
             Async.parallel({
                   getFacebookData: (done) => {
                       
-                      if ( results.retrieveFacebook  == null  ) {
+                      if ( results.retrieveFacebookUser  == null  ) {
                         done( err, 'no facebook data')
                         return
                       }
 
-                      let fUser = results.retrieveFacebook
+                      let fUser = results.retrieveFacebookUser
 
                       graph.setAccessToken(fUser.token);
                       graph.get("me/?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}", (err, response) => {
@@ -99,12 +89,12 @@ router.get('/testsocial/:company', function (req, res) {
 
                   getGoogleData : (done) => {
 
-                      if ( results.retrieveGoogle == null ) {
+                      if ( results.retrieveGoogleUser == null ) {
                         done( err, { data: 'no google data'})
                         return
                       }
 
-                      let gUser = results.retrieveGoogle
+                      let gUser = results.retrieveGoogleUser
 
                       let oauth2Client = new OAuth2(
                           auth.googleAuth.clientID,
@@ -122,6 +112,11 @@ router.get('/testsocial/:company', function (req, res) {
                       google.options({
                           auth: oauth2Client
                       });
+
+
+                       console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
+
+                      // IF FAIL, WE PROBABLY NEED TO REFRESH THE TOKEN. HOW?
 
                       google.analytics('v3').management.accountSummaries.list(function (err, response) {
 

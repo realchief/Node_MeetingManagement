@@ -11,14 +11,174 @@ var Model = require('../models');
 var schedule = require('node-schedule');
 
 
-router.get('/testfb', function (req, res) {
+router.get('/testsocial/:company', function (req, res) {
+
+  const Async = require('async');
+  const graph = require('fbgraph');
+  const {google} = require('googleapis');
+  const OAuth2 = google.auth.OAuth2;
+  const auth = require('../config/auth');
+
+  let company = req.params.company;
+  let type = ( isNaN(Number(company)) ) ? 'company_id' : 'id'
+
+  let whereClause = ( type == "company_id" ) ? { 'company_id' : company } : { 'id' : company }
+
+  Model.User.findOne({
+      where: whereClause
+  }).then(function (user) {
+  
+      if (!user) {
+          console.log('>>> Cant Find user', user)
+          res.send("No User Found")
+          return
+      }
+    
+    let token = "";
+    let socialCreds = {}
+    socialCreds.facebook = {}
+    socialCreds.google = {}
+
+    Async.parallel({
+
+      retrieveFacebook : function( done ) {
+
+        user.getFacebook().then(function (fUser) {
+          if (fUser) {
+              console.log( 'Facebook User>>>', fUser.id)
+              socialCreds.facebook.token = fUser.token
+              socialCreds.facebook.refresh_token = fUser.refresh_token
+              socialCreds.facebook.expiry_date = fUser.expiry_date
+          }
+
+          done( null, fUser )
+
+        })
+
+      },
+
+      retrieveGoogle : function ( done ) {
+
+        user.getGoogle().then(function (gUser) {
+          if (gUser) {
+              console.log( 'Google User>>>', "id", gUser.id )
+              socialCreds.google.token = gUser.token
+              socialCreds.google.refresh_token = gUser.refresh_token
+              socialCreds.google.expiry_date = gUser.expiry_date
+          }
+
+          done( null, gUser )
+
+        })
+
+      }
+
+    },
+
+    function ( err, results ) {
+
+            //console.log('Social Creds>>>', socialCreds)
+            //console.log('Results>>>', results)
+            
+            Async.parallel({
+                  getFacebookData: (done) => {
+                      
+                      if ( results.retrieveFacebook  == null  ) {
+                        done( err, 'no facebook data')
+                        return
+                      }
+
+                      let fUser = results.retrieveFacebook
+
+                      graph.setAccessToken(fUser.token);
+                      graph.get("me/?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}", (err, response) => {
+                          //console.log('get facebook data - me', me)
+                          done(err, response);
+                      });
+                  },
+
+                  getGoogleData : (done) => {
+
+                      if ( results.retrieveGoogle == null ) {
+                        done( err, { data: 'no google data'})
+                        return
+                      }
+
+                      let gUser = results.retrieveGoogle
+
+                      let oauth2Client = new OAuth2(
+                          auth.googleAuth.clientID,
+                          auth.googleAuth.clientSecret,
+                          auth.googleAuth.callbackURL
+                      );
+
+                      oauth2Client.credentials = {
+                          refresh_token: gUser.refresh_token,
+                          expiry_date: gUser.expiry_date,
+                          access_token: gUser.token,
+                          token_type: gUser.token_type,
+                          id_token: gUser.id_token
+                      }
+                      google.options({
+                          auth: oauth2Client
+                      });
+
+                      google.analytics('v3').management.accountSummaries.list(function (err, response) {
+
+                          if (err) {
+                            console.log('Google API error:', err);
+                            return;
+                          }
+
+                        // console.log('get google data - account all', response.data)
+                      
+                          if (response && !response.error) {
+                             //console.log('get google data - account summary', response.data)
+                              done(null, response);
+                          } else {
+                             //console.log('get google data - account summary error', response.data)
+                              done(null, response);
+                          }
+                      });
 
 
-const Async = require('async');
-const graph = require('fbgraph');
+                  }                    
+              },
+              
+              (err, result) => {
 
+                  let output = JSON.stringify(result.getFacebookData)
+                  output += JSON.stringify(result.getGoogleData.data) 
+
+                  //console.log('returned facebook>>>>', result.getFacebookData)
+                  //console.log('returned google>>>>', result.getGoogleData)
+
+                    res.render('fingertips', {
+                        layout: 'social-test.handlebars',
+                        company : company,
+                        user : user,
+                        data: output
+                    });
+
+                });
+
+          })
+    })
+
+})
+
+
+
+router.get('/testsocial-loggedin', function (req, res) {
+
+  const Async = require('async');
+  const graph = require('fbgraph');
  //const token = fUser.token
-  console.log('TEST FB ACCOUNT>>>>')
+ 
+      if (req.user) {
+
+        console.log(req.user)
+
         const token = "EAAH7jVaPTKQBALeANgzauPUKKrqJcH1jcNPBPEz9WtLa6G6ZAAAuZAHbQmMWVQvOfqBtfP8u5nLTH9Ou9MihZAH3ZCxmZCiJDxfZABC2zkchiuxHK1Yns5fqnqfV6ejDxpwlPA7miAMieJ9gf5PJclck26fZA90JdEZD";
 
         graph.setAccessToken(token);
@@ -39,14 +199,22 @@ const graph = require('fbgraph');
                 }
             },
             (err, data) => {
+
                console.log('returned data>>>>', data)
 
-                res.send('testing fb ' + JSON.stringify(data))
+                res.render('fingertips', {
+                    layout: 'social-test.handlebars',
+                    user : req.user,
+                    data: JSON.stringify(data),
+                });
 
             });
 
+    } else {
 
-
+      req.session.redirectTo = '/testsocial-loggedin';
+      res.redirect('/signin');
+    }
 
 })
 

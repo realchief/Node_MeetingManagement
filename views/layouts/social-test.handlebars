@@ -1,0 +1,42 @@
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+
+		<div class="below-header"><div class="below-header-inside">
+
+			<div class="container">
+
+
+<h3>User</h3>
+
+{{#if user}}
+
+User: {{user.username}}<br />
+Email: {{user.email}}<br />
+Company Name: {{user.company_name}}<br />
+User Id: {{user.id}}<br />
+Facebook Id: {{user.FacebookId}}<br />
+Google Id: {{user.GoogleId}}<br />
+
+{{/if}}
+
+{{#if company}}
+
+Company: {{company}}<br />
+
+{{/if}}
+
+<h3>Data:</h3>
+
+{{data}}
+
+			</div>
+
+		</div>
+
+	</div>
+</body>

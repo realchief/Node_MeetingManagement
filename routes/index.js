@@ -7,6 +7,14 @@ let apiControllers = require('../controllers/apis');
 
 router.get('/',  function (req, res) {
 
+    var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
+    
+    if ( redirectTo !== "/") {
+        delete req.session.redirectTo;
+        res.redirect(redirectTo);
+        return
+    }
+
     if (req.user) {
         Async.parallel({
             google_data: function (cb) {
@@ -37,7 +45,7 @@ router.get('/',  function (req, res) {
             }
 
             console.log('***** Results: ', results);
-              console.log('***** User: ', req.user.username, req.user.email, req.user.company_name);
+            console.log('***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             req.session.currentVersion = 'fingertips'
             res.render('fingertips', {

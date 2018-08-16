@@ -110,17 +110,30 @@ exports.checkGoogleToken =  (req, res, next) => {
     }
     req.user.getGoogle().then(function (gUser) {
 
-        //console.log('>>>>>> refresh token:', gUser.refresh_token, 'timing', moment().subtract(gUser.expiry_date, "s").format("X"))
+        if ( gUser ) {
+            console.log('>>>>>> refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
+        }
 
         if (gUser && moment().subtract(gUser.expiry_date, "s").format("X") > -300) {
+            // subtract current time from stored expiry_date and see if less than 5 minutes (300s) remain
+            console.log('we passed the expiry_date and trying to update access token')
+
             oauth2Client.setCredentials({
                 access_token: gUser.token,
                 refresh_token: gUser.refresh_token
             });
+
             oauth2Client.refreshAccessToken(function (err, tokens) {
+
+                if (err) {
+                    console.log('Refresh Token Error>>>', err)
+                    return next(err);
+                }
+
+                console.log('trying to update access token', tokens)
+
                 gUser.updateAttributes({
                     token: tokens.access_token,
-                    refresh_token: tokens.id_token,
                     expiry_date: moment().add(tokens.expires_in, "s").format("X")
                 }).then(function (result) {
                     console.log('token updated!');

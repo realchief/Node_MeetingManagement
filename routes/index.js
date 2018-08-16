@@ -15,7 +15,6 @@ router.get('/',  function (req, res) {
                          apiControllers.getGoogleMatrics(gUser, function (err, data) {
                              cb(null, data);
                          });
-                        //cb(null, true);
                     }
                     else cb(null, false);
                 });
@@ -32,15 +31,20 @@ router.get('/',  function (req, res) {
             }
         }, function (err, results) {
             
-            console.log('***** Error: ', err);
-             console.log('***** Results: ', results);
+            if (err) {
+                console.log('***** Error: ', err);
+                return;
+            }
 
+            console.log('***** Results: ', results);
+              console.log('***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             req.session.currentVersion = 'fingertips'
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'fingertips.handlebars',
                 register_version: 'none',
+                user : req.user,
                 google_data: results.google_data,
                 facebook_data: results.facebook_data
             });

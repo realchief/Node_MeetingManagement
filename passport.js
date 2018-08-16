@@ -126,7 +126,7 @@ module.exports = function(passport) {
         passReqToCallback: true
     }, function(req, token, refreshToken, params, profile, done) {
 
-        console.log( 'GOOGLE THINGS>>>>', 'token', token, 'refresh token', refreshToken, 'params', params)
+        //console.log( 'GOOGLE THINGS>>>>', 'token', token, 'refresh token', refreshToken, 'params', params)
 
         process.nextTick(function() {
             req.usedStrategy = 'google';

@@ -132,9 +132,12 @@ exports.checkGoogleToken =  (req, res, next) => {
 
                 console.log('trying to update access token', tokens)
 
+                // google returns timestamp with milliseconds, so fix that //
+                var expiry_date = parseInt(tokens.expiry_date / 1000)
+
                 gUser.updateAttributes({
                     token: tokens.access_token,
-                    expiry_date: moment().add(tokens.expires_in, "s").format("X")
+                    expiry_date: expiry_date
                 }).then(function (result) {
                     console.log('token updated!');
                     next();

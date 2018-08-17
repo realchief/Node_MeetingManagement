@@ -48,10 +48,14 @@ var cookieSession = require('cookie-session');
 var app = express();
 
 var comparison = handlebarsHelpers.comparison();
+
 app.engine('handlebars', exphbs({
     defaultLayout: process.env.HOME_VERSION,
     layoutsdir: __dirname + '/views/layouts/',
-    partialsdir: __dirname + '/views/partials/'
+    partialsdir: __dirname + '/views/partials/',
+    helpers : {
+      moment : require('helper-moment')
+    }
 }));
 app.set('view engine', 'handlebars');
 

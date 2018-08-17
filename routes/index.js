@@ -20,7 +20,7 @@ router.get('/',  function (req, res) {
             google_data: function (cb) {
                 req.user.getGoogle().then(function (gUser) {
                     if (gUser) {
-                         apiControllers.getGoogleMatrics(gUser, function (err, data) {
+                         apiControllers.getGoogleMetrics(gUser, function (err, data) {
                              cb(null, data);
                          });
                     }
@@ -30,7 +30,7 @@ router.get('/',  function (req, res) {
             facebook_data: function (cb) {
                 req.user.getFacebook().then(function (fUser) {
                     if (fUser) {
-                        apiControllers.getFacebook(fUser, function (err, data) {
+                        apiControllers.getFacebookMetrics(fUser, function (err, data) {
                             cb(null, data);
                         });
                     }
@@ -155,15 +155,15 @@ router.get('/schedule', function (req, res, next) {
 });
 
 router.get('/allschedule', function (req, res, next) {
-    if (req.user) {
+    /*if (req.user) {*/
         Model.Meeting.findAll({}).then(function (meetings) {
             res.render('schdule_jobs', {
                 meetings: meetings,
                 layout: false
             })
         });
-    }
-    else res.redirect('/signin');
+   /* }
+    else res.redirect('/signin');*/
 });
 
 module.exports = router

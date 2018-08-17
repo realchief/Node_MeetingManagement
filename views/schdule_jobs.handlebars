@@ -25,6 +25,7 @@
 					<th>Organizer</th>
 					<th>Start Time</th>
 					<th>End Time</th>
+					<th>Start Date</th>
 					<th>IS_SENT</th>
 				</thead>
 				<tbody>
@@ -33,8 +34,9 @@
 							<td>{{@index}}</td>
 							<td>{{this.meeting_name}}</td>
 							<td>{{this.sender}}</td>
-							<td>{{this.start_time}}</td>
-							<td>{{this.end_time}}</td>
+							<td>{{moment this.start_time format="ddd, MMMM D [at] h:mma"}} </td>
+							<td>{{moment this.end_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td>{{this.start_date}}</td>
 							<td><input type='checkbox' {{#if this.is_sent}}checked{{/if}} readonly> </td>
 						</tr>
 					{{/each}}

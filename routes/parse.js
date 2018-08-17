@@ -21,7 +21,7 @@ router.get('/ical', function (req, res) {
   
   console.log( '----- NEW TEST EVENT FILE PARSE' );
 
-  var ical_data = ical.parseFile('./uploads/test/iCal-20180618-061247-1529327568024.ics')  
+  var ical_data = ical.parseFile('./uploads/invite-1534483084620.ics')  
 
   parseIcal = ical_data[Object.keys(ical_data)[0]]
  
@@ -29,6 +29,22 @@ router.get('/ical', function (req, res) {
     console.log("**** FROM ICAL")
     parseIcal = ical_data[Object.keys(ical_data)[1]]
   }
+
+ // let date = moment().add(2, 'minutes').toDate();
+          // let current_assert_date = moment().add(3, 'minutes').toDate();
+
+
+          // ---------------for testing----------------------  
+
+          console.log(moment('YYYYMMDDTHHmmssZ').add('5', 'minutes').format("YYYYMMDDTHHmmssZ"))
+
+          // parseIcal.start = moment().add(2, 'minutes').toDate()
+          // parseIcal.end = moment().add(1, 'minutes').toDate()
+
+         
+
+
+        
 
   console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
   console.log( 'Start:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
@@ -102,25 +118,22 @@ router.get('/ical', function (req, res) {
           // let current_assert_date = moment().add(3, 'minutes').toDate();
 
           let isAfter = moment(date).isAfter(current_assert_date);
-          console.log('-----isAfter-----');
-          console.log(isAfter);
+          console.log('-----is this meeting in the future? -----', isAfter);
+          
           if (isAfter == false) {
-            date = moment().add(1, 'minutes').toDate();;
+            date = moment().add(1, 'minutes').toDate();
           }
           apis.schedule_email(date, msg, meeting);
-
-
-          console.log('===================date after sending email===========================');
-          console.log(date);
-
-          console.log('ALL SCHEDULED JOBS>>>>', schedule.scheduledJobs) 
+  
       })
 
     });
   
   console.log('email domain:', emailDomain)
   console.log('to array:', toArray)
-  res.send('test in console')
+  res.send( {
+    'test' : 'test'
+  })
 })
 
 

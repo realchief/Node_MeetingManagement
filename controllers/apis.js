@@ -14,7 +14,7 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
-exports.getFacebook = (fUser, cb) => {
+exports.getFacebookMetrics = (fUser, cb) => {
         const token = fUser.token
         graph.setAccessToken(token);
         Async.parallel({
@@ -38,7 +38,7 @@ exports.getFacebook = (fUser, cb) => {
             });
 };
 
-exports.getGoogleMatrics = (gUser, cb) => {
+exports.getGoogleMetrics = (gUser, cb) => {
 
     oauth2Client.credentials = {
         refresh_token: gUser.refresh_token,
@@ -186,12 +186,11 @@ exports.schedule_email = (date, msg, meeting) => {
     schedule.scheduleJob(date, function(data) {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         //sgMail.send(data.msg);           
-        console.log('send scheduled email', moment().toDate())
+        console.log('send scheduled email', moment().format("ddd, MMMM D [at] h:mma"))
         data.meeting.updateAttributes({
           is_sent: true
         }).then(function (result) {
-          console.log('sent: ', result);
-          console.log('schuduled current time', moment().toDate());          
+          console.log('updated database record for: ', result.meeting_name, 'at', moment().format("ddd, MMMM D [at] h:mma"));
         });
       }.bind(null,{
         msg: msg,
@@ -200,11 +199,13 @@ exports.schedule_email = (date, msg, meeting) => {
 }
 
 exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
+    
     const EmailContent = require('../components/EmailContent.js');
     let sender = organizer
     let emailDomain = organizer.replace(/.*@/, "").split('.')[0];
     let meeting_time = moment(start_date).format("ddd, MMMM D [at] h:mma")
     let meeting_date = moment(start_date).format("ddd, MMMM D")
+
     switch ( emailDomain ) {
         case 'loosegrip' :
           var email = JSON.parse(JSON.stringify(EmailContent.email_lg))

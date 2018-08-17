@@ -172,14 +172,13 @@ models.sequelize.sync().then(function() {
             date = moment().add(1, 'minutes').toDate();
           }
 
-           console.log('----is this meeting--', meeting.meeting_name, '-- in the future? -----', isAfter, '--- scheduling to send ---', moment(date).format("ddd, MMMM D [at] h:mma"));
-
+          console.log('++++ rescheduling ---', meeting.meeting_name, '--- to send at ---', moment(date).format("ddd, MMMM D [at] h:mma"), '-- in the future? -----', isAfter);
           apisControllers.schedule_email(date, msg, meeting);
           cb(null);
         })
       
       }, function (err) {
-        console.log('Restarted all scheduled jobs that have not been sent.');
+          console.log('Restarted all scheduled jobs that have not been sent.');
       });
     });
     console.log('Express server listening on port ' + port);

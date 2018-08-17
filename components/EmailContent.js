@@ -1,5 +1,4 @@
 var fs = require('fs')
-const sgMail = require('@sendgrid/mail');
 var _ = require('lodash');
 
 exports.email  = { 

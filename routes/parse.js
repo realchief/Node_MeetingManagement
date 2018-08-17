@@ -87,13 +87,10 @@ router.get('/ical', function (req, res) {
   meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
   
-  console.log('Organizer:', organizer, "Company Id", emailDomain)
-
+  //console.log('Organizer:', organizer, "Company Id", emailDomain)
   console.log( '----- END EVENT FILE PARSE' );
 
   let whereClause = { 'company_id' : emailDomain }
-
-  console.log( 'try and find email domain', emailDomain)
 
   Model.User.findOne({
       where: whereClause
@@ -116,6 +113,8 @@ router.get('/ical', function (req, res) {
         end_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
       }).then(function (meeting) {
          /* ===== modify base email ======= */
+
+         //organizer, summary, toArray, start_date, cb//
         apis.make_email_content(organizer, summary, toArray, moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(), function (msg) {
             
             // set time 30 minutes before meeting time

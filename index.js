@@ -13,6 +13,8 @@ var bodyParser = require('body-parser');
 var helpers = require('./helpers');
 var routes = require('./routes/index');
 var parseRoutes = require('./routes/parse');
+var testRoutes = require('./routes/tests');
+
 var passport = require('passport');
 var auth = require('./routes/auth.js');
 var models = require('./models');
@@ -114,6 +116,7 @@ app.use(apisControllers.checkFacebookToken);
 // route incoming requests to the correct pages
 app.use('/', routes)
 app.use('/', parseRoutes)
+app.use('/', testRoutes)
 
 // route incoming requests to the correct pages
 app.use('/auth', auth);

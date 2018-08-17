@@ -140,4 +140,30 @@ router.get('/signout', function(req, res, next) {
     }
 });
 
+router.get('/schedule', function (req, res, next) {
+    if (req.user) {
+        req.user.getMeetings().then(function (meetings) {
+            console.log('==========meeting==========');
+            
+            res.render('schdule_jobs', {
+                meetings: meetings,
+                layout: false
+            })
+        });
+    }
+    else res.redirect('/signin');
+});
+
+router.get('/allschedule', function (req, res, next) {
+    if (req.user) {
+        Model.Meeting.findAll({}).then(function (meetings) {
+            res.render('schdule_jobs', {
+                meetings: meetings,
+                layout: false
+            })
+        });
+    }
+    else res.redirect('/signin');
+});
+
 module.exports = router

@@ -20,6 +20,9 @@ var auth = require('./routes/auth.js');
 var models = require('./models');
 var flash = require('connect-flash');
 var apisControllers = require('./controllers/apis');
+var Model = require('./models');
+var Async = require('async');
+var moment = require('moment');
 
 require('./passport.js')(passport);
 
@@ -146,6 +149,22 @@ app.use(function(req, res, next){
 models.sequelize.sync().then(function() {
   var port = process.env.PORT || 3001;
   var server = http.createServer(app).listen(port, function() {
+    // run stoped schedule job.
+    Model.Meeting.findAll({
+      where: {
+        is_sent: false
+      }
+    }).then(function (meetings) {
+      Async.each(meetings, function (meeting, cb) {
+        let date = moment(meeting.start_time).subtract(30, 'minutes');
+        apisControllers.make_email_content(meeting.organizer, meeting.summary, meeting.to, meeting.start_time, function (msg) {
+          apisControllers.schedule_email(date, msg, meeting);
+          cb(null);
+        })
+      }, function (err) {
+        console.log('Started all stoped schedule jobs');
+      });
+    });
     console.log('Express server listening on port ' + port);
   });
 

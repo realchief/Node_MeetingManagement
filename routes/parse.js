@@ -1,14 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var request = require('request')
 var multer  = require('multer')
-var fs = require('fs')
 const sgMail = require('@sendgrid/mail');
 var _ = require('lodash');
 var ical = require('ical')
 var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
+var apis = require('../controllers/apis');
 
 
 var numberOfSends = 0;
@@ -22,7 +21,7 @@ router.get('/ical', function (req, res) {
   
   console.log( '----- NEW TEST EVENT FILE PARSE' );
 
-  var ical_data = ical.parseFile('./uploads/test/invite-1534277929098.ics')  
+  var ical_data = ical.parseFile('./uploads/test/iCal-20180618-061247-1529327568024.ics')  
 
   parseIcal = ical_data[Object.keys(ical_data)[0]]
  
@@ -92,98 +91,36 @@ router.get('/ical', function (req, res) {
       end_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
     }).then(function (meeting) {
        /* ===== modify base email ======= */
+      apis.make_email_content(organizer, summary, toArray, moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(), function (msg) {
+          
+          // set time 30 minutes before meeting time
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
+          let current_assert_date = moment().subtract(30, 'minutes').toDate();  
 
-      console.log('email domain:', emailDomain)
-      console.log('insight type', insightType)
+          // ---------------for testing----------------------  
+          // let date = moment().add(2, 'minutes').toDate();
+          // let current_assert_date = moment().add(3, 'minutes').toDate();
 
-      switch ( emailDomain ) {
-        case 'loosegrip' :
-          var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
-        break
-
-        case 'presidio' :
-          var email = JSON.parse(JSON.stringify(EmailContent.email));
-        break
-
-        case 'unilever' :
-          var email = JSON.parse(JSON.stringify(EmailContent.email_unilever))
-        break
-
-        default :
-          var email = JSON.parse(JSON.stringify(EmailContent.email));
-        break
-
-      }
-      email.replacements.sender = sender
-      email.replacements.summary = summary
-      email.replacements.meeting_time = meeting_time
-      email.replacements.meeting_date = meeting_date
-
-      /* ===== make and send email ======= */
-
-      var theEmail = EmailContent.processEmail(email)
-
-      theEmail.then( function(result) {
-
-          var from = "insights@meetbrief.com"
-
-          var subject = ""
-          subject = result.data.subject;
-          subject += " " + result.data.summary + " "
-          subject += " " + "(" + result.data.meeting_date + ")"               
-        
-          const msg = {
-            to: toArray,
-            from: {
-              email : from,
-              name: "MeetBrief"
-            },
-            subject: subject,
-            text: result.emailToSend,
-            html: result.emailToSend
-
-          };
-          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').add(30, 'minutes').toDate();   
-          let current_assert_date = moment().add(30, 'minutes').toDate();       
-          // let date = moment().add(5, 'minutes').toDate();
-          // let current_assert_date = moment().add(5, 'minutes').toDate();
           let isAfter = moment(date).isAfter(current_assert_date);
-          console.log('----isAfter-----');
+          console.log('-----isAfter-----');
           console.log(isAfter);
           if (isAfter == false) {
             date = moment().add(1, 'minutes').toDate();;
-          }  
+          }
+          apis.schedule_email(date, msg, meeting);
 
-          console.log('====================date===========================');
+
+          console.log('===================date after sending email===========================');
           console.log(date);
-          
-          schedule.scheduleJob(date, function(data){
-            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-            //sgMail.send(data.msg);           
-            console.log('send scheduled email', moment().toDate)
-            data.meeting.updateAttributes({
-              is_sent: true
-            }).then(function (result) {
-              console.log('sent: ', result);
-              console.log('schuduled current time', moment().toDate);
-              res.sendStatus(200);
-            });
-          }.bind(null,{
-            msg: msg,
-            meeting: meeting            
-          }));
 
           console.log('ALL SCHEDULED JOBS>>>>', schedule.scheduledJobs) 
-
       })
+
     });
   
-
   console.log('email domain:', emailDomain)
   console.log('to array:', toArray)
-
-
-    res.send('test in console')
+  res.send('test in console')
 })
 
 
@@ -539,18 +476,7 @@ router.post('/parse', cpUpload, function (req, res) {
                     date = moment().add(1, 'minutes').toDate();;
                   }  
                   
-                  schedule.scheduleJob(date, function(data){
-                    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-                    sgMail.send(data.msg);
-                    data.moment.updateAttributes({
-                      is_sent: true
-                    }).then(function (result) {
-                      console.log('sent: ', result);
-                    });
-                  }.bind(null,{
-                    msg: msg,
-                    momnet: moment
-                  }));
+                  apis.schedule_email(date, msg, meeting);
 
                   console.log( 'parsed email sent to: ',  toArray )
                   console.log( 'number of sends: ',  numberOfSends )

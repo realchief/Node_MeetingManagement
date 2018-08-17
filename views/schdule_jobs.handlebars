@@ -1,0 +1,49 @@
+{{> head }}
+	<header>
+		<div class="flex-wrapper relative">
+			<div class="cell logo">
+				<div class="branding">
+					<p><i class="far fa-fw fa-hand-point-right fa-2x" style="vertical-align:middle;"></i> FingerTips</p>
+				</div>
+			</div>			
+			<div class="cell navigation">
+				<ul class="nav">	
+					<li class=""><a class="jump" href="/">home</a></li>			
+					<li class=""><a class="jump" href="/frontend">Front End</a></li>
+					<li class=""><a class="jump" href="/schedule">View Schedule</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>	
+	<body>		
+		<div class='tb-schedule'>
+			<h2>View Meeting Table Data</h2>
+			<table>
+				<thead>
+					<th>No</th>
+					<th>Meeting Name</th>
+					<th>Organizer</th>
+					<th>Start Time</th>
+					<th>End Time</th>
+					<th>IS_SENT</th>
+				</thead>
+				<tbody>
+					{{#each meetings}}
+						<tr>
+							<td>{{@index}}</td>
+							<td>{{this.meeting_name}}</td>
+							<td>{{this.sender}}</td>
+							<td>{{this.start_time}}</td>
+							<td>{{this.end_time}}</td>
+							<td><input type='checkbox' {{#if this.is_sent}}checked{{/if}} readonly> </td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="section gutter footer">
+			{{> footer }}
+		</div>
+	</body>
+</html>

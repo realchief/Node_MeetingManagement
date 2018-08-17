@@ -21,7 +21,8 @@
 			<table>
 				<thead>
 					<th>No</th>
-					<th>Meeting Name</th>					
+					<th>Meeting Name</th>
+					<th>Organizer</th>
 					<th>Start Time</th>
 					<th>End Time</th>
 					<th>IS_SENT</th>
@@ -30,7 +31,8 @@
 					{{#each meetings}}
 						<tr>
 							<td>{{@index}}</td>
-							<td>{{this.meeting_name}}</td>							
+							<td>{{this.meeting_name}}</td>
+							<td>{{this.sender}}</td>
 							<td>{{this.start_time}}</td>
 							<td>{{this.end_time}}</td>
 							<td><input type='checkbox' {{#if this.is_sent}}checked{{/if}} readonly> </td>

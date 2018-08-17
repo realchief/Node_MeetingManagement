@@ -313,10 +313,15 @@ router.get('/ical', function (req, res) {
     }).then(function (meeting) {
        /* ===== modify base email ======= */
       apis.make_email_content(organizer, summary, toArray, moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(), function (msg) {
-          // let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
-          // let current_assert_date = moment().subtract(30, 'minutes').toDate();       
-          let date = moment().add(2, 'minutes').toDate();
-          let current_assert_date = moment().add(3, 'minutes').toDate();
+          
+          // set time 30 minutes before meeting time
+          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
+          let current_assert_date = moment().subtract(30, 'minutes').toDate();  
+
+          // ---------------for testing----------------------  
+          // let date = moment().add(2, 'minutes').toDate();
+          // let current_assert_date = moment().add(3, 'minutes').toDate();
+
           let isAfter = moment(date).isAfter(current_assert_date);
           console.log('-----isAfter-----');
           console.log(isAfter);

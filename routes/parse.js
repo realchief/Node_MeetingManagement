@@ -30,21 +30,14 @@ router.get('/ical', function (req, res) {
     parseIcal = ical_data[Object.keys(ical_data)[1]]
   }
 
- // let date = moment().add(2, 'minutes').toDate();
-          // let current_assert_date = moment().add(3, 'minutes').toDate();
+  // let date = moment().add(2, 'minutes').toDate();
+  // let current_assert_date = moment().add(3, 'minutes').toDate();
+  // ---------------for testing----------------------  
 
+  console.log(moment().add('5', 'minutes').format("YYYYMMDDTHHmmssZ"))
 
-          // ---------------for testing----------------------  
-
-          console.log(moment('YYYYMMDDTHHmmssZ').add('5', 'minutes').format("YYYYMMDDTHHmmssZ"))
-
-          // parseIcal.start = moment().add(2, 'minutes').toDate()
-          // parseIcal.end = moment().add(1, 'minutes').toDate()
-
-         
-
-
-        
+  // parseIcal.start = moment().add(2, 'minutes').toDate()
+  // parseIcal.end = moment().add(1, 'minutes').toDate()
 
   console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
   console.log( 'Start:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
@@ -83,8 +76,6 @@ router.get('/ical', function (req, res) {
     organizer = "Someone"
   }
 
-  console.log('Organizer:', organizer)
-
   if ( flatRecipients.indexOf(organizer) < 0 ) {
       toArray.push( { email : organizer } )
   }
@@ -95,40 +86,60 @@ router.get('/ical', function (req, res) {
   meeting_time = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
   meeting_date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
-    console.log( '----- END EVENT FILE PARSE' );
+  
+  console.log('Organizer:', organizer, "Company Id", emailDomain)
+
+  console.log( '----- END EVENT FILE PARSE' );
+
+  let whereClause = { 'company_id' : emailDomain }
+
+  console.log( 'try and find email domain', emailDomain)
+
+  Model.User.findOne({
+      where: whereClause
+  }).then(function (user) {
+
+     if (!user) {
+        var user_id = null
+     } else {
+        var user_id = user.id
+     }
 
     Model.Meeting.create({
-      to: flatRecipients,
-      meeting_name: summary,
-      sender: organizer,
-      start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
-      end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(), 
-      start_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
-      end_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
-    }).then(function (meeting) {
-       /* ===== modify base email ======= */
-      apis.make_email_content(organizer, summary, toArray, moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(), function (msg) {
-          
-          // set time 30 minutes before meeting time
-          let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
-          let current_assert_date = moment().subtract(30, 'minutes').toDate();  
+        to: flatRecipients,
+        meeting_name: summary,
+        sender: organizer,
+        UserId : user_id,
+        start_time: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
+        end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(), 
+        start_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+        end_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+      }).then(function (meeting) {
+         /* ===== modify base email ======= */
+        apis.make_email_content(organizer, summary, toArray, moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(), function (msg) {
+            
+            // set time 30 minutes before meeting time
+            let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
+            let current_assert_date = moment().subtract(30, 'minutes').toDate();  
 
-          // ---------------for testing----------------------  
-          // let date = moment().add(2, 'minutes').toDate();
-          // let current_assert_date = moment().add(3, 'minutes').toDate();
+            // ---------------for testing----------------------  
+            // let date = moment().add(2, 'minutes').toDate();
+            // let current_assert_date = moment().add(3, 'minutes').toDate();
 
-          let isAfter = moment(date).isAfter(current_assert_date);
-          console.log('-----is this meeting in the future? -----', isAfter);
-          
-          if (isAfter == false) {
-            date = moment().add(1, 'minutes').toDate();
-          }
-          apis.schedule_email(date, msg, meeting);
+            let isAfter = moment(date).isAfter(current_assert_date);
+            console.log('-----is this meeting in the future? -----', isAfter);
+            
+            if (isAfter == false) {
+              date = moment().add(1, 'minutes').toDate();
+            }
+            apis.schedule_email(date, msg, meeting);
+    
+        })
+
+      });
   
-      })
+  })
 
-    });
-  
   console.log('email domain:', emailDomain)
   console.log('to array:', toArray)
   res.send( {

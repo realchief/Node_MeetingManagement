@@ -156,17 +156,30 @@ models.sequelize.sync().then(function() {
     // run stoped schedule job.
     Model.Meeting.findAll({
       where: {
-        is_sent: false
+        is_sent: null
       }
     }).then(function (meetings) {
       Async.each(meetings, function (meeting, cb) {
-        let date = moment(meeting.start_time).subtract(30, 'minutes');
-        apisControllers.make_email_content(meeting.organizer, meeting.summary, meeting.to, meeting.start_time, function (msg) {
+        
+        apisControllers.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
+
+          // set time 30 minutes before meeting time
+          let date = moment(meeting.start_time).subtract(30, 'minutes').toDate();   
+          let current_assert_date = moment().subtract(30, 'minutes').toDate();  
+          let isAfter = moment(date).isAfter(current_assert_date);
+          
+          if (isAfter == false) {
+            date = moment().add(1, 'minutes').toDate();
+          }
+
+           console.log('----is this meeting--', meeting.meeting_name, '-- in the future? -----', isAfter, '--- scheduling to send ---', moment(date).format("ddd, MMMM D [at] h:mma"));
+
           apisControllers.schedule_email(date, msg, meeting);
           cb(null);
         })
+      
       }, function (err) {
-        console.log('Started all stoped schedule jobs');
+        console.log('Restarted all scheduled jobs that have not been sent.');
       });
     });
     console.log('Express server listening on port ' + port);

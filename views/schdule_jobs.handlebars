@@ -26,7 +26,8 @@
 					<th>Start Time</th>
 					<th>End Time</th>
 					<th>Start Date</th>
-					<th>IS_SENT</th>
+					<th>User Id</th>
+					<th>is sent?</th>
 				</thead>
 				<tbody>
 					{{#each meetings}}
@@ -37,6 +38,7 @@
 							<td>{{moment this.start_time format="ddd, MMMM D [at] h:mma"}} </td>
 							<td>{{moment this.end_time format="ddd, MMMM D [at] h:mma"}}</td>
 							<td>{{this.start_date}}</td>
+							<td>{{this.UserId}}</td>
 							<td><input type='checkbox' {{#if this.is_sent}}checked{{/if}} readonly> </td>
 						</tr>
 					{{/each}}

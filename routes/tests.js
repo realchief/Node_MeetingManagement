@@ -17,7 +17,7 @@ var phrases = require('../schemas/phrases');
 
 router.get('/testsocial/:company', function (req, res) {
 
-  console.log('PHRASES>>>', phrases)
+  //console.log('PHRASES>>>', phrases)
 
   /*_.forEach(insights.phrases, function(phrase, index) {
     console.log('phrase>>>>', phrase.phrase, phrase.tags)
@@ -124,7 +124,7 @@ router.get('/testsocial/:company', function (req, res) {
                       });
 
 
-                       console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
+                       console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"), 'google access token:', gUser.token)
 
                       // IF FAIL, WE PROBABLY NEED TO REFRESH THE TOKEN. HOW?
 

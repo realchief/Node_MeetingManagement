@@ -21,6 +21,7 @@
 			<table>
 				<thead>
 					<th>No</th>
+					<th>To</th>
 					<th>Meeting Name</th>
 					<th>Organizer</th>
 					<th>Start Time</th>
@@ -33,6 +34,7 @@
 					{{#each meetings}}
 						<tr>
 							<td>{{@index}}</td>
+							<td style="font-size: 10px;">{{this.to}}</td>
 							<td>{{this.meeting_name}}</td>
 							<td>{{this.sender}}</td>
 							<td>{{moment this.start_time format="ddd, MMMM D [at] h:mma"}} </td>

@@ -202,8 +202,8 @@ router.get('/send', function (req, res) {
   var email = JSON.parse(JSON.stringify(EmailContent.email_lg));
 
   email.replacements.summary = "LooseGrip Email";
-  email.replacements.meeting_time = moment().format("ddd, MMMM D [at] h:mma")
-  email.replacements.meeting_date = moment().format("ddd, MMMM D")
+  email.replacements.meeting_time_for_display = moment().format("ddd, MMMM D [at] h:mma")
+  email.replacements.meeting_date_for_display = moment().format("ddd, MMMM D")
   
    var theEmail = EmailContent.processEmail(email)
 
@@ -217,7 +217,7 @@ router.get('/send', function (req, res) {
 
       subject = result.data.subject;
       subject += " " + result.data.summary + " "
-      subject += " " + "(" + result.data.meeting_date + ")"
+      subject += " " + "(" + result.data.meeting_date_for_display + ")"
 
       var toArray = [];
 
@@ -264,7 +264,7 @@ router.post('/send', function (req, res) {
       var subject = ""
       subject = result.data.subject;
       subject += " " + result.data.summary + " "
-      subject += " " + "(" + result.data.meeting_date + ")"
+      subject += " " + "(" + result.data.meeting_date_for_display + ")"
     
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
        

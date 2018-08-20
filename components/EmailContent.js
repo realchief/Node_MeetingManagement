@@ -8,8 +8,8 @@ exports.email  = {
   
   replacements : { 
     sender: 'marty@loosegrip.net',
-    meeting_time: 'Tuesday, June 12th, 2018 at 9:34 am',
-    meeting_date: 'Tue, June 12',
+    meeting_time_for_display: 'Tuesday, June 12th, 2018 at 9:34 am',
+    meeting_date_for_display: 'Tue, June 12',
     summary: 'Sales Meeting',
     subject: 'MeetBrief for',
     headline: 'Your Engagement Score is up with a big increase in time spent watching video on Facebook.',
@@ -48,8 +48,8 @@ exports.email_lg  = {
   
   replacements : { 
     sender: 'marty@loosegrip.net',
-    meeting_time: 'Tuesday, June 12th, 2018 at 9:34 am',
-    meeting_date: 'Tue, June 12',
+    meeting_time_for_display: 'Tuesday, June 12th, 2018 at 9:34 am',
+    meeting_date_for_display: 'Tue, June 12',
     summary: 'Sales Meeting',
     subject: 'MeetBrief for',
     headline: 'A drop in website conversions is dragging down your Demand Score.',
@@ -88,8 +88,8 @@ exports.email_unilever  = {
   
   replacements : { 
     sender: 'marty@loosegrip.net',
-    meeting_time: 'Tuesday, June 12th, 2018 at 9:34 am',
-    meeting_date: 'Tue, June 12',
+    meeting_time_for_display: 'Tuesday, June 12th, 2018 at 9:34 am',
+    meeting_date_for_display: 'Tue, June 12',
     summary: 'Sales Meeting',
     subject: 'MeetBrief for',
     headline: 'A jump in ecommerce revenue has led to an increase in your Demand Score.',

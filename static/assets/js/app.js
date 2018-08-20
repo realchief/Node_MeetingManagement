@@ -179,8 +179,8 @@ FT.app = {
 
 			var replacements = {
 				sender : 'Direct Tester',
-				meeting_time: todayDisplay,
-				meeting_date: todayShort,
+				meeting_time_for_display: todayDisplay,
+				meeting_date_for_display: todayShort,
 				summary: "In-Page Test",
 				subject: 'MeetBrief for',
 				headline: FT.insights.data.bucket_insights.headline,

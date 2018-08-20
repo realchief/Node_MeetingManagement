@@ -147,7 +147,6 @@ exports.processEmail = function( emailContent ) {
    emailContent.replacements.interest_change =  this.wrapWithHTML( interest_change, 'status-color' )
   emailContent.replacements.demand_change =  this.wrapWithHTML( demand_change, 'status-color' )
   emailContent.replacements.engagement_change =  this.wrapWithHTML( engagement_change, 'status-color' )
-
     
   return new Promise(function(resolve, reject) {
 

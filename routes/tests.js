@@ -174,56 +174,6 @@ router.get('/testsocial/:company', function (req, res) {
 
 
 
-router.get('/testsocial-loggedin', function (req, res) {
-
-  const Async = require('async');
-  const graph = require('fbgraph');
- //const token = fUser.token
- 
-      if (req.user) {
-
-        console.log(req.user)
-
-        const token = "EAAH7jVaPTKQBALeANgzauPUKKrqJcH1jcNPBPEz9WtLa6G6ZAAAuZAHbQmMWVQvOfqBtfP8u5nLTH9Ou9MihZAH3ZCxmZCiJDxfZABC2zkchiuxHK1Yns5fqnqfV6ejDxpwlPA7miAMieJ9gf5PJclck26fZA90JdEZD";
-
-        graph.setAccessToken(token);
-        Async.parallel({
-                getMyProfile: (done) => {
-                    graph.get("me/?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}", (err, me) => {
-                          console.log('get facebook data - me', me)
-
-                        done(err, me);
-                    });
-                },
-                getMyFriends: (done) => {
-                    graph.get("me/friends", (err, friends) => {
-                          console.log('get facebook data - friends', friends)
-
-                        done(err, friends.data);
-                    });
-                }
-            },
-            (err, data) => {
-
-               console.log('returned data>>>>', data)
-
-                res.render('fingertips', {
-                    layout: 'social-test.handlebars',
-                    user : req.user,
-                    data: JSON.stringify(data),
-                });
-
-            });
-
-    } else {
-
-      req.session.redirectTo = '/testsocial-loggedin';
-      res.redirect('/signin');
-    }
-
-})
-
-
 router.get('/testsched', function (req, res) {
 
   var testDate = moment().add(10, 'seconds').toDate();;
@@ -240,5 +190,106 @@ router.get('/testsched', function (req, res) {
   }))
 
 })
+
+
+
+router.get('/send', function (req, res) {
+
+  // ,sarah@loosegrip.net
+  var to = 'martymix@gmail.com'
+  console.log('=========== page refresh show attempt:', to)
+
+  var email = JSON.parse(JSON.stringify(EmailContent.email_lg));
+
+  email.replacements.summary = "LooseGrip Email";
+  email.replacements.meeting_time = moment().format("ddd, MMMM D [at] h:mma")
+  email.replacements.meeting_date = moment().format("ddd, MMMM D")
+  
+   var theEmail = EmailContent.processEmail(email)
+
+   theEmail.then( function(result) {
+
+    var recipients = to.split(',')
+
+    var from = "insights@meetbrief.com"
+      
+      var subject = ""
+
+      subject = result.data.subject;
+      subject += " " + result.data.summary + " "
+      subject += " " + "(" + result.data.meeting_date + ")"
+
+      var toArray = [];
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+       
+      _.forEach(recipients, function(recipient) {
+        toArray.push( { email : recipient } )
+      })
+
+     const msg = {
+        to: toArray,
+        from: {
+          email : from,
+          name: "MeetBrief"
+        },
+        subject: subject,
+        text: result.emailToSend,
+        html: result.emailToSend
+
+      };
+
+     //sgMail.send(msg);
+
+      res.send(result.emailToSend)
+ 
+   })
+
+})
+
+router.post('/send', function (req, res) {
+
+  console.log('=========== user controlled send attempt:', req.body.to)
+
+  var theEmail = EmailContent.processEmail(req.body)
+
+   theEmail.then( function(result) {
+
+      var to = req.body.to
+      var recipients = req.body.to.split(',')
+
+      var from = "insights@meetbrief.com"
+      var toArray = [];
+
+      var subject = ""
+      subject = result.data.subject;
+      subject += " " + result.data.summary + " "
+      subject += " " + "(" + result.data.meeting_date + ")"
+    
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+       
+      _.forEach(recipients, function(recipient) {
+        toArray.push( { email : recipient } )
+      })
+
+     const msg = {
+        to: toArray,
+        from: {
+          email : from,
+          name: "MeetBrief"
+        },
+        subject: subject,
+        text: result.emailToSend,
+        html: result.emailToSend
+
+      };
+
+      sgMail.send(msg);
+
+      console.log( 'email sent to: ',  to ) 
+   })
+
+})
+
 
 module.exports = router

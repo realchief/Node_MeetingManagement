@@ -19,7 +19,8 @@ var passport = require('passport');
 var auth = require('./routes/auth.js');
 var models = require('./models');
 var flash = require('connect-flash');
-var apisControllers = require('./controllers/apis');
+var apis = require('./controllers/apis');
+var emails = require('./controllers/emails');
 var Model = require('./models');
 var Async = require('async');
 var moment = require('moment');
@@ -117,8 +118,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(apisControllers.checkGoogleToken);
-app.use(apisControllers.checkFacebookToken);
+app.use(apis.checkGoogleToken);
+app.use(apis.checkFacebookToken);
 
 // route incoming requests to the correct pages
 app.use('/', routes)
@@ -161,7 +162,7 @@ models.sequelize.sync().then(function() {
     }).then(function (meetings) {
       Async.each(meetings, function (meeting, cb) {
         
-        apisControllers.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
+        emails.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
 
           // set time 30 minutes before meeting time
           let date = moment(meeting.start_time).subtract(30, 'minutes').toDate();   
@@ -173,7 +174,7 @@ models.sequelize.sync().then(function() {
           }
 
           console.log('++++ rescheduling ---', meeting.meeting_name, '--- to send at ---', moment(date).format("ddd, MMMM D [at] h:mma"), '-- in the future? -----', isAfter);
-          apisControllers.schedule_email(date, msg, meeting);
+          emails.schedule_email(date, msg, meeting);
           cb(null);
         })
       

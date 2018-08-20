@@ -8,6 +8,7 @@ var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
 var apis = require('../controllers/apis');
+var emails = require('../controllers/emails');
 
 
 var numberOfSends = 0;
@@ -38,12 +39,6 @@ router.get('/ical', function (req, res) {
 
   // parseIcal.start = moment().add(2, 'minutes').toDate()
   // parseIcal.end = moment().add(1, 'minutes').toDate()
-
-  console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
-  console.log( 'Start:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
-  console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-  console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-  console.log( 'Summary:', parseIcal.summary)
 
   /* =====  replace "to" response with calendar attendees */
       var toArray = [];
@@ -115,7 +110,7 @@ router.get('/ical', function (req, res) {
          /* ===== modify base email ======= */
 
          //organizer, summary, toArray, start_date, cb//
-        apis.make_email_content(organizer, summary, toArray, moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(), function (msg) {
+        emails.make_email_content(organizer, summary, toArray, moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(), function (msg) {
             
             // set time 30 minutes before meeting time
             let date = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
@@ -131,7 +126,7 @@ router.get('/ical', function (req, res) {
             if (isAfter == false) {
               date = moment().add(1, 'minutes').toDate();
             }
-            apis.schedule_email(date, msg, meeting);
+            emails.schedule_email(date, msg, meeting);
     
         })
 
@@ -401,7 +396,7 @@ router.post('/parse', cpUpload, function (req, res) {
                     date = moment().add(1, 'minutes').toDate();;
                   }  
                   
-                  apis.schedule_email(date, msg, meeting);
+                  emails.schedule_email(date, msg, meeting);
 
                   console.log( 'parsed email sent to: ',  toArray )
                   console.log( 'number of sends: ',  numberOfSends )

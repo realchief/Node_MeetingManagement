@@ -90,7 +90,7 @@ exports.meetingFileParse = ( meetingFile ) => {
         //console.log('Organizer:', organizer, "Company Id", emailDomain)
         console.log( '+++++++++++ END PARSE ICS FILE' );
 
-        resolve ( {
+        return resolve ( {
             'recipients' : flatRecipients,
             'sendgrid_recipients' : toArray,
             'organizer' : organizer,
@@ -100,7 +100,8 @@ exports.meetingFileParse = ( meetingFile ) => {
             'meeting_date_for_display' : meeting_date_for_display,
             'meeting_start' : moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_end' : moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(),
-            'insight_type' : insightType
+            'insight_type' : insightType,
+            'type' : 'request'
         } )
 
     })
@@ -128,24 +129,21 @@ exports.inboundParse = ( req ) => {
 
 
      if ( fromEmail.indexOf('bounce') >= 0 ) {
-      console.log('******************')
-      console.log('bounce! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
-      console.log('******************')
-      resolve();
+      console.log('!!!!!!!!!!!!! ', 'bounce! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      //resolve( { type : 'cancel'} );
+      return resolve();
     }
 
     if ( subject.indexOf('cancelled') >= 0 ) {
-      console.log('******************')
-      console.log('cancelled subject! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
-      console.log('******************')
-      resolve();
+      console.log('!!!!!!!!!!!!! ','cancelled subject! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      //resolve( { type : 'cancel'} );
+      return resolve();
     }
 
     if ( subject.indexOf('canceled') >= 0 ) {
-      console.log('******************')
-      console.log('cancelled subject! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
-      console.log('******************')
-      resolve();
+      console.log('!!!!!!!!!!!!! ', 'cancelled subject! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      //resolve( { type : 'cancel'} );
+      return resolve();
     }
     
      /* ===== default values ======= */
@@ -203,14 +201,14 @@ exports.inboundParse = ( req ) => {
         // Resolve with the ICS information
         var icsInfo = thisModule.meetingFileParse(attachmentsList[attachmentsList.length-1]) 
         icsInfo.then( function(meetingInfo) {
-            resolve ( meetingInfo )
+            return resolve ( meetingInfo )
         } )
 
     } else {
 
         // Resolve with the regular email information
 
-        resolve ( {
+        return resolve ( {
             'attachmentsList' : attachmentsList,
             'recipients' : flatRecipients,
             'sendgrid_recipients' : toArray,
@@ -221,7 +219,8 @@ exports.inboundParse = ( req ) => {
             'meeting_date_for_display' : meeting_date_for_display,
             'meeting_start' : moment().toDate(),
             'meeting_end' : moment().toDate(),
-            'insight_type' : insightType
+            'insight_type' : insightType,
+            'type' : 'request'
         } )
 
     }
@@ -238,7 +237,7 @@ exports.schedule_email = (date, msg, meeting) => {
     schedule.scheduleJob(date, function(data) {
 
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail.send(data.msg);           
+        //sgMail.send(data.msg);           
         console.log('---- send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent on', '-----', moment().format("ddd, MMMM D [at] h:mma"))
         data.meeting.updateAttributes({
           is_sent: true

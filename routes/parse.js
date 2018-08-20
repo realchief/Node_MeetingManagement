@@ -140,6 +140,8 @@ router.post('/parse', cpUpload, function (req, res) {
  
   getMeetingInfo.then( function(meetingInfo) {
 
+    console.log('meeting info', meetingInfo)
+
      if ( !meetingInfo ) {
       res.sendStatus(200);
       return
@@ -195,6 +197,7 @@ router.post('/parse', cpUpload, function (req, res) {
               // ---- schedule the email for sending
               emails.schedule_email(date, msg, meeting);
 
+              res.sendStatus(200);
              console.log('inbound parse end ===============================')
       
           })

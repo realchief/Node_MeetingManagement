@@ -1,24 +1,28 @@
 'use strict';
 const sgMail = require('@sendgrid/mail');
 const schedule = require('node-schedule');
+const moment = require("moment");
 
 exports.schedule_email = (date, msg, meeting) => {
 
-     console.log('---- schedule email ---', meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'to send at', '-----', moment(date).format("ddd, MMMM D [at] h:mma"))
-      
+    console.log('---- schedule email ---', meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'to send at', '-----', moment(date).format("ddd, MMMM D [at] h:mma"))
 
     schedule.scheduleJob(date, function(data) {
+
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail.send(data.msg);           
+        //sgMail.send(data.msg);           
         console.log('---- send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent on', '-----', moment().format("ddd, MMMM D [at] h:mma"))
         data.meeting.updateAttributes({
           is_sent: true
         }).then(function (result) {
           console.log('---- marked as sent: ', result.meeting_name);
         });
+
       }.bind(null,{
+
         msg: msg,
         meeting: meeting
+
       }));
 }
 

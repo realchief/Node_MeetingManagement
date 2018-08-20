@@ -98,6 +98,7 @@ router.get('/ical', function (req, res) {
      }
 
     Model.Meeting.create({
+
         to: flatRecipients,
         meeting_name: summary,
         sender: organizer,
@@ -106,6 +107,7 @@ router.get('/ical', function (req, res) {
         end_time: moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(), 
         start_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
         end_date: moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+      
       }).then(function (meeting) {
          /* ===== modify base email ======= */
 
@@ -126,7 +128,18 @@ router.get('/ical', function (req, res) {
             if (isAfter == false) {
               date = moment().add(1, 'minutes').toDate();
             }
+
             emails.schedule_email(date, msg, meeting);
+
+            res.send( {
+              'message' : 'ical endpoint tester',
+              'email domain:' : emailDomain,
+              'to array:' : toArray,
+              'company id' : organizer,
+              'user id' : user_id,
+              'scheduled for' : moment(date).format("dddd, MMMM Do YYYY, h:mma")
+
+            })
     
         })
 
@@ -134,20 +147,18 @@ router.get('/ical', function (req, res) {
   
   })
 
-  console.log('email domain:', emailDomain)
-  console.log('to array:', toArray)
-  res.send( {
-    'test' : 'test'
-  })
+  
 })
 
 
 router.get('/parse', function (req, res) {
 
   console.log('PARSE EMAIL Get noop ===============================')
-  res.send('this is just a post endpoint')
+  res.send('this is just a post endpoint!')
 
 })
+
+
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {

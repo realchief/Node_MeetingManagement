@@ -154,6 +154,10 @@ app.use(function(req, res, next){
 models.sequelize.sync().then(function() {
   var port = process.env.PORT || 3001;
   var server = http.createServer(app).listen(port, function() {
+
+    console.log('\n', '---- restarted server ----', moment().format("ddd, MMMM D [at] h:mma"), '\n');
+         
+
     // run stoped schedule job.
     Model.Meeting.findAll({
       where: {
@@ -165,15 +169,25 @@ models.sequelize.sync().then(function() {
         emails.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
 
           // set time 30 minutes before meeting time
-          let date = moment(meeting.start_time).subtract(30, 'minutes').toDate();   
+          let current_date = moment().toDate();  
+          let date = moment(meeting.start_time, 'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
           let current_assert_date = moment().subtract(30, 'minutes').toDate();  
-          let isAfter = moment(date).isAfter(current_assert_date);
           
-          if (isAfter == false) {
+          // if scheduled date is after the (current time - 30 mimutes)
+          let isAfter = moment(date).isAfter(current_assert_date);
+
+          // if the current time is after the scheduled date
+          let scheduledIsAfter = moment(current_date).isAfter(date);
+
+          console.log('==== current date', moment(current_date).format("ddd, MMMM D [at] h:mma"), 'schedule date', moment(date).format("ddd, MMMM D [at] h:mma"), 'assert_date', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
+
+          if ( isAfter == false || scheduledIsAfter == true ) {
+            isAfter = false
             date = moment().add(1, 'minutes').toDate();
           }
 
           console.log('++++ rescheduling ---', meeting.meeting_name, '--- to send at ---', moment(date).format("ddd, MMMM D [at] h:mma"), '-- in the future? -----', isAfter);
+          
           emails.schedule_email(date, msg, meeting);
           cb(null);
         })

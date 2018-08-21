@@ -9,15 +9,22 @@ exports.meetingFileParse = ( meetingFile ) => {
 
     return new Promise(function(resolve, reject) {
 
-        console.log( '+++++++++++ Parse ICS file', meetingFile );
+        console.log( "\n", '+++++++++++ Parse ICS file', meetingFile, "\n" );
 
         var ical_data = ical.parseFile(meetingFile)  
         var parseIcal = ical_data[Object.keys(ical_data)[0]]
         var insightType = "default"
+        var requestType = "request"
+        var status = "none"
 
         if ( parseIcal.type == "VTIMEZONE") {
+            // can be VEVENT or VTIMEZONE
             console.log("**** FROM ICAL Object")
             parseIcal = ical_data[Object.keys(ical_data)[1]]
+        }
+
+        if ( parseIcal.status ) {
+          status = parseIcal.status.toLowerCase();
         }
 
         // let date = moment().add(2, 'minutes').toDate();
@@ -27,10 +34,11 @@ exports.meetingFileParse = ( meetingFile ) => {
         // parseIcal.start = moment().add(2, 'minutes').toDate()
         // parseIcal.end = moment().add(1, 'minutes').toDate()
 
+        //console.log( 'ics data:', parseIcal )
         console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
-        console.log( 'Start Unformatted:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
+        //console.log( 'Start Unformatted:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
         console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-        console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+        //console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
         console.log( 'Summary:', parseIcal.summary)
 
         /* =====  get calendar attendees */
@@ -87,8 +95,12 @@ exports.meetingFileParse = ( meetingFile ) => {
         var meeting_time_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
         var meeting_date_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
+        if ( status == "cancelled" || status == "canceled" || status == "cancel" ) {
+          requestType = "cancel";
+        }
+
         //console.log('Organizer:', organizer, "Company Id", emailDomain)
-        console.log( '+++++++++++ END PARSE ICS FILE' );
+        console.log("\n", '+++++++++++ done parsing ics file', "\n" );
 
         return resolve ( {
             'recipients' : flatRecipients,
@@ -101,7 +113,8 @@ exports.meetingFileParse = ( meetingFile ) => {
             'meeting_start' : moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_end' : moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(),
             'insight_type' : insightType,
-            'type' : 'request'
+            'request_type' : requestType,
+            'status' : status
         } )
 
     })
@@ -126,24 +139,27 @@ exports.inboundParse = ( req ) => {
     var num_attachments = req.body.attachments;
     var attachmentInfo = req.body['attachment-info']
     var insightType = "default"
+    var requestType = "request"
 
-
-     if ( fromEmail.indexOf('bounce') >= 0 ) {
-      console.log('!!!!!!!!!!!!! ', 'bounce! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+     if ( fromEmail.toLowerCase().indexOf('bounce') >= 0 ) {
+      console.log('!!!!!!!!!!!!! ', 'bounce in from email', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      requestType = "bounce"
       //resolve( { type : 'cancel'} );
-      return resolve();
+      //return resolve();
     }
 
-    if ( subject.indexOf('cancelled') >= 0 ) {
-      console.log('!!!!!!!!!!!!! ','cancelled subject! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+    if ( subject.toLowerCase().indexOf('cancelled') >= 0 ) {
+      console.log('!!!!!!!!!!!!! ','cancelled in subject', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      requestType = "cancel"
       //resolve( { type : 'cancel'} );
-      return resolve();
+      //return resolve();
     }
 
-    if ( subject.indexOf('canceled') >= 0 ) {
-      console.log('!!!!!!!!!!!!! ', 'cancelled subject! do not send!!', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+    if ( subject.toLowerCase().indexOf('canceled') >= 0 ) {
+      console.log('!!!!!!!!!!!!! ', 'cancelled in subject', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      requestType = "cancel"
       //resolve( { type : 'cancel'} );
-      return resolve();
+      //return resolve();
     }
     
      /* ===== default values ======= */
@@ -220,7 +236,8 @@ exports.inboundParse = ( req ) => {
             'meeting_start' : moment().toDate(),
             'meeting_end' : moment().toDate(),
             'insight_type' : insightType,
-            'type' : 'request'
+            'request_type' : 'request',
+            'status' : 'add'
         } )
 
     }
@@ -232,7 +249,7 @@ exports.inboundParse = ( req ) => {
 
 exports.schedule_email = (date, msg, meeting) => {
 
-    console.log('---- schedule email ---', meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'to send at', '-----', moment(date).format("ddd, MMMM D [at] h:mma"))
+    console.log('---- schedule email ---', meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'to send at', '-----', moment(date).format("ddd, MMMM D [at] h:mma"), '\n')
 
     schedule.scheduleJob(date, function(data) {
 

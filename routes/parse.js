@@ -128,7 +128,7 @@ var cpUpload = upload.fields([
 
 router.post('/parse', cpUpload, function (req, res) {
 
-  console.log('inbound parse start ===============================')
+  console.log('\n', '=== inbound parse start ===============================', '\n')
 
   if (!req.body) {
     console.log('no body. thats wacky')
@@ -140,14 +140,24 @@ router.post('/parse', cpUpload, function (req, res) {
  
   getMeetingInfo.then( function(meetingInfo) {
 
-    console.log('meeting info', meetingInfo)
+    console.log('------ meeting info', '\n', meetingInfo)
 
      if ( !meetingInfo ) {
       res.sendStatus(200);
+      console.log('=== inbound parse end ===============================', '\n')
       return
     }
 
     let whereClause = { 'company_id' : meetingInfo.emailDomain }
+
+
+    if ( meetingInfo.request_type == "cancel") {
+      console.log('!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
+        res.sendStatus(200);
+        console.log('=== inbound parse end ===============================', '\n')
+        return
+    }
+ 
 
     Model.User.findOne({
 
@@ -179,26 +189,30 @@ router.post('/parse', cpUpload, function (req, res) {
           emails.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
               
               // set time 30 minutes before meeting time
-              let date = moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
+              let current_date = moment().toDate();  
+              let date = moment(meetingInfo.meeting_start,'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
               let current_assert_date = moment().subtract(30, 'minutes').toDate();  
 
-              // ---------------for testing----------------------  
-              // let date = moment().add(2, 'minutes').toDate();
-              // let current_assert_date = moment().add(3, 'minutes').toDate();
-
-              // ---- if meeting is in the past, send right away
+               // if scheduled date is after the (current time - 30 mimutes)
               let isAfter = moment(date).isAfter(current_assert_date);
-              console.log('-----is this meeting in the future? -----', isAfter);
+
+               // if the current time is after the scheduled date
+              let scheduledIsAfter = moment(current_date).isAfter(date);
               
-              if (isAfter == false) {
+               console.log('==== current date', moment(current_date).format("ddd, MMMM D [at] h:mma"), 'schedule date', moment(date).format("ddd, MMMM D [at] h:mma"), 'assert_date', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
+
+               if ( isAfter == false || scheduledIsAfter == true ) {
+                isAfter = false
                 date = moment().add(1, 'minutes').toDate();
               }
 
+             console.log('----- is this meeting in the future? -----', isAfter);
+             
               // ---- schedule the email for sending
               emails.schedule_email(date, msg, meeting);
 
               res.sendStatus(200);
-             console.log('inbound parse end ===============================')
+             console.log('=== inbound parse end ===============================', '\n')
       
           })
 

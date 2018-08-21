@@ -5,8 +5,52 @@ let Model = require('../models');
 let Async = require('async');
 let apiControllers = require('../controllers/apis');
 
-router.get('/',  function (req, res) {
 
+var google_data = function (user, data, done) {
+    console.log('params: ', data);
+    Async.waterfall([
+        function (cb) {
+            user.getGoogle().then(function (gUser) {
+                if (gUser) {
+                    cb(null, gUser)
+                }
+                else cb({error: 'can not find the gUser'}, {})
+            });
+        }, function (gUser, cb) {
+            if (data.view_id && data.account_id && data.property_id) {
+                gUser.updateAttributes({
+                    view_id: data.view_id,
+                    account_id: data.account_id,
+                    property_id: data.property_id
+                }).then(function (updatedUser) {
+                    cb(null, updatedUser);
+                });
+            }
+            else {
+                cb(null, gUser);
+            }
+            
+        }, function (gUser, cb) {
+            if (gUser.view_id && gUser.property_id && gUser.account_id) {
+                apiControllers.getGoogleMatrics(gUser, function (err, data) {
+                    cb(null, {metric_data: data, dialog_data: null});
+                });
+            }
+            else {
+                apiControllers.getGoogleSummaries(gUser, function (err, data) {
+                    cb(null, {dialog_data: data, metric_data: null})
+                });
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            console.log(err.error);
+        }
+        done(result);
+    })
+}
+
+router.get('/',  function (req, res) {
     var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
     
     if ( redirectTo !== "/") {
@@ -18,21 +62,13 @@ router.get('/',  function (req, res) {
     if (req.user) {
         Async.parallel({
             google_data: function (cb) {
-                req.user.getGoogle().then(function (gUser) {
-                    if (gUser) {
-                        if (gUser.view_id && gUser.property_id && gUser.account_id) {
-                            apiControllers.getGoogleMatrics(gUser, function (err, data) {
-                                cb(null, {metric_data: data, dialog_data: null});
-                            });
-                        }
-                        else {
-                            apiControllers.getSummaries(gUser, function (err, data) {
-                                cb(null, {dialog_data: data, metric_data: null})
-                            });
-                        }
-                    }
-                    else cb(null, false);
-                });
+                google_data(req.user, {
+                    view_id: req.param('view_id'),
+                    account_id: req.param('account_id'),
+                    property_id: req.param('property_id')
+                }, function (data) {
+                    cb(null, data);
+                })
             },
             facebook_data: function (cb) {
                 req.user.getFacebook().then(function (fUser) {
@@ -172,5 +208,6 @@ router.get('/allschedule', function (req, res, next) {
     }
     else res.redirect('/signin');
 });
+
 
 module.exports = router

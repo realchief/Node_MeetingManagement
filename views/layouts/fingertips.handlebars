@@ -80,24 +80,31 @@
 		
 
 </div>
+{{#if (hasOne google_data 'matric_data')}}
+	{{google_data.metric_data}}
+{{/if}}
 {{#if (hasOwn google_data 'dialog_data')}}
 	<div class="select-google-view modal">
 		<div class="modal-header">
-			Select Google View
+			Select Google View				
 		</div>
 		<div class="modal-body">
-			<ul>
-				{{#each google_data.dialog_data as account}}
-					{{account}}
-					{{#each account.web_properties as |property|}}
-						{{#each property.views as |view|}}
+			
+			{{#each google_data.dialog_data.users as |account|}}
+				<h4> {{ account.account_name }}</h4>
+				{{#each account.web_properties as |property|}}
+					<h5> {{ property.property_name }}</h5>
+					<ul class="views-list">
+					{{#each property.views as |view|}}
+						<li>
 							<a href='/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
 								{{view.view_name}}
 							</a>
-						{{/each}}
+						</li>
 					{{/each}}
+					</ul>
 				{{/each}}
-			</ul>
+			{{/each}}
 		</div>
 		<div class="modal-footer">
 

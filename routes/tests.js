@@ -218,10 +218,7 @@ router.get('/testsocial/:company', function (req, res) {
                       });
 
                       analyticsreporting.reports.batchGet({
-                        "headers": {
-                            "Content-Type": "application/json"
-                        },
-                        "resource": {
+                        "requestBody": {
                           reportRequests: [{
                             viewId: gUser.view_id,
                             dateRanges: dateRanges,

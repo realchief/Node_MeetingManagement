@@ -80,7 +80,7 @@
 		
 
 </div>
-{{#if (hasOne google_data 'matric_data')}}
+{{#if (hasOwn google_data 'matric_data')}}
 	{{google_data.metric_data}}
 {{/if}}
 {{#if (hasOwn google_data 'dialog_data')}}

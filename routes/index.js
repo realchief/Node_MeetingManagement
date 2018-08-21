@@ -155,7 +155,7 @@ router.get('/schedule', function (req, res, next) {
 });
 
 router.get('/allschedule', function (req, res, next) {
-    if (req.user) {
+    if (req.user) {        
         Model.Meeting.findAll({}).then(function (meetings) {
             res.render('schdule_jobs', {
                 meetings: meetings,

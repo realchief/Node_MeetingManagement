@@ -96,6 +96,16 @@ exports.getGoogleMatrics = (gUser, cb) => {
             });
         }
     }, function (err, data) {
+        console.log('Google Users properties: ', 
+            data.users.data.items[1].webProperties[0].id, 
+            data.users.data.items[1].webProperties[0].internalWebPropertyId, 
+            data.users.data.items[1].webProperties[0].name,
+            data.users.data.items[1].webProperties[0].websiteUrl
+        );
+
+        console.log('Google Users account: ', 
+            data.users.data.items[1]
+        );
         cb(null, data)
     });
     

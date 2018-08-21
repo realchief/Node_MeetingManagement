@@ -14,7 +14,7 @@ var google_data = function (user, data, done) {
                 if (gUser) {
                     cb(null, gUser)
                 }
-                else cb({error: 'can not find the gUser'}, {})
+                else cb({error: 'can not find the gUser'}, false)
             });
         }, function (gUser, cb) {
             if (data.view_id && data.account_id && data.property_id) {

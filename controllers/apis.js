@@ -11,8 +11,8 @@ const schedule = require('node-schedule');
 const moment = require('moment');
 
 let oauth2Client = new OAuth2(
-    auth.googleAuth.reportRequestsID,
-    auth.googleAuth.reportRequestsSecret,
+    auth.googleAuth.clientID,
+    auth.googleAuth.clientSecret,
     auth.googleAuth.callbackURL
 );
 

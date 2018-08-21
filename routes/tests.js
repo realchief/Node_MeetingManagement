@@ -104,6 +104,8 @@ router.get('/testsocial/:company', function (req, res) {
                         return
                       }
 
+                      // Set the global Google credentials for the user //
+
                       let gUser = results.retrieveGoogleUser
 
                       let oauth2Client = new OAuth2(
@@ -261,7 +263,7 @@ router.get('/testsocial/:company', function (req, res) {
                           
                           }, (err, results) => {
 
-                                  console.log('METRIC PULL RESULTS', results)
+                                  //console.log('METRIC PULL RESULTS', results)
                                   
                                   done(null, {
                                     accountSummaries : results.accountSummaries,

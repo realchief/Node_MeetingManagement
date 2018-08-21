@@ -129,7 +129,12 @@ router.get('/testsocial/:company', function (req, res) {
                       // IF FAIL, WE PROBABLY NEED TO REFRESH THE TOKEN. HOW?
 
                       /* ACCOUNTS ==== */
-                      google.analytics('v3').management.accountSummaries.list(function (err, response) {
+
+                      const analytics = google.analytics({
+                        version: 'v3',
+                      });
+
+                      analytics.management.accountSummaries.list(function (err, response) {
 
                           if (err) {
                             console.log('Google API error:', err);
@@ -148,7 +153,7 @@ router.get('/testsocial/:company', function (req, res) {
                       });
 
                       /* GOALS ==== */
-                      google.analytics('v3').management.goals.list({
+                      analytics.management.goals.list({
                         'accountId': gUser.account_id,
                         'webPropertyId': gUser.property_id,
                         'profileId': gUser.view_id },
@@ -197,6 +202,11 @@ router.get('/testsocial/:company', function (req, res) {
 
 
                       /* METRICS ==== */
+
+                      const analyticsreporting = google.analyticsreporting({
+                        version: 'v4',
+                      });
+
                       var currentSince = moment('2018-08-14').format( "YYYY-MM-DD" );
                       var currentUntil = moment('2018-08-20').format( "YYYY-MM-DD" );
                       var comparedSince = moment( '2018-08-07' ).format( "YYYY-MM-DD" );
@@ -212,10 +222,6 @@ router.get('/testsocial/:company', function (req, res) {
                         endDate: comparedUntil
                       }
                       ]
-
-                      const analyticsreporting = google.analyticsreporting({
-                        version: 'v4',
-                      });
 
                       analyticsreporting.reports.batchGet({
                         "requestBody": {

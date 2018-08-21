@@ -71,10 +71,12 @@ module.exports = function(passport) {
                         cb(null, fbUser);
                     });
                 }, function (fbUser, cb) {
-                    if (fbUser) {
-                        cb(null, fbUser)
-                    }
-                    else {
+                    //if (fbUser) {
+                        // console.log('>>> found an existing facebook user')
+                        // lets add this to the database anyway
+                        // cb(null, fbUser)
+                    //}
+                   // else {
 
                         let newFBUser = {
                             token       : token,
@@ -90,7 +92,7 @@ module.exports = function(passport) {
                             }
                             else cb(null, fbUser);
                         });
-                    }
+                   // }
                 }, function (fbUser, cb) {
                     if (req.user) {
                         cb(null, req.user, fbUser);
@@ -137,13 +139,15 @@ module.exports = function(passport) {
                             profile_id: profile.id
                         }
                     }).then(function(goUser) {
+
                         cb(null, goUser);
                     });
                 }, function (goUser, cb) {
-                    if (goUser) {
-                        cb(null, goUser);
-                    }
-                    else {
+                    //if (goUser) {
+                    //    console.log('>>> found an existing google user')
+                    //    cb(null, goUser);
+                   // }
+                    //else {
                         let newGoUser = {
                             token           : token,
                             refresh_token   : refreshToken,
@@ -161,7 +165,7 @@ module.exports = function(passport) {
                             }
                             else cb(null, goUser);
                         });
-                    }
+                    //}
                 }, function (goUser, cb) {
                     if (req.user) {
                         cb(null, req.user, goUser);

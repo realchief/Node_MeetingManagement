@@ -21,20 +21,26 @@
 			<table>
 				<thead>
 					<th>No</th>
+					<th>To</th>
 					<th>Meeting Name</th>
 					<th>Organizer</th>
 					<th>Start Time</th>
 					<th>End Time</th>
-					<th>IS_SENT</th>
+					<th>Start Date</th>
+					<th>User Id</th>
+					<th>is sent?</th>
 				</thead>
 				<tbody>
 					{{#each meetings}}
 						<tr>
 							<td>{{@index}}</td>
+							<td style="font-size: 10px;">{{this.to}}</td>
 							<td>{{this.meeting_name}}</td>
 							<td>{{this.sender}}</td>
-							<td>{{this.start_time}}</td>
-							<td>{{this.end_time}}</td>
+							<td>{{moment this.start_time format="ddd, MMMM D [at] h:mma"}} </td>
+							<td>{{moment this.end_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td>{{this.start_date}}</td>
+							<td>{{this.UserId}}</td>
 							<td><input type='checkbox' {{#if this.is_sent}}checked{{/if}} readonly> </td>
 						</tr>
 					{{/each}}

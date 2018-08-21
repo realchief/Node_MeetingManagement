@@ -68,6 +68,7 @@ router.get('/',  function (req, res) {
     if (req.user) {
         Async.parallel({
             google_data: function (cb) {
+
                 google_data(req.user, {
                     view_id: req.param('view_id'),
                     account_id: req.param('account_id'),
@@ -75,11 +76,21 @@ router.get('/',  function (req, res) {
                 }, function (data) {
                     cb(null, data);
                 })
+
+                req.user.getGoogle().then(function (gUser) {
+                    if (gUser) {
+                         apiControllers.getGoogleMetrics(gUser, function (err, data) {
+                             cb(null, data);
+                         });
+                    }
+                    else cb(null, false);
+                });
             },
+            
             facebook_data: function (cb) {
                 req.user.getFacebook().then(function (fUser) {
                     if (fUser) {
-                        apiControllers.getFacebook(fUser, function (err, data) {
+                        apiControllers.getFacebookMetrics(fUser, function (err, data) {
                             cb(null, data);
                         });
                     }
@@ -204,15 +215,15 @@ router.get('/schedule', function (req, res, next) {
 });
 
 router.get('/allschedule', function (req, res, next) {
-    if (req.user) {        
+    /*if (req.user) {*/
         Model.Meeting.findAll({}).then(function (meetings) {
             res.render('schdule_jobs', {
                 meetings: meetings,
                 layout: false
             })
         });
-    }
-    else res.redirect('/signin');
+   /* }
+    else res.redirect('/signin');*/
 });
 
 

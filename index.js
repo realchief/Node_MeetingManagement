@@ -13,11 +13,14 @@ var bodyParser = require('body-parser');
 var helpers = require('./helpers');
 var routes = require('./routes/index');
 var parseRoutes = require('./routes/parse');
+var testRoutes = require('./routes/tests');
+
 var passport = require('passport');
 var auth = require('./routes/auth.js');
 var models = require('./models');
 var flash = require('connect-flash');
-var apisControllers = require('./controllers/apis');
+var apis = require('./controllers/apis');
+var emails = require('./controllers/emails');
 var Model = require('./models');
 var Async = require('async');
 var moment = require('moment');
@@ -48,7 +51,10 @@ var app = express();
 app.engine('handlebars', exphbs({
     defaultLayout: process.env.HOME_VERSION,
     layoutsdir: __dirname + '/views/layouts/',
-    partialsdir: __dirname + '/views/partials/'
+    partialsdir: __dirname + '/views/partials/',
+    helpers : {
+      moment : require('helper-moment')
+    }
 }));
 app.set('view engine', 'handlebars');
 
@@ -110,12 +116,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(apisControllers.checkGoogleToken);
-app.use(apisControllers.checkFacebookToken);
+app.use(apis.checkGoogleToken);
+app.use(apis.checkFacebookToken);
 
 // route incoming requests to the correct pages
 app.use('/', routes)
 app.use('/', parseRoutes)
+app.use('/', testRoutes)
 
 // route incoming requests to the correct pages
 app.use('/auth', auth);
@@ -145,20 +152,46 @@ app.use(function(req, res, next){
 models.sequelize.sync().then(function() {
   var port = process.env.PORT || 3001;
   var server = http.createServer(app).listen(port, function() {
+
+    console.log('\n', '---- restarted server ----', moment().format("ddd, MMMM D [at] h:mma"), '\n');
+         
+
     // run stoped schedule job.
     Model.Meeting.findAll({
       where: {
-        is_sent: false
+        is_sent: null
       }
     }).then(function (meetings) {
       Async.each(meetings, function (meeting, cb) {
-        let date = moment(meeting.start_time).subtract(30, 'minutes');
-        apisControllers.make_email_content(meeting.organizer, meeting.summary, meeting.to, meeting.start_time, function (msg) {
-          apisControllers.schedule_email(date, msg, meeting);
+        
+        emails.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
+
+          // set time 30 minutes before meeting time
+          let current_date = moment().toDate();  
+          let date = moment(meeting.start_time, 'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
+          let current_assert_date = moment().subtract(30, 'minutes').toDate();  
+          
+          // if scheduled date is after the (current time - 30 mimutes)
+          let isAfter = moment(date).isAfter(current_assert_date);
+
+          // if the current time is after the scheduled date
+          let scheduledIsAfter = moment(current_date).isAfter(date);
+
+          console.log('==== current date', moment(current_date).format("ddd, MMMM D [at] h:mma"), 'schedule date', moment(date).format("ddd, MMMM D [at] h:mma"), 'assert_date', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
+
+          if ( isAfter == false || scheduledIsAfter == true ) {
+            isAfter = false
+            date = moment().add(1, 'minutes').toDate();
+          }
+
+          console.log('++++ rescheduling ---', meeting.meeting_name, '--- to send at ---', moment(date).format("ddd, MMMM D [at] h:mma"), '-- in the future? -----', isAfter);
+          
+          emails.schedule_email(date, msg, meeting);
           cb(null);
         })
+      
       }, function (err) {
-        console.log('Started all stoped schedule jobs');
+          console.log('Restarted all scheduled jobs that have not been sent.');
       });
     });
     console.log('Express server listening on port ' + port);

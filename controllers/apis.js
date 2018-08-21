@@ -16,26 +16,25 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
+exports.getFacebookMetrics = (fUser, cb) => {
+        const token = fUser.token
+        graph.setAccessToken(token);
+        Async.parallel({
+                getMyProfile: (done) => {
+                    graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, me) => {
+                       //   console.log('get facebook data - me', me)
 
-exports.getFacebook = (fUser, cb) => {
-    const token = fUser.token
-    graph.setAccessToken(token);
-    Async.parallel({
-            getMyProfile: (done) => {
-                graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, me) => {
-                    //   console.log('get facebook data - me', me)
+                        done(err, me);
+                    });
+                },
+                getMyFriends: (done) => {
+                    graph.get(`${fUser.profile_id}/friends`, (err, friends) => {
+                        //  console.log('get facebook data - friends', friends)
 
-                    done(err, me);
-                });
+                        done(err, friends.data);
+                    });
+                }
             },
-            getMyFriends: (done) => {
-                graph.get(`${fUser.profile_id}/friends`, (err, friends) => {
-                    //  console.log('get facebook data - friends', friends)
-
-                    done(err, friends.data);
-                });
-            }
-        },
         (err, data) => {
             cb(null, data);
         });
@@ -575,75 +574,3 @@ exports.checkFacebookToken = (req, res, next) => {
         } else return next();
     });
 };
-
-exports.schedule_email = (date, msg, meeting) => {
-    schedule.scheduleJob(date, function (data) {
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        //sgMail.send(data.msg);           
-        console.log('send scheduled email', moment().toDate())
-        data.meeting.updateAttributes({
-            is_sent: true
-        }).then(function (result) {
-            console.log('sent: ', result);
-            console.log('schuduled current time', moment().toDate());
-        });
-    }.bind(null, {
-        msg: msg,
-        meeting: meeting
-    }));
-}
-
-exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
-    const EmailContent = require('../components/EmailContent.js');
-    let sender = organizer
-    let emailDomain = organizer.replace(/.*@/, "").split('.')[0];
-    let meeting_time = moment(start_date).format("ddd, MMMM D [at] h:mma")
-    let meeting_date = moment(start_date).format("ddd, MMMM D")
-    switch (emailDomain) {
-        case 'loosegrip':
-            var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
-            break
-
-        case 'presidio':
-            var email = JSON.parse(JSON.stringify(EmailContent.email));
-            break
-
-        case 'unilever':
-            var email = JSON.parse(JSON.stringify(EmailContent.email_unilever))
-            break
-
-        default:
-            var email = JSON.parse(JSON.stringify(EmailContent.email));
-            break
-    }
-
-    email.replacements.sender = sender
-    email.replacements.summary = summary
-    email.replacements.meeting_time = meeting_time
-    email.replacements.meeting_date = meeting_date
-
-    var theEmail = EmailContent.processEmail(email)
-
-    theEmail.then(function (result) {
-
-        var from = "insights@meetbrief.com"
-
-        var subject = ""
-        subject = result.data.subject;
-        subject += " " + result.data.summary + " "
-        subject += " " + "(" + result.data.meeting_date + ")"
-
-        const msg = {
-            to: toArray,
-            from: {
-                email: from,
-                name: "MeetBrief"
-            },
-            subject: subject,
-            text: result.emailToSend,
-            html: result.emailToSend
-        };
-        cb(msg);
-
-    });
-}

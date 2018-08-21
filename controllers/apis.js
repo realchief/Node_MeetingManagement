@@ -38,7 +38,7 @@ exports.getFacebook = (fUser, cb) => {
             });
 };
 
-exports.getGoogleMatrics = (gUser, cb) => {
+exports.getSummaries = (gUser, cb) => {
 
     oauth2Client.credentials = {
         refresh_token: gUser.refresh_token,
@@ -64,7 +64,32 @@ exports.getGoogleMatrics = (gUser, cb) => {
             
                 if (response && !response.error) {
                   // console.log('get google data - account summary', response.data)
-                    done(null, response);
+                    var data = [];
+                    for (var i = 0;i < response.data.items.length;i ++) {
+                        var datum = {
+                            account_name: response.data.items[i].name,
+                            account_id: response.data.items[i].id,
+                            web_properties: []
+                        };
+                        for (var j = 0; j < response.data.items[i].webProperties.length;j ++ ) {
+                            var property  = {
+                                property_id: response.data.items[i].webProperties[j].id,
+                                internal_id: response.data.items[i].webProperties[j].internalWebPropertyId,
+                                name: response.data.items[i].webProperties[j].name,
+                                views: []
+                            }
+                            for (var k = 0; k < response.data.items[i].webProperties[j].profiles.length;k ++ ) {
+                                var view = {
+                                    view_id: response.data.items[i].webProperties[j].profiles[k].id,
+                                    view_name: response.data.items[i].webProperties[j].profiles[k].name
+                                };
+                                property.views.push(view);
+                            }
+                            datum.web_properties.push(property);
+                        }
+                        data.push(datum);
+                    }
+                    done(null, data);
                 } else {
                   // console.log('get google data - account summary error', response.data)
                     done(null, response);
@@ -96,15 +121,8 @@ exports.getGoogleMatrics = (gUser, cb) => {
             });
         }
     }, function (err, data) {
-        console.log('Google Users properties: ', 
-            data.users.data.items[1].webProperties[0].id, 
-            data.users.data.items[1].webProperties[0].internalWebPropertyId, 
-            data.users.data.items[1].webProperties[0].name,
-            data.users.data.items[1].webProperties[0].websiteUrl
-        );
-
-        console.log('Google Users account: ', 
-            data.users.data.items[1]
+        console.log('Google Users ', 
+            data.users
         );
         cb(null, data)
     });

@@ -20,9 +20,16 @@ router.get('/',  function (req, res) {
             google_data: function (cb) {
                 req.user.getGoogle().then(function (gUser) {
                     if (gUser) {
-                         apiControllers.getGoogleMatrics(gUser, function (err, data) {
-                             cb(null, data);
-                         });
+                        if (gUser.view_id && gUser.property_id && gUser.account_id) {
+                            apiControllers.getGoogleMatrics(gUser, function (err, data) {
+                                cb(null, {metric_data: data, dialog_data: null});
+                            });
+                        }
+                        else {
+                            apiControllers.getSummaries(gUser, function (err, data) {
+                                cb(null, {dialog_data: data, metric_data: null})
+                            });
+                        }
                     }
                     else cb(null, false);
                 });

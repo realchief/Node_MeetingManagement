@@ -11,8 +11,6 @@
 		<div class="below-header"><div class="below-header-inside">
 
 			<div class="container">
-
-
 					<div class="row clearfix" id="connect-sources">
 
 						<h2 class="with-line">Connect API Sources</h2>
@@ -76,11 +74,36 @@
 				{{> footer }}
 			</div>
 
-		</div></div>
+		</div>
+	</div>
 
 		
 
+</div>
+{{#if (hasOwn google_data 'dialog_data')}}
+	<div class="select-google-view modal">
+		<div class="modal-header">
+			Select Google View
+		</div>
+		<div class="modal-body">
+			<ul>
+				{{#each google_data.dialog_data as account}}
+					{{account}}
+					{{#each account.web_properties as |property|}}
+						{{#each property.views as |view|}}
+							<a href='/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
+								{{view.view_name}}
+							</a>
+						{{/each}}
+					{{/each}}
+				{{/each}}
+			</ul>
+		</div>
+		<div class="modal-footer">
+
+		</div>
 	</div>
+{{/if}}
 	
 <div class="test"></div>
 

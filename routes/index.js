@@ -17,20 +17,6 @@ var google_data = function (user, data, done) {
                 else cb({error: 'can not find the gUser'}, false)
             });
         }, function (gUser, cb) {
-            if (data.view_id && data.account_id && data.property_id) {
-                gUser.updateAttributes({
-                    view_id: data.view_id,
-                    account_id: data.account_id,
-                    property_id: data.property_id
-                }).then(function (updatedUser) {
-                    cb(null, updatedUser);
-                });
-            }
-            else {
-                cb(null, gUser);
-            }
-            
-        }, function (gUser, cb) {
             if (gUser.view_id && gUser.property_id && gUser.account_id) {
                 apiControllers.getGoogleMatrics(gUser, function (err, data) {
                     cb(null, {metric_data: data, dialog_data: null});
@@ -49,6 +35,26 @@ var google_data = function (user, data, done) {
         done(result);
     })
 }
+
+router.get('/setprofile', function (req, res) {
+    console.log(req.query);
+    if (req.user) {
+        if (req.query.view_id && req.query.account_id && req.query.property_id) {
+            req.user.getGoogle().then(function (gUser) {
+                gUser.updateAttributes({
+                    view_id: req.query.view_id,
+                    account_id: req.query.account_id,
+                    property_id: req.query.property_id
+                }).then(function (updatedResult) {
+                    console.log(updatedResult);
+                    res.redirect('/');
+                })
+            });
+        }
+        else res.redirect('/');
+    }
+    else res.redirect('signin');
+})
 
 router.get('/',  function (req, res) {
     var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';

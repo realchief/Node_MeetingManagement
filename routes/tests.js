@@ -55,7 +55,7 @@ router.get('/testsocial/:company', function (req, res) {
 
         user.getFacebook().then(function (fUser) {
           if (fUser) {
-              console.log( 'Facebook User>>>', fUser.id)
+              console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
           }
 
           done( null, fUser )
@@ -68,7 +68,7 @@ router.get('/testsocial/:company', function (req, res) {
 
         user.getGoogle().then(function (gUser) {
           if (gUser) {
-              console.log( 'Google User>>>', "id", gUser.id )
+              console.log( emoji.get("smile"), 'Google User>>>', "id", gUser.id )
           }
 
           done( null, gUser )
@@ -129,7 +129,7 @@ router.get('/testsocial/:company', function (req, res) {
                       });
 
 
-                       console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"), 'google access token:', gUser.token)
+                       console.log('\n', emoji.get("information_source"),'>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"), 'google access token:', gUser.token)
 
                       // IF FAIL, WE PROBABLY NEED TO REFRESH THE TOKEN. HOW?
 

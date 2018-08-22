@@ -8,6 +8,10 @@ const auth = require('../config/auth');
 const sgMail = require('@sendgrid/mail');
 const schedule = require('node-schedule');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
+
 let oauth2Client = new OAuth2(
     auth.googleAuth.clientID,
     auth.googleAuth.clientSecret,
@@ -104,7 +108,7 @@ exports.getGoogleMetrics = (gUser, cb) => {
 
 exports.checkGoogleToken =  (req, res, next) => {
 
-    console.log('checking google token')
+    //console.log('checking google token')
 
     // check for user
     if (!req.user) {
@@ -113,7 +117,7 @@ exports.checkGoogleToken =  (req, res, next) => {
     req.user.getGoogle().then(function (gUser) {
 
         if ( gUser ) {
-            console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
+            console.log("\n", emoji.get("rain_cloud"), '>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
         }
 
         if (gUser && moment().subtract(gUser.expiry_date, "s").format("X") > -300) {
@@ -157,7 +161,7 @@ exports.checkFacebookToken = (req, res, next) => {
     req.user.getFacebook().then(function (fUser) {
 
         if ( fUser ) {
-            console.log('>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract(fUser.expiry_date, "s").format("X"))
+            console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract(fUser.expiry_date, "s").format("X"))
         }
 
         if (fUser && moment().subtract(fUser.expiry_date, "s").format("X") > 86400) {

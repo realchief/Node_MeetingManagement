@@ -289,7 +289,7 @@ exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         //sgMail.send(data.msg);           
         
-        console.log(emoji.get('rocket'), ' send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
+        console.log('\n', emoji.get('rocket'), ' send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
         
         data.meeting.updateAttributes({
           is_sent: true

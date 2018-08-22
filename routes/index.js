@@ -5,6 +5,9 @@ let Model = require('../models');
 let Async = require('async');
 let apiControllers = require('../controllers/apis');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
 router.get('/',  function (req, res) {
 
     var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
@@ -44,8 +47,8 @@ router.get('/',  function (req, res) {
                 return;
             }
 
-            console.log('***** Results: ', results);
-            console.log('***** User: ', req.user.username, req.user.email, req.user.company_name);
+            console.log('\n', emoji.get("smile"), '***** Results: ', results);
+            console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             req.session.currentVersion = 'fingertips'
             res.render('fingertips', {

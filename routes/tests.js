@@ -10,6 +10,9 @@ var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
 // set up all phrases
 var talkingPoints = require('../schemas/phrases-talking-points');
 var insights = require('../schemas/phrases-insights');

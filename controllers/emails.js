@@ -4,7 +4,9 @@ const schedule = require('node-schedule');
 const moment = require("moment");
 var ical = require('ical')
 var _ = require('lodash');
+
 var colors = require('colors');
+var emoji = require('node-emoji')
 
 exports.meetingFileParse = ( meetingFile ) => {
 
@@ -248,13 +250,17 @@ exports.inboundParse = ( req ) => {
 }
 
 
-exports.schedule_email = (meetingDate, msg, meeting) => {
+exports.schedule_email = (meetingDate, msg, meeting, from) => {
 
     // set time 30 minutes before meeting time
     let current_date = moment().toDate();  
     let date = moment(meetingDate,'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
     let current_assert_date = moment().subtract(30, 'minutes').toDate();  
+    var from = from || ""
 
+    if ( from == "reschedule") {
+      //console.log('++++ rescheduling ---', meeting.meeting_name, '--- to send at ---', moment(date).format("ddd, MMMM D [at] h:mma"));
+    }
      // if scheduled date is after the (current time - 30 mimutes)
     let isAfter = moment(date).isAfter(current_assert_date);
 
@@ -268,17 +274,17 @@ exports.schedule_email = (meetingDate, msg, meeting) => {
       date = moment().add(1, 'minutes').toDate();
     }
 
-    console.log('---- schedule email ---'.inverse, meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'to send at', '-----', moment(date).format("ddd, MMMM D [at] h:mma"), '---send later?---', isAfter, '\n')
+    console.log(emoji.get('date'), '---- schedule email ---', meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma").underline, '----', 'to send at'.inverse, '-----', moment(date).format("ddd, MMMM D [at] h:mma").underline, '---send later?---', isAfter, '\n')
 
     schedule.scheduleJob(date, function(data) {
 
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         //sgMail.send(data.msg);           
-        console.log('---- send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent on', '-----', moment().format("ddd, MMMM D [at] h:mma"))
+        console.log(emoji.get('rocket'), '---- send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent on', '-----', moment().format("ddd, MMMM D [at] h:mma"))
         data.meeting.updateAttributes({
           is_sent: true
         }).then(function (result) {
-          console.log('---- marked as sent: ', result.meeting_name);
+          console.log(emoji.get('thumbsup'), '---- marked as sent: ', result.meeting_name);
         });
 
       }.bind(null,{

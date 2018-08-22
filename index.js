@@ -25,6 +25,9 @@ var Model = require('./models');
 var Async = require('async');
 var moment = require('moment');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
 require('./passport.js')(passport);
 
 var establishSecurePort = false;
@@ -168,9 +171,9 @@ models.sequelize.sync().then(function() {
         
         emails.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
 
-          console.log('++++ rescheduling ---', meeting.meeting_name, '--- for ---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"));
+          console.log('++++ rescheduling ---', meeting.meeting_name);
           
-          emails.schedule_email(meeting.start_time, msg, meeting);
+          emails.schedule_email(meeting.start_time, msg, meeting, 'reschedule');
           cb(null);
         })
       

@@ -10,6 +10,8 @@ var schedule = require('node-schedule');
 var apis = require('../controllers/apis');
 var emails = require('../controllers/emails');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
 
 var numberOfSends = 0;
 
@@ -67,7 +69,7 @@ router.get('/ical', function (req, res) {
                 'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
                 'company id' : meetingInfo.organizer,
                 'user id' : user_id,
-                'scheduled for' : moment(date).format("dddd, MMMM Do YYYY, h:mma")
+                'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma")
 
               })
       

@@ -76,15 +76,6 @@ router.get('/',  function (req, res) {
                 }, function (data) {
                     cb(null, data);
                 })
-
-                req.user.getGoogle().then(function (gUser) {
-                    if (gUser) {
-                         apiControllers.getGoogleMetrics(gUser, function (err, data) {
-                             cb(null, data);
-                         });
-                    }
-                    else cb(null, false);
-                });
             },
             
             facebook_data: function (cb) {

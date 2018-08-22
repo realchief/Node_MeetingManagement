@@ -4,6 +4,7 @@ const schedule = require('node-schedule');
 const moment = require("moment");
 var ical = require('ical')
 var _ = require('lodash');
+var colors = require('colors');
 
 exports.meetingFileParse = ( meetingFile ) => {
 
@@ -247,9 +248,27 @@ exports.inboundParse = ( req ) => {
 }
 
 
-exports.schedule_email = (date, msg, meeting) => {
+exports.schedule_email = (meetingDate, msg, meeting) => {
 
-    console.log('---- schedule email ---', meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'to send at', '-----', moment(date).format("ddd, MMMM D [at] h:mma"), '\n')
+    // set time 30 minutes before meeting time
+    let current_date = moment().toDate();  
+    let date = moment(meetingDate,'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
+    let current_assert_date = moment().subtract(30, 'minutes').toDate();  
+
+     // if scheduled date is after the (current time - 30 mimutes)
+    let isAfter = moment(date).isAfter(current_assert_date);
+
+     // if the current time is after the scheduled date
+    let scheduledIsAfter = moment(current_date).isAfter(date);
+    
+     console.log('==== current date:', moment(current_date).format("ddd, MMMM D [at] h:mma"), '--meeting date--', moment(meetingDate).format("ddd, MMMM D [at] h:mma"), '--schedule date--', moment(date).format("ddd, MMMM D [at] h:mma"), '--assert_date--', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
+
+     if ( isAfter == false || scheduledIsAfter == true ) {
+      isAfter = false
+      date = moment().add(1, 'minutes').toDate();
+    }
+
+    console.log('---- schedule email ---'.inverse, meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'to send at', '-----', moment(date).format("ddd, MMMM D [at] h:mma"), '---send later?---', isAfter, '\n')
 
     schedule.scheduleJob(date, function(data) {
 

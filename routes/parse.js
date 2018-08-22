@@ -19,11 +19,15 @@ const EmailContent = require('../components/EmailContent.js')
 
 router.get('/ical', function (req, res) {
 
-  var getMeetingInfo = emails.meetingFileParse('./uploads/invite-1534483084620.ics') 
-  
+  // add awesome pizza meeting
+  var getMeetingInfo = emails.meetingFileParse('./uploads/invite-1534959593903.ics') 
+  // cancel awesome pizza meeting
+  var getMeetingInfo = emails.meetingFileParse('./uploads/invite-1534959697885.ics') 
+
   getMeetingInfo.then( function(meetingInfo) {
 
      if ( !meetingInfo ) {
+      console.log('!!! meeting info is blank.', '\n', meetingInfo)
       res.sendStatus(200);
       return
     }
@@ -42,41 +46,85 @@ router.get('/ical', function (req, res) {
           var user_id = user.id
        }
 
-      Model.Meeting.create({
+       var meetingId = meetingInfo.summary + '_' + moment(meetingInfo.meeting_start,'YYYYMMDDTHHmmssZ') + '_' + user_id
 
-          to: meetingInfo.recipients,
-          meeting_name: meetingInfo.summary,
-          sender: meetingInfo.organizer,
-          UserId : user_id,
-          start_time: meetingInfo.meeting_start,
-          end_time: meetingInfo.meeting_end, 
-          start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
-          end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+       /* CANCEL THE MEETING */
+      if ( meetingInfo.request_type == "cancel") {
         
-        }).then(function (meeting) {
-           /* ===== modify base email ======= */
+        console.log('\n', emoji.get('mute'), '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
+        
+        emails.cancel( user_id, meetingInfo.meeting_start, function(meetings) {
+             
+            console.log(emoji.get('mute'), 'we have cancelled these meetings:', meetings)
 
-           //organizer, summary, toArray, start_date, cb//
-          emails.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
-              
-              // ---- schedule the email for sending
-              emails.schedule_email(meetingInfo.meeting_start, msg, meeting);
-
-              // output manual ical response //
+            // output manual ical response //
               res.send( {
-                'message' : 'ical endpoint tester',
+                'message' : 'ical endpoint: ' + meetingInfo.summary,
                 'email domain:' : meetingInfo.emailDomain,
                 'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
                 'company id' : meetingInfo.organizer,
                 'user id' : user_id,
+                'meeting_id' : meetingId,
+                'file name' : meetingInfo.file_name,
+                'request_type' : meetingInfo.request_type,
                 'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma")
 
               })
-      
-          })
 
-        });
+              return
+      
+         })
+        
+      } 
+
+      /* CREATE THE MEETING */
+      if ( meetingInfo.request_type == "request") {
+
+        Model.Meeting.create({
+
+            to: meetingInfo.recipients,
+            meeting_name: meetingInfo.summary,
+            sender: meetingInfo.organizer,
+            UserId : user_id,
+            meeting_id : meetingId,
+            file_name: meetingInfo.file_name,
+            start_time: meetingInfo.meeting_start,
+            end_time: meetingInfo.meeting_end, 
+            start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+            end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+          
+          }).then(function (meeting) {
+             /* ===== modify base email ======= */
+
+             //organizer, summary, toArray, start_date, cb//
+            
+            //organizer, summary, toArray, start_date, cb//
+            emails.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
+                
+                // ---- schedule the email for sending
+                
+                emails.schedule_email(meetingId, meetingInfo.meeting_start, msg, meeting);
+
+                // output manual ical response //
+                res.send( {
+                  'message' : 'ical endpoint: ' + meetingInfo.summary,
+                  'email domain:' : meetingInfo.emailDomain,
+                  'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
+                  'company id' : meetingInfo.organizer,
+                  'user id' : user_id,
+                  'meeting_id' : meetingId,
+                  'file name' : meetingInfo.file_name,
+                  'request_type' : meetingInfo.request_type,
+                  'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma")
+                })
+        
+            })
+
+          });
     
+      }
+
+
     })
 
   })
@@ -114,7 +162,7 @@ var cpUpload = upload.fields([
 
 router.post('/parse', cpUpload, function (req, res) {
 
-  console.log('\n', '=== inbound parse start ===============================', '\n')
+  console.log('\n', emoji.get('eyeglasses'), '=== inbound parse start ===============================', '\n')
 
   if (!req.body) {
     console.log('no body. thats wacky')
@@ -126,25 +174,16 @@ router.post('/parse', cpUpload, function (req, res) {
  
   getMeetingInfo.then( function(meetingInfo) {
 
-    console.log('------ meeting info from incoming request ----', '\n', meetingInfo)
+    console.log(emoji.get('trumpet'), emoji.get('trumpet'), '------ meeting info from incoming request ----', '\n', meetingInfo)
 
      if ( !meetingInfo ) {
       console.log('!!! meeting info is blank.', '\n', meetingInfo)
       res.sendStatus(200);
-      console.log('=== inbound parse end ===============================', '\n')
+      console.log('\n', '=== inbound parse end ===============================', '\n')
       return
     }
-
+   
     let whereClause = { 'company_id' : meetingInfo.emailDomain }
-
-
-    if ( meetingInfo.request_type == "cancel") {
-      console.log('!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
-        res.sendStatus(200);
-        console.log('=== inbound parse end ===============================', '\n')
-        return
-    }
- 
 
     Model.User.findOne({
 
@@ -158,36 +197,67 @@ router.post('/parse', cpUpload, function (req, res) {
           var user_id = user.id
        }
 
-      Model.Meeting.create({
+       var meetingId = meetingInfo.summary + '_' + moment(meetingInfo.meeting_start,'YYYYMMDDTHHmmssZ') + '_' + user_id
 
-          to: meetingInfo.recipients,
-          meeting_name: meetingInfo.summary,
-          sender: meetingInfo.organizer,
-          UserId : user_id,
-          start_time: meetingInfo.meeting_start,
-          end_time: meetingInfo.meeting_end, 
-          start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
-          end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+      /* CANCEL THE MEETING */
+      if ( meetingInfo.request_type == "cancel") {
         
-        }).then(function (meeting) {
-           /* ===== modify base email ======= */
+        console.log('\n', emoji.get('trumpet'), emoji.get('trumpet'),  '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
+        
+        emails.cancel( user_id, meetingInfo.meeting_start, function(meetings) {
+            
+            console.log(emoji.get('mute'), 'we have cancelled these meetings:', meetings)
+            res.sendStatus(200);
+            console.log('\n', '=== inbound parse end ===============================', '\n')
+            return
 
-           //organizer, summary, toArray, start_date, cb//
-          emails.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
-              
-              // ---- schedule the email for sending
-              emails.schedule_email(meetingInfo.meeting_start, msg, meeting);
+         })
+        
+      } 
 
-              res.sendStatus(200);
-             console.log('=== inbound parse end ===============================', '\n')
+      /* CREATE THE MEETING */
+       if ( meetingInfo.request_type == "request") {
       
-          })
+        Model.Meeting.create({
 
-        });
+            to: meetingInfo.recipients,
+            meeting_name: meetingInfo.summary,
+            sender: meetingInfo.organizer,
+            UserId : user_id,
+            meeting_id : meetingId,
+            file_name: meetingInfo.file_name,
+            start_time: meetingInfo.meeting_start,
+            end_time: meetingInfo.meeting_end, 
+            start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+            end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
+          
+          }).then(function (meeting) {
+             /* ===== modify base email ======= */
+
+             //organizer, summary, toArray, start_date, cb//
+            emails.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
+                
+                // ---- schedule the email for sending
+                emails.schedule_email(meetingId, meetingInfo.meeting_start, msg, meeting);
+
+                res.sendStatus(200);
+               console.log('\n', '=== inbound parse end ===============================', '\n')
+        
+            })
+
+          });
+
+      }
+
     
     })
 
   })
+
+
+
+
+
 
 });
 

@@ -155,34 +155,19 @@ app.use(function(req, res, next){
 
 // start the server
 models.sequelize.sync().then(function() {
+  
   var port = process.env.PORT || 3001;
+  
   var server = http.createServer(app).listen(port, function() {
+  
+  console.log('\n', '---- restarted server ----', moment().format("ddd, MMMM D [at] h:mma"), '\n');
+  
+  // RUN ALL STOPPED SCHEDULED JOBS
+  emails.reschedule()
+  
+  console.log('Express server listening on port ' + port);
 
-    console.log('\n', '---- restarted server ----', moment().format("ddd, MMMM D [at] h:mma"), '\n');
-         
-
-    // run stoped schedule job.
-    Model.Meeting.findAll({
-      where: {
-        is_sent: null
-      }
-    }).then(function (meetings) {
-      Async.each(meetings, function (meeting, cb) {
-        
-        emails.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
-
-          console.log('++++ rescheduling ---', meeting.meeting_name);
-          
-          emails.schedule_email(meeting.start_time, msg, meeting, 'reschedule');
-          cb(null);
-        })
-      
-      }, function (err) {
-          console.log('Restarted all scheduled jobs that have not been sent.');
-      });
-    });
-    console.log('Express server listening on port ' + port);
-  });
+ });
 
   /* FOR HTTPS */
 

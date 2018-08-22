@@ -18,11 +18,17 @@ module.exports = (sequelize, DataTypes) => {
         sender: {
             type: DataTypes.STRING
         },
+        file_name: {
+            type: DataTypes.STRING
+        },
         to: {
             type: DataTypes.ARRAY(DataTypes.STRING)
         },
         is_sent: {
             type: DataTypes.BOOLEAN
+        },
+        meeting_id: {
+            type: DataTypes.STRING
         }
     });
 

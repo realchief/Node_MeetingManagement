@@ -25,9 +25,10 @@
 					<th>Meeting Name</th>
 					<th>Organizer</th>
 					<th>Start Time</th>
-					<th>End Time</th>
 					<th>Start Date</th>
 					<th>User Id</th>
+					<th>Meeting Id</th>
+					<th>File Name</th>
 					<th>is sent?</th>
 				</thead>
 				<tbody>
@@ -38,9 +39,10 @@
 							<td>{{this.meeting_name}}</td>
 							<td>{{this.sender}}</td>
 							<td>{{moment this.start_time format="ddd, MMMM D [at] h:mma"}} </td>
-							<td>{{moment this.end_time format="ddd, MMMM D [at] h:mma"}}</td>
 							<td>{{this.start_date}}</td>
 							<td>{{this.UserId}}</td>
+							<td style="font-size: 10px;">{{this.meeting_id}}</td>
+							<td style="font-size: 10px;">{{this.file_name}}</td>
 							<td><input type='checkbox' {{#if this.is_sent}}checked{{/if}} readonly> </td>
 						</tr>
 					{{/each}}

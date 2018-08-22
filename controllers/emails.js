@@ -5,6 +5,9 @@ const moment = require("moment");
 var ical = require('ical')
 var _ = require('lodash');
 
+var Model = require('../models');
+var Async = require('async');
+
 var colors = require('colors');
 var emoji = require('node-emoji')
 
@@ -12,7 +15,7 @@ exports.meetingFileParse = ( meetingFile ) => {
 
     return new Promise(function(resolve, reject) {
 
-        console.log( "\n", '+++++++++++ Parse ICS file', meetingFile, "\n" );
+        console.log( "\n", '+++++++++++ Parse ICS file', meetingFile, 'on', moment(), "\n" );
 
         var ical_data = ical.parseFile(meetingFile)  
         var parseIcal = ical_data[Object.keys(ical_data)[0]]
@@ -43,6 +46,7 @@ exports.meetingFileParse = ( meetingFile ) => {
         console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
         //console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
         console.log( 'Summary:', parseIcal.summary)
+        console.log( 'Status:', parseIcal.status)
 
         /* =====  get calendar attendees */
 
@@ -102,6 +106,9 @@ exports.meetingFileParse = ( meetingFile ) => {
           requestType = "cancel";
         }
 
+        // get just the file name
+        meetingFile = meetingFile.split('uploads/')[1];
+
         //console.log('Organizer:', organizer, "Company Id", emailDomain)
         console.log("\n", '+++++++++++ done parsing ics file', "\n" );
 
@@ -117,7 +124,8 @@ exports.meetingFileParse = ( meetingFile ) => {
             'meeting_end' : moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(),
             'insight_type' : insightType,
             'request_type' : requestType,
-            'status' : status
+            'status' : status,
+            'file_name' : meetingFile
         } )
 
     })
@@ -250,7 +258,7 @@ exports.inboundParse = ( req ) => {
 }
 
 
-exports.schedule_email = (meetingDate, msg, meeting, from) => {
+exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
 
     // set time 30 minutes before meeting time
     let current_date = moment().toDate();  
@@ -267,24 +275,26 @@ exports.schedule_email = (meetingDate, msg, meeting, from) => {
      // if the current time is after the scheduled date
     let scheduledIsAfter = moment(current_date).isAfter(date);
     
-     console.log('==== current date:', moment(current_date).format("ddd, MMMM D [at] h:mma"), '--meeting date--', moment(meetingDate).format("ddd, MMMM D [at] h:mma"), '--schedule date--', moment(date).format("ddd, MMMM D [at] h:mma"), '--assert_date--', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
+    //console.log('==== current date:', moment(current_date).format("ddd, MMMM D [at] h:mma"), '--meeting date--', moment(meetingDate).format("ddd, MMMM D [at] h:mma"), '--schedule date--', moment(date).format("ddd, MMMM D [at] h:mma"), '--assert_date--', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
 
      if ( isAfter == false || scheduledIsAfter == true ) {
       isAfter = false
       date = moment().add(1, 'minutes').toDate();
     }
 
-    console.log(emoji.get('date'), '---- schedule email ---', meeting.meeting_name, '----', 'for', '---', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma").underline, '----', 'to send at'.inverse, '-----', moment(date).format("ddd, MMMM D [at] h:mma").underline, '---send later?---', isAfter, '\n')
+    console.log('\n', emoji.get('date'), ' schedule email ---', meeting.meeting_name, 'for', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma").underline, 'to send at'.inverse, moment(date).format("ddd, MMMM D [at] h:mma").underline, '--- send later? ---', isAfter, '\n', ' --- meeting id ', meetingId)
 
-    schedule.scheduleJob(date, function(data) {
+    schedule.scheduleJob(meetingId, date, function(data) {
 
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         //sgMail.send(data.msg);           
-        console.log(emoji.get('rocket'), '---- send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent on', '-----', moment().format("ddd, MMMM D [at] h:mma"))
+        
+        console.log(emoji.get('rocket'), ' send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
+        
         data.meeting.updateAttributes({
           is_sent: true
         }).then(function (result) {
-          console.log(emoji.get('thumbsup'), '---- marked as sent: ', result.meeting_name);
+          //console.log(emoji.get('thumbsup'), '---- marked as sent: ', result.meeting_name);
         });
 
       }.bind(null,{
@@ -293,6 +303,55 @@ exports.schedule_email = (meetingDate, msg, meeting, from) => {
         meeting: meeting
 
       }));
+}
+
+
+exports.cancel = (user_id, start_time, onFinish) => {
+
+    var thisModule = this 
+    let whereClause = { 'UserId' : user_id, 'start_time' : start_time }
+    let cancelledMeetings = [];
+
+    Model.Meeting.findAll({
+
+        where: whereClause
+
+    }).then(function(meetings, done) {
+
+       if (!meetings) {
+          console.log('no meetings to cancel!!')
+       } else {
+       }
+
+      Async.each(meetings, function (meeting, done) {
+
+          var meetingId = meeting.meeting_name + '_' + moment(meeting.start_time,'YYYYMMDDTHHmmssZ') + '_' + user_id
+          console.log( emoji.get('scissors'), 'remove', meeting.meeting_name, 'which was at:', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), 'for meeting_id', meetingId)
+          meeting.destroy()
+          cancelledMeetings.push(meetingId)
+          done();
+
+      }, function (err, result) {
+         
+         if ( cancelledMeetings.length) {
+            
+            // now, we need to remove any scheduled jobs, so that the newly deleted ones dont send
+            var scheduledJob = schedule.scheduledJobs[cancelledMeetings[0]]
+            
+            if ( scheduledJob) {
+              console.log(emoji.get('hammer_and_pick'), 'Remove scheduled job for meeting ID:', cancelledMeetings[0])
+              scheduledJob.cancel();
+            }
+          }
+
+          onFinish(cancelledMeetings)
+
+
+      });
+
+
+   })
+
 }
 
 exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
@@ -350,4 +409,36 @@ exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
           cb(msg);
 
     });
+}
+
+exports.reschedule = () => {
+
+  var thisModule = this 
+ 
+// run stoped schedule job.
+    Model.Meeting.findAll({
+      where: {
+        is_sent: null
+      }
+    }).then(function (meetings) {
+      
+      Async.each(meetings, function (meeting, cb) {
+        
+        thisModule.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
+          
+          //console.log(emoji.get("repeat"), ' rescheduling ---', meeting.meeting_name);
+          
+          var meetingId = meeting.meeting_name + '_' + moment(meeting.start_time,'YYYYMMDDTHHmmssZ') + '_' + meeting.UserId
+          thisModule.schedule_email(meetingId, meeting.start_time, msg, meeting, 'reschedule');
+          
+          cb(null);
+        
+        })
+      
+      }, function (err, result) {
+         console.log('\n', 'Restarted all scheduled jobs that have not been sent.', '\n');
+      });
+
+  })
+
 }

@@ -1,26 +1,10 @@
 {{> head }}
-	<header>
-		<div class="flex-wrapper relative">
-			<div class="cell logo">
-				<div class="branding">
-					<p><i class="far fa-fw fa-hand-point-right fa-2x" style="vertical-align:middle;"></i> FingerTips</p>
-				</div>
-			</div>			
-			<div class="cell navigation">
-				<ul class="nav">	
-					<li class=""><a class="jump" href="/">home</a></li>			
-					<li class=""><a class="jump" href="/frontend">Front End</a></li>
-					<li class=""><a class="jump" href="/schedule">View Schedule</a></li>
-				</ul>
-			</div>
-		</div>
-	</header>	
+	
 	<body>		
 		<div class='tb-schedule'>
 			<h2>View Meeting Table Data</h2>
 			<table>
 				<thead>
-					<th>No</th>
 					<th>To</th>
 					<th>Meeting Name</th>
 					<th>Organizer</th>
@@ -29,21 +13,26 @@
 					<th>User Id</th>
 					<th>Meeting Id</th>
 					<th>File Name</th>
+					<th>Timestamp Time</th>
+					<th>Created Time</th>
+					<th>Sequence</th>
 					<th>is sent?</th>
 				</thead>
 				<tbody>
 					{{#each meetings}}
 						<tr>
-							<td>{{@index}}</td>
 							<td style="font-size: 10px;">{{this.to}}</td>
-							<td>{{this.meeting_name}}</td>
-							<td>{{this.sender}}</td>
-							<td>{{moment this.start_time format="ddd, MMMM D [at] h:mma"}} </td>
-							<td>{{this.start_date}}</td>
-							<td>{{this.UserId}}</td>
+							<td style="font-size: 10px;">{{this.meeting_name}}</td>
+							<td style="font-size: 10px;">{{this.sender}}</td>
+							<td style="font-size: 10px;">{{moment this.start_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td style="font-size: 10px;">{{this.start_date}}</td>
+							<td style="font-size: 10px;">{{this.UserId}}</td>
 							<td style="font-size: 10px;">{{this.meeting_id}}</td>
 							<td style="font-size: 10px;">{{this.file_name}}</td>
-							<td><input type='checkbox' {{#if this.is_sent}}checked{{/if}} readonly> </td>
+							<td style="font-size: 10px;">{{moment this.dtstamp_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td style="font-size: 10px;">{{moment this.created_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td style="font-size: 10px;">{{this.sequence}}</td>
+							<td style="font-size: 10px;">{{#if this.is_sent}}sent{{/if}}</td>
 						</tr>
 					{{/each}}
 				</tbody>

@@ -29,6 +29,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         meeting_id: {
             type: DataTypes.STRING
+        },
+        dtstamp_time: {
+             type: DataTypes.DATE
+        },
+        created_time: {
+             type: DataTypes.DATE
+        },
+        sequence: {
+            type: DataTypes.STRING
         }
     });
 

@@ -33,19 +33,17 @@ exports.meetingFileParse = ( meetingFile ) => {
           status = parseIcal.status.toLowerCase();
         }
 
-        // let date = moment().add(2, 'minutes').toDate();
-        // let current_assert_date = moment().add(3, 'minutes').toDate();
-        // ---------------for testing----------------------  
-
-        // parseIcal.start = moment().add(2, 'minutes').toDate()
-        // parseIcal.end = moment().add(1, 'minutes').toDate()
-
         //console.log( 'ics data:', parseIcal )
+
         console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
-        //console.log( 'Start Unformatted:', JSON.stringify(parseIcal.start), 'End:', JSON.stringify(parseIcal.end) )
-        console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-        //console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
         console.log( 'Summary:', parseIcal.summary)
+        
+        console.log( 'DT Stamp Date:',  moment(JSON.stringify(parseIcal.dtstamp),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+        console.log( 'Created Date:',  moment(JSON.stringify(parseIcal.created),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+        console.log( 'Last Modified:',  moment(JSON.stringify(parseIcal['last-modified']),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+        console.log( 'Sequence:',  parseIcal.sequence )
+        console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
+       
         console.log( 'Status:', parseIcal.status)
 
         /* =====  get calendar attendees */
@@ -99,6 +97,7 @@ exports.meetingFileParse = ( meetingFile ) => {
 
         var emailDomain = organizer.replace(/.*@/, "").split('.')[0];
         var summary = parseIcal.summary
+        var sequence = parseIcal.sequence
         var meeting_time_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
         var meeting_date_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
 
@@ -122,6 +121,9 @@ exports.meetingFileParse = ( meetingFile ) => {
             'meeting_date_for_display' : meeting_date_for_display,
             'meeting_start' : moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_end' : moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(),
+            'meeting_created' : moment(JSON.stringify(parseIcal.created),'YYYYMMDDTHHmmssZ').toDate(),
+            'meeting_dtstamp' : moment(JSON.stringify(parseIcal.dtstamp),'YYYYMMDDTHHmmssZ').toDate(),
+            'meeting_sequence' : sequence,
             'insight_type' : insightType,
             'request_type' : requestType,
             'status' : status,
@@ -151,6 +153,9 @@ exports.inboundParse = ( req ) => {
     var attachmentInfo = req.body['attachment-info']
     var insightType = "default"
     var requestType = "request"
+
+    //console.log('\n', emoji.get('email'), 'The whole email:', req.body)
+
 
      if ( fromEmail.toLowerCase().indexOf('bounce') >= 0 ) {
       console.log('!!!!!!!!!!!!! ', 'bounce in from email', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
@@ -246,6 +251,9 @@ exports.inboundParse = ( req ) => {
             'meeting_date_for_display' : meeting_date_for_display,
             'meeting_start' : moment().toDate(),
             'meeting_end' : moment().toDate(),
+            'meeting_created' : moment().toDate(),
+            'meeting_dtstamp' : moment().toDate(),
+            'meeting_sequence' : 0,
             'insight_type' : insightType,
             'request_type' : 'request',
             'status' : 'add'
@@ -282,15 +290,21 @@ exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
       date = moment().add(1, 'minutes').toDate();
     }
 
-    console.log('\n', emoji.get('date'), ' schedule email ---', meeting.meeting_name, 'for', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma").underline, 'to send at'.inverse, moment(date).format("ddd, MMMM D [at] h:mma").underline, '--- send later? ---', isAfter, '\n', ' --- meeting id ', meetingId)
+    if ( schedule.scheduledJobs[meetingId] ) {
+      console.log( '\n', emoji.get('warning'), ' ', meetingId, ' meeting is already scheduled - un-schedule the existing one' )
+      schedule.scheduledJobs[meetingId].cancel()
+    }
+
+     console.log('\n', emoji.get('date'), ' schedule email ---', meeting.meeting_name, 'for', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma").underline, 'to send at'.inverse, moment(date).format("ddd, MMMM D [at] h:mma").underline, '--- send later? ---', isAfter, '\n', ' --- meeting id ', meetingId)
+
 
     schedule.scheduleJob(meetingId, date, function(data) {
 
+        console.log('\n', emoji.get('rocket'), ' send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
+
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         //sgMail.send(data.msg);           
-        
-        console.log('\n', emoji.get('rocket'), ' send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
-        
+
         data.meeting.updateAttributes({
           is_sent: true
         }).then(function (result) {
@@ -306,10 +320,10 @@ exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
 }
 
 
-exports.cancel = (user_id, start_time, onFinish) => {
+exports.cancel = (user_id, created_time, onFinish) => {
 
     var thisModule = this 
-    let whereClause = { 'UserId' : user_id, 'start_time' : start_time }
+    let whereClause = { 'UserId' : user_id, 'created_time' : created_time }
     let cancelledMeetings = [];
 
     Model.Meeting.findAll({
@@ -325,7 +339,7 @@ exports.cancel = (user_id, start_time, onFinish) => {
 
       Async.each(meetings, function (meeting, done) {
 
-          var meetingId = meeting.meeting_name + '_' + moment(meeting.start_time,'YYYYMMDDTHHmmssZ') + '_' + user_id
+          var meetingId = meeting.meeting_name + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + user_id
           console.log( emoji.get('scissors'), 'remove', meeting.meeting_name, 'which was at:', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), 'for meeting_id', meetingId)
           meeting.destroy()
           cancelledMeetings.push(meetingId)
@@ -335,15 +349,23 @@ exports.cancel = (user_id, start_time, onFinish) => {
          
          if ( cancelledMeetings.length) {
             
+            _.forEach( schedule.scheduledJobs, function( value, key ) {
+              console.log('before:', key)
+           })
+
             // now, we need to remove any scheduled jobs, so that the newly deleted ones dont send
             var scheduledJob = schedule.scheduledJobs[cancelledMeetings[0]]
             
-            if ( scheduledJob) {
+            if ( scheduledJob ) {
               console.log(emoji.get('hammer_and_pick'), 'Remove scheduled job for meeting ID:', cancelledMeetings[0])
               scheduledJob.cancel();
             }
           }
 
+          _.forEach( schedule.scheduledJobs, function( value, key ) {
+              console.log('after:', key)
+           })
+          
           onFinish(cancelledMeetings)
 
 
@@ -351,6 +373,45 @@ exports.cancel = (user_id, start_time, onFinish) => {
 
 
    })
+
+}
+
+
+exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
+
+  var thisModule = this;
+
+  Model.Meeting.create({
+
+      to: meetingInfo.recipients,
+      meeting_name: meetingInfo.summary,
+      sender: meetingInfo.organizer,
+      UserId : user_id,
+      meeting_id : meetingId,
+      file_name: meetingInfo.file_name,
+      start_time: meetingInfo.meeting_start,
+      end_time: meetingInfo.meeting_end, 
+      start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+      end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+      dtstamp_time : meetingInfo.meeting_dtstamp,
+      created_time : meetingInfo.meeting_created,
+      sequence : meetingInfo.meeting_sequence
+    
+    }).then(function (meeting) {
+       /* ===== modify base email ======= */
+
+       //organizer, summary, toArray, start_date, cb//
+      thisModule.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
+          
+          // ---- schedule the email for sending
+          thisModule.schedule_email(meetingId, meetingInfo.meeting_start, msg, meeting);
+
+          onFinish(meetingId)
+          
+
+      })
+
+    });
 
 }
 
@@ -428,7 +489,7 @@ exports.reschedule = () => {
           
           //console.log(emoji.get("repeat"), ' rescheduling ---', meeting.meeting_name);
           
-          var meetingId = meeting.meeting_name + '_' + moment(meeting.start_time,'YYYYMMDDTHHmmssZ') + '_' + meeting.UserId
+          var meetingId = meeting.meeting_name + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + meeting.UserId
           thisModule.schedule_email(meetingId, meeting.start_time, msg, meeting, 'reschedule');
           
           cb(null);

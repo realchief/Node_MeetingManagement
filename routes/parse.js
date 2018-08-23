@@ -22,7 +22,8 @@ router.get('/ical', function (req, res) {
   // add awesome pizza meeting
   var getMeetingInfo = emails.meetingFileParse('./uploads/invite-1534959593903.ics') 
   // cancel awesome pizza meeting
-  var getMeetingInfo = emails.meetingFileParse('./uploads/invite-1534959697885.ics') 
+  //var getMeetingInfo = emails.meetingFileParse('./uploads/invite-1534959697885.ics') 
+
 
   getMeetingInfo.then( function(meetingInfo) {
 
@@ -32,8 +33,8 @@ router.get('/ical', function (req, res) {
       return
     }
 
+     // LOOK UP USER FROM REQUEST COMPANY_ID
     let whereClause = { 'company_id' : meetingInfo.emailDomain }
-
     Model.User.findOne({
 
         where: whereClause
@@ -46,67 +47,97 @@ router.get('/ical', function (req, res) {
           var user_id = user.id
        }
 
-       var meetingId = meetingInfo.summary + '_' + moment(meetingInfo.meeting_start,'YYYYMMDDTHHmmssZ') + '_' + user_id
+       var meetingId = meetingInfo.summary + '_' + moment(meetingInfo.meeting_created,'YYYYMMDDTHHmmssZ') + '_' + user_id
 
-       /* CANCEL THE MEETING */
-      if ( meetingInfo.request_type == "cancel") {
-        
-        console.log('\n', emoji.get('mute'), '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
-        
-        emails.cancel( user_id, meetingInfo.meeting_start, function(meetings) {
-             
-            console.log(emoji.get('mute'), 'we have cancelled these meetings:', meetings)
+       // SEE IF THERE IS AN EXISTING MEETING
+       let whereClause = { 'meeting_id' : meetingId, 'is_sent' : null }
+       Model.Meeting.findOne({
 
-            // output manual ical response //
-              res.send( {
-                'message' : 'ical endpoint: ' + meetingInfo.summary,
-                'email domain:' : meetingInfo.emailDomain,
-                'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
-                'company id' : meetingInfo.organizer,
-                'user id' : user_id,
-                'meeting_id' : meetingId,
-                'file name' : meetingInfo.file_name,
-                'request_type' : meetingInfo.request_type,
-                'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma")
+        where: whereClause
+
+        }).then(function (meeting) {
+
+             /* SEE IF THERE IS AN EXISTING MEETING BASED ON THE MEETING_ID */
+             if (!meeting) {
+
+                console.log('\n', emoji.get('trumpet'), 'We did not find an existing meeting.')
+            
+             } else {
+                
+                console.log('\n', emoji.get('trumpet'), 'We found an existing meeting.', meeting.meeting_id, meeting.sequence )
+
+                if ( meeting.sequence == meetingInfo.sequence) {
+                  console.log('\n', emoji.get('trumpet'), 'Sequence numbers match, so no changes' )
+                } else {
+                  console.log('\n', emoji.get('trumpet'), 'Sequence numbers dont match, we need to make a change' )
+                  // cancel and add? or update and save?
+                }
+
+             }
+
+            /* CANCEL THE MEETING */
+            if ( meetingInfo.request_type == "cancel") {
+              
+              console.log('\n', emoji.get('trumpet'), emoji.get('trumpet'), '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
+              
+              emails.cancel( user_id, meetingInfo.meeting_created, function(meetings) {
+                   
+                  console.log(emoji.get('mute'), 'we have cancelled these meetings:', meetings)
+
+                  // output manual ical response //
+                    res.send( {
+                      'message' : 'ical endpoint: ' + meetingInfo.summary,
+                      'email domain:' : meetingInfo.emailDomain,
+                      'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
+                      'company id' : meetingInfo.organizer,
+                      'user id' : user_id,
+                      'meeting_id' : meetingId,
+                      'file name' : meetingInfo.file_name,
+                      'request_type' : meetingInfo.request_type,
+                      'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma"),
+                      'dtstamp' : moment(meetingInfo.meeting_dtstamp).format("dddd, MMMM Do YYYY, h:mma"),
+                      'created' : moment(meetingInfo.meeting_created).format("dddd, MMMM Do YYYY, h:mma"),
+                      'sequence' : meetingInfo.sequence
+                    })
+
+                    return
+            
+               })
+              
+            } 
+
+            /* CREATE THE MEETING */
+            if ( meetingInfo.request_type == "request" && !meeting) {
+
+              emails.create( user_id, meetingId, meetingInfo, function(meeting) {
+
+                    // output manual ical response //
+                    res.send( {
+                      'message' : 'ical endpoint: ' + meetingInfo.summary,
+                      'email domain:' : meetingInfo.emailDomain,
+                      'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
+                      'company id' : meetingInfo.organizer,
+                      'user id' : user_id,
+                      'meeting_id' : meetingId,
+                      'file name' : meetingInfo.file_name,
+                      'request_type' : meetingInfo.request_type,
+                      'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma"),
+                      'dtstamp' : moment(meetingInfo.meeting_dtstamp).format("dddd, MMMM Do YYYY, h:mma"),
+                      'created' : moment(meetingInfo.meeting_created).format("dddd, MMMM Do YYYY, h:mma"),
+                      'sequence' : meetingInfo.sequence
+                    })
+            
+                    return
 
               })
 
-              return
-      
-         })
-        
-      } 
+            }
 
-      /* CREATE THE MEETING */
-      if ( meetingInfo.request_type == "request") {
+            /* SEND A RESPONSE IF WE DIDNT UPDATE A MEETING */
+            if ( meetingInfo.request_type == "request" && meeting ) {
 
-        Model.Meeting.create({
-
-            to: meetingInfo.recipients,
-            meeting_name: meetingInfo.summary,
-            sender: meetingInfo.organizer,
-            UserId : user_id,
-            meeting_id : meetingId,
-            file_name: meetingInfo.file_name,
-            start_time: meetingInfo.meeting_start,
-            end_time: meetingInfo.meeting_end, 
-            start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
-            end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
-          
-          }).then(function (meeting) {
-             /* ===== modify base email ======= */
-
-             //organizer, summary, toArray, start_date, cb//
-            
-            //organizer, summary, toArray, start_date, cb//
-            emails.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
-                
-                // ---- schedule the email for sending
-                
-                emails.schedule_email(meetingId, meetingInfo.meeting_start, msg, meeting);
-
-                // output manual ical response //
-                res.send( {
+              res.send( {
+                  'what' : 'we didnt update anything!',
                   'message' : 'ical endpoint: ' + meetingInfo.summary,
                   'email domain:' : meetingInfo.emailDomain,
                   'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
@@ -115,14 +146,17 @@ router.get('/ical', function (req, res) {
                   'meeting_id' : meetingId,
                   'file name' : meetingInfo.file_name,
                   'request_type' : meetingInfo.request_type,
-                  'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma")
+                  'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma"),
+                  'dtstamp' : moment(meetingInfo.meeting_dtstamp).format("dddd, MMMM Do YYYY, h:mma"),
+                  'created' : moment(meetingInfo.meeting_created).format("dddd, MMMM Do YYYY, h:mma"),
+                  'sequence' : meetingInfo.sequence
                 })
-        
-            })
 
-          });
-    
-      }
+              return
+
+            }
+
+        })
 
 
     })
@@ -183,8 +217,8 @@ router.post('/parse', cpUpload, function (req, res) {
       return
     }
    
+    // LOOK UP USER FROM REQUEST COMPANY_ID
     let whereClause = { 'company_id' : meetingInfo.emailDomain }
-
     Model.User.findOne({
 
         where: whereClause
@@ -197,57 +231,92 @@ router.post('/parse', cpUpload, function (req, res) {
           var user_id = user.id
        }
 
-       var meetingId = meetingInfo.summary + '_' + moment(meetingInfo.meeting_start,'YYYYMMDDTHHmmssZ') + '_' + user_id
+       var meetingId = meetingInfo.summary + '_' + moment(meetingInfo.meeting_created,'YYYYMMDDTHHmmssZ') + '_' + user_id
 
-      /* CANCEL THE MEETING */
-      if ( meetingInfo.request_type == "cancel") {
-        
-        console.log('\n', emoji.get('trumpet'), emoji.get('trumpet'),  '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
-        
-        emails.cancel( user_id, meetingInfo.meeting_start, function(meetings) {
+       // SEE IF THERE IS AN EXISTING MEETING
+       let whereClause = { 'meeting_id' : meetingId, 'is_sent' : null }
+       Model.Meeting.findOne({
+
+        where: whereClause
+
+        }).then(function (meeting) {
+
+             /* SEE IF THERE IS AN EXISTING MEETING BASED ON THE MEETING_ID */
+             if (!meeting) {
+
+                console.log('\n', emoji.get('trumpet'), 'We did not find an existing meeting.')
             
-            console.log(emoji.get('mute'), 'we have cancelled these meetings:', meetings)
-            res.sendStatus(200);
-            console.log('\n', '=== inbound parse end ===============================', '\n')
-            return
-
-         })
-        
-      } 
-
-      /* CREATE THE MEETING */
-       if ( meetingInfo.request_type == "request") {
-      
-        Model.Meeting.create({
-
-            to: meetingInfo.recipients,
-            meeting_name: meetingInfo.summary,
-            sender: meetingInfo.organizer,
-            UserId : user_id,
-            meeting_id : meetingId,
-            file_name: meetingInfo.file_name,
-            start_time: meetingInfo.meeting_start,
-            end_time: meetingInfo.meeting_end, 
-            start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
-            end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
-          
-          }).then(function (meeting) {
-             /* ===== modify base email ======= */
-
-             //organizer, summary, toArray, start_date, cb//
-            emails.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
+             } else {
                 
-                // ---- schedule the email for sending
-                emails.schedule_email(meetingId, meetingInfo.meeting_start, msg, meeting);
+                console.log('\n', emoji.get('trumpet'), 'We found an existing meeting.', meeting.meeting_id, meeting.sequence )
 
+                if ( meeting.sequence == meetingInfo.sequence) {
+                  console.log('\n', emoji.get('trumpet'), 'Sequence numbers match, so no changes' )
+                } else {
+                  console.log('\n', emoji.get('trumpet'), 'Sequence numbers dont match, we need to make a change' )
+                  if ( meetingInfo.request_type != "cancel" ) meetingInfo.request_type = "update"
+                  // cancel and add? or update and save?
+                }
+
+             }
+
+            /* UPDATE THE MEETING by CANCELLING AND CREATING */
+             if ( meetingInfo.request_type == "update") {
+
+                  emails.cancel( user_id, meetingInfo.meeting_created, function(meetings) {
+                  
+                  console.log(emoji.get('mute'), 'we have cancelled this existing meeting:', meetings)
+                  
+                  emails.create( user_id, meetingId, meetingInfo, function(meeting) {
+                
+                    res.sendStatus(200);
+                    console.log('\n', '=== inbound parse end update ===============================', '\n')
+                    return
+
+                  })
+
+
+               })
+
+            }
+
+            /* CANCEL THE MEETING */
+            if ( meetingInfo.request_type == "cancel") {
+              
+              console.log('\n', emoji.get('trumpet'), emoji.get('trumpet'),  '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
+              
+              emails.cancel( user_id, meetingInfo.meeting_created, function(meetings) {
+                  
+                  console.log(emoji.get('mute'), 'we have cancelled these meetings:', meetings)
+                  res.sendStatus(200);
+                  console.log('\n', '=== inbound parse end cancel ===============================', '\n')
+                  return
+
+               })
+              
+            } 
+
+            /* CREATE THE MEETING */
+             if ( meetingInfo.request_type == "request" && !meeting) {
+            
+              emails.create( user_id, meetingId, meetingInfo, function(meeting) {
+                
                 res.sendStatus(200);
-               console.log('\n', '=== inbound parse end ===============================', '\n')
-        
-            })
+                console.log('\n', '=== inbound parse end create ===============================', '\n')
+                return
 
-          });
+              })
 
-      }
+            }
+
+
+            /* SEND A RESPONSE IF WE DIDNT UPDATE A MEETING */
+            if ( meeting ) {
+              //res.sendStatus(200);
+              //console.log('\n', '=== inbound parse end no changes ===============================', '\n')
+            }
+
+        })
 
     
     })

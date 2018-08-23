@@ -265,7 +265,6 @@ exports.inboundParse = ( req ) => {
 
 }
 
-
 exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
 
     // set time 30 minutes before meeting time

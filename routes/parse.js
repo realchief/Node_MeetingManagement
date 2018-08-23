@@ -70,10 +70,45 @@ router.get('/ical', function (req, res) {
                   console.log('\n', emoji.get('trumpet'), 'Sequence numbers match, so no changes' )
                 } else {
                   console.log('\n', emoji.get('trumpet'), 'Sequence numbers dont match, we need to make a change' )
+                  if ( meetingInfo.request_type != "cancel" ) meetingInfo.request_type = "update"
                   // cancel and add? or update and save?
                 }
 
              }
+
+
+            /* UPDATE THE MEETING by CANCELLING AND CREATING */
+             if ( meetingInfo.request_type == "update") {
+
+                  emails.cancel( user_id, meetingInfo.meeting_created, function(meetings) {
+                  
+                  console.log(emoji.get('mute'), 'we have cancelled this existing meeting:', meetings)
+                  
+                  emails.create( user_id, meetingId, meetingInfo, function(meeting) {
+                
+                    res.send( {
+                      'what' : 'update a meeting',
+                      'message' : 'ical endpoint: ' + meetingInfo.summary,
+                      'email domain:' : meetingInfo.emailDomain,
+                      'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
+                      'company id' : meetingInfo.organizer,
+                      'user id' : user_id,
+                      'meeting_id' : meetingId,
+                      'file name' : meetingInfo.file_name,
+                      'request_type' : meetingInfo.request_type,
+                      'start date' : moment(meetingInfo.meeting_start).format("dddd, MMMM Do YYYY, h:mma"),
+                      'dtstamp' : moment(meetingInfo.meeting_dtstamp).format("dddd, MMMM Do YYYY, h:mma"),
+                      'created' : moment(meetingInfo.meeting_created).format("dddd, MMMM Do YYYY, h:mma"),
+                      'sequence' : meetingInfo.sequence
+                    })
+                    return
+
+                  })
+
+
+               })
+
+            } 
 
             /* CANCEL THE MEETING */
             if ( meetingInfo.request_type == "cancel") {
@@ -86,6 +121,7 @@ router.get('/ical', function (req, res) {
 
                   // output manual ical response //
                     res.send( {
+                      'what' : 'cancel a meeting',
                       'message' : 'ical endpoint: ' + meetingInfo.summary,
                       'email domain:' : meetingInfo.emailDomain,
                       'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
@@ -113,6 +149,7 @@ router.get('/ical', function (req, res) {
 
                     // output manual ical response //
                     res.send( {
+                      'what' : 'create a meeting',
                       'message' : 'ical endpoint: ' + meetingInfo.summary,
                       'email domain:' : meetingInfo.emailDomain,
                       'to array (sendgrid_recipients):' : meetingInfo.sendgrid_recipients,
@@ -311,9 +348,10 @@ router.post('/parse', cpUpload, function (req, res) {
 
 
             /* SEND A RESPONSE IF WE DIDNT UPDATE A MEETING */
-            if ( meeting ) {
-              //res.sendStatus(200);
-              //console.log('\n', '=== inbound parse end no changes ===============================', '\n')
+            if ( meetingInfo.request_type == "request" && meeting ) {
+              res.sendStatus(200);
+              console.log('\n', '=== inbound parse end no changes ===============================', '\n')
+              return
             }
 
         })

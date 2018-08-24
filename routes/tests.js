@@ -13,6 +13,9 @@ var schedule = require('node-schedule');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+// email content function
+const EmailContent = require('../components/EmailContent.js')
+
 // set up all phrases
 var talkingPoints = require('../schemas/phrases-talking-points');
 var insights = require('../schemas/phrases-insights');
@@ -330,7 +333,7 @@ router.get('/send', function (req, res) {
 
   // ,sarah@loosegrip.net
   var to = 'martymix@gmail.com'
-  console.log('=========== page refresh show attempt:', to)
+  console.log('\n', emoji.get('eyes'), ' page refresh show attempt:', to)
 
   var email = JSON.parse(JSON.stringify(EmailContent.email_lg));
 
@@ -382,7 +385,7 @@ router.get('/send', function (req, res) {
 
 router.post('/send', function (req, res) {
 
-  console.log('=========== user controlled send attempt:', req.body.to)
+  console.log('\n', emoji.get('eyes'), ' user controlled send attempt:', req.body.to)
 
   var theEmail = EmailContent.processEmail(req.body)
 
@@ -419,7 +422,7 @@ router.post('/send', function (req, res) {
 
       sgMail.send(msg);
 
-      console.log( 'email sent to: ',  to ) 
+      console.log('\n', emoji.get('email'), ' email sent to: ',  to ) 
    })
 
 })

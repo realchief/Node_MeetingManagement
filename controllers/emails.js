@@ -177,6 +177,12 @@ exports.inboundParse = ( req ) => {
       //resolve( { type : 'cancel'} );
       //return resolve();
     }
+
+    if ( subject.toLowerCase().indexOf('out of office') >= 0 || subject.toLowerCase().indexOf('re:') >= 0) {
+      console.log('!!!!!!!!!!!!! ', 'vacation reminder in subject', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      requestType = "request"
+      return resolve();
+    }
     
      /* ===== default values ======= */
   
@@ -302,7 +308,7 @@ exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
         console.log('\n', emoji.get('rocket'), ' send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        //sgMail.send(data.msg);           
+        sgMail.send(data.msg);           
 
         data.meeting.updateAttributes({
           is_sent: true

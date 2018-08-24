@@ -11,7 +11,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
   console.log(emoji.get('trumpet'), emoji.get('trumpet'), '------ meeting info from incoming request ----', '\n', meetingInfo)
 
      if ( !meetingInfo ) {
-      console.log('!!! meeting info is blank.', '\n', meetingInfo)
+      console.log('!!! meeting info is blank.', '\n')
       //res.sendStatus(200);
       cb(meetingInfo)
       console.log('\n', emoji.get('eyes'), ' process end ===============================', '\n')

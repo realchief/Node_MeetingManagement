@@ -28,7 +28,7 @@ router.get('/ical', function (req, res) {
 
   getMeetingInfo.then( function(meetingInfo) {
 
-    meeting.process(meetingInfo, function(response) {
+    meeting.processMeetingRequest(meetingInfo, function(response) {
 
         res.send(response);
     
@@ -81,7 +81,7 @@ router.post('/parse', cpUpload, function (req, res) {
  
   getMeetingInfo.then( function(meetingInfo) {
 
-    meeting.process(meetingInfo, function(response){
+    meeting.processMeetingRequest(meetingInfo, function(response){
     
       res.sendStatus(200);
     

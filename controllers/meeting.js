@@ -6,7 +6,7 @@ var emails = require('../controllers/emails');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
-exports.process = ( meetingInfo, cb ) => {
+exports.processMeetingRequest = ( meetingInfo, cb ) => {
 
   console.log(emoji.get('trumpet'), emoji.get('trumpet'), '------ meeting info from incoming request ----', '\n', meetingInfo)
 

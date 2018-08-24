@@ -45,7 +45,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
              /* SEE IF THERE IS AN EXISTING MEETING BASED ON THE MEETING_ID */
              if (!meeting) {
 
-                console.log('\n', emoji.get('trumpet'), 'We did not find an existing meeting.')
+                console.log('\n', emoji.get('trumpet'), 'We did not find an existing meeting that has not been sent.')
             
              } else {
                 

@@ -51,7 +51,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
                 
                 console.log('\n', emoji.get('trumpet'), 'We found an existing meeting.', meeting.meeting_id, meeting.sequence )
 
-                if ( meeting.sequence == meetingInfo.sequence) {
+                if ( meeting.sequence == meetingInfo.meeting_sequence) {
                   console.log('\n', emoji.get('trumpet'), 'Sequence numbers match, so no changes' )
                 } else {
                   console.log('\n', emoji.get('trumpet'), 'Sequence numbers dont match, we need to make a change' )

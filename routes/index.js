@@ -5,23 +5,17 @@ let Model = require('../models');
 let Async = require('async');
 let apiControllers = require('../controllers/apis');
 
-<<<<<<< HEAD
-=======
 var colors = require('colors');
 var emoji = require('node-emoji')
 
-router.get('/',  function (req, res) {
->>>>>>> d6f2d8a69097a698484147a6bfb1137651f84c72
-
-var google_data = function (user, data, done) {
-    console.log('params: ', data);
+var google_data = function (user, done) {
     Async.waterfall([
         function (cb) {
             user.getGoogle().then(function (gUser) {
                 if (gUser) {
                     cb(null, gUser)
                 }
-                else cb({error: 'can not find the gUser'}, false)
+                else cb({error: 'User is not connected with Google'}, false)
             });
         }, function (gUser, cb) {
             if (gUser.view_id && gUser.property_id && gUser.account_id) {
@@ -43,7 +37,36 @@ var google_data = function (user, data, done) {
     })
 }
 
-router.get('/setprofile', function (req, res) {
+var facebook_data = function (user, cb) {
+    Async.waterfall([
+        function (cb) {
+            user.getFacebook().then(function (fUser) {
+                if (fUser) {
+                    cb(null, fUser)
+                }
+                else cb({'error': 'User is not connected with Facebook'})
+            })
+        }, function (fUser, cb) {
+            if (fUser.token && fUser.property_id && fUser.property_name) {
+                apiControllers.getFacebookMetrics(fUser, function (err, data) {
+                    cb(null, {metric_data: data, dialog_data: null});
+                });
+            }
+            else {
+                apiControllers.getFacebookSummaries(gUser, function (err, data) {
+                    cb(null, {dialog_data: data, metric_data: null})
+                });
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            console.log(err.error);
+        }
+        done(result);
+    })
+}
+
+router.get('/google/setprofile', function (req, res) {
     console.log(req.query);
     if (req.user) {
         if (req.query.view_id && req.query.account_id && req.query.property_id) {
@@ -76,11 +99,7 @@ router.get('/',  function (req, res) {
         Async.parallel({
             google_data: function (cb) {
 
-                google_data(req.user, {
-                    view_id: req.param('view_id'),
-                    account_id: req.param('account_id'),
-                    property_id: req.param('property_id')
-                }, function (data) {
+                google_data(req.user, function (data) {
                     cb(null, data);
                 })
             },

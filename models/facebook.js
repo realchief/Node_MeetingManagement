@@ -20,6 +20,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         expiry_date: {
             type: DataTypes.INTEGER
+        },
+        account_id: {
+            type: DataTypes.STRING
+        },
+        account_name: {
+            type: DataTypes.STRING
+        },
+        account_token: {
+            type: DataTypes.STRING
         }
     });
 

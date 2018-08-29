@@ -20,29 +20,42 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
-exports.getFacebookMetrics = (fUser, cb) => {
-        const token = fUser.token
+exports.getFacebookMetrics = (fUser, done) => {
+        const token = fUser.token;
         graph.setAccessToken(token);
         Async.parallel({
-                getMyProfile: (done) => {
-                    graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, me) => {
-                       //   console.log('get facebook data - me', me)
-
-                        done(err, me);
-                    });
-                },
-                getMyFriends: (done) => {
-                    graph.get(`${fUser.profile_id}/friends`, (err, friends) => {
-                        //  console.log('get facebook data - friends', friends)
-
-                        done(err, friends.data);
-                    });
-                }
-            },
+            fan: function (cb) {
+                graph.get(fUser.account_id, {
+                    access_token : fUser.account_token,
+                    fields : 'fan_count,engagement,global_brand_page_name,name,name_with_location_descriptor,posts'
+                }, function(err, response) {
+                    cb(null, response);
+                });
+            }
+        },
         (err, data) => {
             cb(null, data);
         });
 };
+
+exports.getFacebookSummaries = (fUser, done) => {
+    const token = fUser.token;
+    graph.setAccessToken(token);
+    
+    graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, response) => {
+        var data = [];
+        for (var i = 0; i < response.accounts.data.length; i ++) {
+            var datum = {
+                'account_id': response.accounts.data[i].id,
+                'account_name': response.accounts.data[i].global_brand_page_name,
+                'account_token': response.accounts.data[i].access_token
+            };
+            data.push(datum)
+        }
+        done(data);
+    });
+
+}
 
 exports.getGoogleMatrics = (gUser, done) => {
     oauth2Client.credentials = {
@@ -511,13 +524,8 @@ exports.checkGoogleToken = (req, res, next) => {
     }
     req.user.getGoogle().then(function (gUser) {
 
-<<<<<<< HEAD
-        if (gUser) {
-            console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
-=======
         if ( gUser ) {
             console.log("\n", emoji.get("rain_cloud"), '>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
->>>>>>> d6f2d8a69097a698484147a6bfb1137651f84c72
         }
 
         if (gUser && moment().subtract(gUser.expiry_date, "s").format("X") > -300) {
@@ -559,13 +567,8 @@ exports.checkFacebookToken = (req, res, next) => {
     }
     req.user.getFacebook().then(function (fUser) {
 
-<<<<<<< HEAD
-        if (fUser) {
-            console.log('>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract(fUser.expiry_date, "s").format("X"))
-=======
         if ( fUser ) {
             console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract(fUser.expiry_date, "s").format("X"))
->>>>>>> d6f2d8a69097a698484147a6bfb1137651f84c72
         }
 
         if (fUser && moment().subtract(fUser.expiry_date, "s").format("X") > 86400) {

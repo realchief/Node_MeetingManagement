@@ -10,6 +10,12 @@ var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
+// email content function
+const EmailContent = require('../components/EmailContent.js')
+
 // set up all phrases
 var talkingPoints = require('../schemas/phrases-talking-points');
 var insights = require('../schemas/phrases-insights');
@@ -52,7 +58,7 @@ router.get('/testsocial/:company', function (req, res) {
 
         user.getFacebook().then(function (fUser) {
           if (fUser) {
-              console.log( 'Facebook User>>>', fUser.id)
+              console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
           }
 
           done( null, fUser )
@@ -65,7 +71,7 @@ router.get('/testsocial/:company', function (req, res) {
 
         user.getGoogle().then(function (gUser) {
           if (gUser) {
-              console.log( 'Google User>>>', "id", gUser.id )
+              console.log( emoji.get("smile"), 'Google User>>>', "id", gUser.id )
           }
 
           done( null, gUser )
@@ -104,6 +110,8 @@ router.get('/testsocial/:company', function (req, res) {
                         return
                       }
 
+                      // Set the global Google credentials for the user //
+
                       let gUser = results.retrieveGoogleUser
 
                       let oauth2Client = new OAuth2(
@@ -124,36 +132,164 @@ router.get('/testsocial/:company', function (req, res) {
                       });
 
 
-                       console.log('>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"), 'google access token:', gUser.token)
+                       console.log('\n', emoji.get("information_source"),'>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"), 'google access token:', gUser.token)
 
                       // IF FAIL, WE PROBABLY NEED TO REFRESH THE TOKEN. HOW?
 
-                      google.analytics('v3').management.accountSummaries.list(function (err, response) {
+                      /* ACCOUNTS ==== */
 
-                          if (err) {
-                            console.log('Google API error:', err);
-                            return;
-                          }
-
-                        // console.log('get google data - account all', response.data)
-                      
-                          if (response && !response.error) {
-                             //console.log('get google data - account summary', response.data)
-                              done(null, response);
-                          } else {
-                             //console.log('get google data - account summary error', response.data)
-                              done(null, response);
-                          }
+                      const analytics = google.analytics({
+                        version: 'v3',
                       });
 
 
-                  }                    
+                       Async.parallel({
+
+                          accountSummaries : (done) => {
+
+                            analytics.management.accountSummaries.list(function (err, response) {
+
+                                if (err) {
+                                  console.log('Google API error:', err);
+                                  return;
+                                }
+
+                              // console.log('get google data - account all', response.data)
+                            
+                                if (response && !response.error) {
+                                   //console.log('get google data - account summary', response.data)
+                                    done(null, response);
+                                } else {
+                                   //console.log('get google data - account summary error', response.data)
+                                    done(null, response);
+                                }
+                            });
+
+                          },
+
+                          goals : (done) => {
+
+                            /* GOALS ==== */
+                            analytics.management.goals.list({
+                              'accountId': gUser.account_id,
+                              'webPropertyId': gUser.property_id,
+                              'profileId': gUser.view_id },
+
+                              function (err, response) {
+
+                                if (err) {
+                                  console.log('Google API error:', err);
+                                }
+
+                                var goals = [];
+                                var metrics = [];
+
+                                if ( typeof response.data != 'undefined') {
+
+                                  //console.log(response.result.items)
+
+                                  _.each( response.data.items, function(goal, index) {
+                                    
+                                    var details = ""
+                                    if (goal.urlDestinationDetails) {
+                                      details = goal.urlDestinationDetails
+                                    } else if (goal.eventDetails) {
+                                       details = goal.eventDetails
+                                     }
+
+                                     goals.push( {
+                                      id : goal.id,
+                                      name : goal.name,
+                                      type : goal.type,
+                                      details : details
+                                     })
+
+                                     metrics.push( {  
+                                      metricName: 'ga:goal' + goal.id + 'Completions',
+                                      name : goal.name
+                                     })
+
+                                  })
+
+                                }
+                                
+                                done(null, { goals : goals, metricNames : metrics });                              
+                                //console.log('Google API goals response:', goals, metrics)
+                            });
+
+                          },
+
+                          metrics : (done) => {
+
+                            /* METRICS ==== */
+
+                            const analyticsreporting = google.analyticsreporting({
+                              version: 'v4',
+                            });
+
+                            var currentSince = moment('2018-08-14').format( "YYYY-MM-DD" );
+                            var currentUntil = moment('2018-08-20').format( "YYYY-MM-DD" );
+                            var comparedSince = moment( '2018-08-07' ).format( "YYYY-MM-DD" );
+                            var comparedUntil = moment( '2018-08-13' ).format( "YYYY-MM-DD" );
+
+                            var dateRanges = [
+                            {
+                              startDate: currentSince,
+                              endDate: currentUntil
+                            },
+                            {
+                             startDate: comparedSince,
+                              endDate: comparedUntil
+                            }
+                            ]
+
+                            analyticsreporting.reports.batchGet({
+                              "requestBody": {
+                                reportRequests: [{
+                                  viewId: gUser.view_id,
+                                  dateRanges: dateRanges,
+                                  metrics: [
+                                    {
+                                      expression: 'ga:users'
+                                    }
+                                  ]
+                                }]
+                              }}, function ( err, response ) {
+                              
+                                if (err) {
+                                  console.log('Google API error:', err);
+                                }
+
+                                done(null, response.data.reports);
+                                //console.log('Google API Metrics response:', response.data.reports)
+
+                              })
+
+                              },
+                          
+                          }, (err, results) => {
+
+                                  //console.log('METRIC PULL RESULTS', results)
+                                  
+                                  done(null, {
+                                    accountSummaries : results.accountSummaries,
+                                    goals : results.goals,
+                                    metrics : results.metrics
+                                  });
+
+                            })       
+
+                    }
+
               },
               
               (err, result) => {
 
                   let output = JSON.stringify(result.getFacebookData)
-                  output += JSON.stringify(result.getGoogleData.data) 
+                  
+                  output += JSON.stringify(result.getGoogleData.accountSummaries.data) 
+                  output += JSON.stringify(result.getGoogleData.goals.goals) 
+                  output += JSON.stringify(result.getGoogleData.metrics[0].data) 
 
                   //console.log('returned facebook>>>>', result.getFacebookData)
                   //console.log('returned google>>>>', result.getGoogleData)
@@ -197,7 +333,7 @@ router.get('/send', function (req, res) {
 
   // ,sarah@loosegrip.net
   var to = 'martymix@gmail.com'
-  console.log('=========== page refresh show attempt:', to)
+  console.log('\n', emoji.get('eyes'), ' page refresh show attempt:', to)
 
   var email = JSON.parse(JSON.stringify(EmailContent.email_lg));
 
@@ -249,7 +385,7 @@ router.get('/send', function (req, res) {
 
 router.post('/send', function (req, res) {
 
-  console.log('=========== user controlled send attempt:', req.body.to)
+  console.log('\n', emoji.get('eyes'), ' user controlled send attempt:', req.body.to)
 
   var theEmail = EmailContent.processEmail(req.body)
 
@@ -286,7 +422,7 @@ router.post('/send', function (req, res) {
 
       sgMail.send(msg);
 
-      console.log( 'email sent to: ',  to ) 
+      console.log('\n', emoji.get('email'), ' email sent to: ',  to ) 
    })
 
 })

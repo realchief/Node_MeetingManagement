@@ -24,6 +24,8 @@ MeetBrief (http://www.meetbrief.com) delivers Marketing and Sales insights — h
 
 Example deliverable: [http://www.getfingertips.net/send](http://www.getfingertips.net/send))
 
+More Info: https://docs.google.com/document/d/1jv_3oj1g03g9dSSueYaDjgNMh9DdbyhYBsUUcvVWCM0/
+
 **How?**
 
 

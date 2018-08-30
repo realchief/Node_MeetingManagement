@@ -47,7 +47,7 @@ var facebook_data = function (user, cb) {
                 else cb({'error': 'User is not connected with Facebook'})
             })
         }, function (fUser, cb) {
-            if (fUser.token && fUser.property_id && fUser.property_name) {
+            if (fUser.account_id && fUser.account_name && fUser.account_token) {
                 apiControllers.getFacebookMetrics(fUser, function (err, data) {
                     cb(null, {metric_data: data, dialog_data: null});
                 });
@@ -86,6 +86,26 @@ router.get('/google/setprofile', function (req, res) {
     else res.redirect('signin');
 })
 
+router.get('/facebook/setprofile', function (req, res) {
+    console.log(req.query);
+    if (req.user) {
+        if (req.query.account_id && req.query.account_name && req.query.account_token) {
+            req.user.getGoogle().then(function (fUser) {
+                fUser.updateAttributes({
+                    account_id: req.query.account_id,
+                    account_name: req.query.account_name,
+                    account_token: req.query.account_token
+                }).then(function (updatedResult) {
+                    console.log(updatedResult);
+                    res.redirect('/');
+                })
+            });
+        }
+        else res.redirect('/');
+    }
+    else res.redirect('signin');
+})
+
 router.get('/',  function (req, res) {
     var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
     
@@ -103,15 +123,9 @@ router.get('/',  function (req, res) {
                     cb(null, data);
                 })
             },
-            
             facebook_data: function (cb) {
-                req.user.getFacebook().then(function (fUser) {
-                    if (fUser) {
-                        apiControllers.getFacebookMetrics(fUser, function (err, data) {
-                            cb(null, data);
-                        });
-                    }
-                    else cb(null, false);
+                google_data(req.user, function (data) {
+                    cb(null, data);
                 })
             }
         }, function (err, results) {

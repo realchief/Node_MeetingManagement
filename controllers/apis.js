@@ -22,6 +22,13 @@ let oauth2Client = new OAuth2(
 
 exports.getFacebookMetrics = (fUser, done) => {
     const token = fUser.token;
+
+    var since = moment().format( "YYYY-MM-DD" );
+    var until = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+
+    var sinceForPosts = moment().format( "YYYY-MM-DD" );
+    var untilForPosts = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+
     graph.setAccessToken(token);
     Async.parallel({
         fan: function (cb) {
@@ -73,6 +80,7 @@ exports.getFacebookMetrics = (fUser, done) => {
         },
         insights_posts: function(cb) {
             graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
                 limit : 50,
 			    fields : 'created_time,message,id,type,link,permalink_url',
 			    date_preset : FT.defaults.facebookDatePreset,
@@ -83,7 +91,32 @@ exports.getFacebookMetrics = (fUser, done) => {
                 cb(null, response);
             });
         },
-        
+        insights_28days: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
+                period : 'days_28',
+                date_preset : FT.defaults.facebookDatePreset,
+                since : since,
+                until : until,
+                show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                cb(null, response);
+            });
+        },
+        insights_28days: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
+			    period : 'week',
+			    date_preset : FT.defaults.facebookDatePreset,
+			    since : since,
+			    until : until,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                cb(null, response);
+            });
+        },
     },
     (err, data) => {
         cb(null, data);

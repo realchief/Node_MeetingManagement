@@ -53,7 +53,7 @@ var facebook_data = function (user, done) {
                 });
             }
             else {
-                apiControllers.getFacebookSummaries(fUser, function (err, data) {
+                apiControllers.getFacebookSummaries(fUser, function (data) {
                     cb(null, {dialog_data: data, metric_data: null})
                 });
             }
@@ -136,6 +136,8 @@ router.get('/',  function (req, res) {
             }
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
+            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_data);
+            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             req.session.currentVersion = 'fingertips'

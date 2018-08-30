@@ -37,7 +37,7 @@ var google_data = function (user, done) {
     })
 }
 
-var facebook_data = function (user, cb) {
+var facebook_data = function (user, done) {
     Async.waterfall([
         function (cb) {
             user.getFacebook().then(function (fUser) {
@@ -124,7 +124,7 @@ router.get('/',  function (req, res) {
                 })
             },
             facebook_data: function (cb) {
-                google_data(req.user, function (data) {
+                facebook_data(req.user, function (data) {
                     cb(null, data);
                 })
             }
@@ -137,6 +137,8 @@ router.get('/',  function (req, res) {
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+            console.log('\n', emoji.get("smile"), '***** Google Data: ', results.google_data);
+            console.log('\n', emoji.get("smile"), '***** Facebook Data: ', results.facebook_data);
 
             req.session.currentVersion = 'fingertips'
             res.render('fingertips', {

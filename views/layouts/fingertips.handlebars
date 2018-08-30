@@ -80,43 +80,78 @@
 		
 
 </div>
-{{#if (hasOwn google_data 'matric_data')}}
-	{{google_data.metric_data}}
-{{/if}}
-{{#if (hasOwn google_data 'dialog_data')}}
-	<div class="select-google-view modal">
-		<div class="modal-header">
-			Select Google View				
-		</div>
-		<div class="modal-body">
-			
-			{{#each google_data.dialog_data.users as |account|}}
-				<h4> {{ account.account_name }}</h4>
-				{{#each account.web_properties as |property|}}
-					<h5> {{ property.property_name }}</h5>
-					<ul class="views-list">
-					{{#each property.views as |view|}}
-						<li>
-							<a href='/google/setprofile/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
-								{{view.view_name}}
-							</a>
-						</li>
+{{#if google_data }}
+	{{#if (hasOwn google_data 'matric_data')}}
+		{{google_data.metric_data}}
+	{{/if}}
+	{{#if (hasOwn google_data 'dialog_data')}}
+		<div class="select-google-view modal">
+			<div class="modal-header">
+				Select Google View				
+			</div>
+			<div class="modal-body">
+				
+				{{#each google_data.dialog_data.users as |account|}}
+					<h4> {{ account.account_name }}</h4>
+					{{#each account.web_properties as |property|}}
+						<h5> {{ property.property_name }}</h5>
+						<ul class="views-list">
+						{{#each property.views as |view|}}
+							<li>
+								<a href='/google/setprofile/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
+									{{view.view_name}}
+								</a>
+							</li>
+						{{/each}}
+						</ul>
 					{{/each}}
-					</ul>
 				{{/each}}
-			{{/each}}
-		</div>
-		<div class="modal-footer">
+			</div>
+			<div class="modal-footer">
 
+			</div>
 		</div>
-	</div>
+	{{/if}}
 {{/if}}
-	
-<div class="test"></div>
 
+{{#if facebook_data }}
+	{{#if (hasOwn facebook_data 'matric_data')}}
+		{{facebook.metric_data}}
+	{{/if}}
+
+	{{#if (hasOwn facebook_data 'dialog_data')}}
+		<div class="select-facebook-view modal">
+			<div class="modal-header">
+				Select Facebook View				
+			</div>
+			<div class="modal-body">
+				
+				{{#each facebook_data.dialog_data.users as |account|}}
+					<h4> {{ account.account_name }}</h4>
+					{{#each account.web_properties as |property|}}
+						<h5> {{ property.property_name }}</h5>
+						<ul class="views-list">
+						{{#each property.views as |view|}}
+							<li>
+								<a href='/google/setprofile/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
+									{{view.view_name}}
+								</a>
+							</li>
+						{{/each}}
+						</ul>
+					{{/each}}
+				{{/each}}
+			</div>
+			<div class="modal-footer">
+
+			</div>
+		</div>
+	{{/if}}
+{{/if}}
+
+<div class="test"></div>
 	
 	{{> scripts }}
-
 
 </body>
 

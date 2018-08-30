@@ -53,7 +53,7 @@ var facebook_data = function (user, done) {
                 });
             }
             else {
-                apiControllers.getFacebookSummaries(gUser, function (err, data) {
+                apiControllers.getFacebookSummaries(fUser, function (err, data) {
                     cb(null, {dialog_data: data, metric_data: null})
                 });
             }
@@ -90,7 +90,7 @@ router.get('/facebook/setprofile', function (req, res) {
     console.log(req.query);
     if (req.user) {
         if (req.query.account_id && req.query.account_name && req.query.account_token) {
-            req.user.getGoogle().then(function (fUser) {
+            req.user.getFacebook().then(function (fUser) {
                 fUser.updateAttributes({
                     account_id: req.query.account_id,
                     account_name: req.query.account_name,
@@ -118,11 +118,11 @@ router.get('/',  function (req, res) {
     if (req.user) {
         Async.parallel({
             google_data: function (cb) {
-
                 google_data(req.user, function (data) {
                     cb(null, data);
                 })
             },
+            
             facebook_data: function (cb) {
                 facebook_data(req.user, function (data) {
                     cb(null, data);
@@ -137,8 +137,6 @@ router.get('/',  function (req, res) {
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
-            console.log('\n', emoji.get("smile"), '***** Google Data: ', results.google_data);
-            console.log('\n', emoji.get("smile"), '***** Facebook Data: ', results.facebook_data);
 
             req.session.currentVersion = 'fingertips'
             res.render('fingertips', {

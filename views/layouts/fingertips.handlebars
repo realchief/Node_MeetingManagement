@@ -24,15 +24,48 @@
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
 
 								<ul class="connectors-list">
-								{{#if google_data }}
-									<a class="title" href='/auth/google/unlink'>Disconnected Google Analytics</a>
-								{{else}}
-									<a class="title" href='/auth/google'>Connect Google Analytics</a>
-								{{/if}}
-								</ul>								
-						
-							</div>
+									{{#if google_data }}
+									<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnected Google Analytics</a></li>
+									{{else}}
+									<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									{{/if}}
+								</ul>
+								<div class="google-accounts">
+									{{#if google_data }}
+										{{#if (hasOwn google_data 'matric_data')}}
+											{{google_data.metric_data}}
+										{{/if}}
+										{{#if (hasOwn google_data 'dialog_data')}}
+											<div class="select-google-view modal">
+												<div class="modal-header">
+													<h3 class="with-line"><i class="fab fa-google"></i>Select Google View</h3>				
+												</div>
+												<div class="modal-body">
+													
+													{{#each google_data.dialog_data.users as |account|}}
+														<h4 class="label ga-account"> {{ account.account_name }}</h4>
+														{{#each account.web_properties as |property|}}
+															<h5 class="label ga-property">Property: {{ property.property_name }}</h5>
+															<ul class="views-list">
+															{{#each property.views as |view|}}
+																<li class="ga-account ga-view">
+																	<a href='/google/setprofile/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
+																		{{view.view_name}}
+																	</a>
+																</li>
+															{{/each}}
+															</ul>
+														{{/each}}
+													{{/each}}
+												</div>
+												<div class="modal-footer">
 
+												</div>
+											</div>
+										{{/if}}
+									{{/if}}
+								</div>							
+							</div>
 						</div>
 
 						<div class="col last">
@@ -42,14 +75,42 @@
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
 
 									<ul class="connectors-list">
-									{{#if facebook_data }}
-										<a class="title" href="/auth/facebook/unlink">Disconnected Facebook</a>
-									{{else}}
-										<a class="title" href="/auth/facebook">Connect Facebook Account</a>
-									{{/if}}
+										{{#if facebook_data }}
+										<li class="facebook facebook-authorize-button button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnected Facebook</a></li>
+										{{else}}
+										<li class="facebook facebook-deauthorize-button button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+										{{/if}}
 									</ul>
 
-								<div class="facebook-accounts"></div>
+								<div class="facebook-accounts">
+									{{#if facebook_data }}
+										{{#if (hasOwn facebook_data 'matric_data')}}
+											{{facebook.metric_data}}
+										{{/if}}
+
+										{{#if (hasOwn facebook_data 'dialog_data')}}
+											<div class="select-facebook-view modal">
+												<div class="modal-header">
+													<h3 class="with-line"><i class="fab fa-google"></i>Select Google View</h3>					
+												</div>
+												<div class="modal-body">											
+													<ul class="views-list">
+														{{#each facebook_data.dialog_data as |account|}}
+															<li class="fb-account">
+																<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
+																	{{ account.account_name }}
+																</a>
+															</li>
+														{{/each}}
+													</ul>
+												</div>
+												<div class="modal-footer">
+
+												</div>
+											</div>
+										{{/if}}
+									{{/if}}
+								</div>
 						
 							</div>
 
@@ -69,72 +130,9 @@
 			</div>
 
 		</div>
-	</div>
-
-		
+	</div>	
 
 </div>
-{{#if google_data }}
-	{{#if (hasOwn google_data 'matric_data')}}
-		{{google_data.metric_data}}
-	{{/if}}
-	{{#if (hasOwn google_data 'dialog_data')}}
-		<div class="select-google-view modal">
-			<div class="modal-header">
-				Select Google View				
-			</div>
-			<div class="modal-body">
-				
-				{{#each google_data.dialog_data.users as |account|}}
-					<h4> {{ account.account_name }}</h4>
-					{{#each account.web_properties as |property|}}
-						<h5> {{ property.property_name }}</h5>
-						<ul class="views-list">
-						{{#each property.views as |view|}}
-							<li>
-								<a href='/google/setprofile/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
-									{{view.view_name}}
-								</a>
-							</li>
-						{{/each}}
-						</ul>
-					{{/each}}
-				{{/each}}
-			</div>
-			<div class="modal-footer">
-
-			</div>
-		</div>
-	{{/if}}
-{{/if}}
-
-{{#if facebook_data }}
-	{{#if (hasOwn facebook_data 'matric_data')}}
-		{{facebook.metric_data}}
-	{{/if}}
-
-	{{#if (hasOwn facebook_data 'dialog_data')}}
-		<div class="select-facebook-view modal">
-			<div class="modal-header">
-				Select Facebook View				
-			</div>
-			<div class="modal-body">
-				<ul class="views-list">
-					{{#each facebook_data.dialog_data as |account|}}
-						<li>
-							<a href='/google/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
-								{{ account.account_name }}
-							</a>
-						</li>
-					{{/each}}
-				</ul>
-			</div>
-			<div class="modal-footer">
-
-			</div>
-		</div>
-	{{/if}}
-{{/if}}
 
 <div class="test"></div>
 	

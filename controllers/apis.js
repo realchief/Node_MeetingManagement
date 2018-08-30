@@ -21,21 +21,73 @@ let oauth2Client = new OAuth2(
 );
 
 exports.getFacebookMetrics = (fUser, done) => {
-        const token = fUser.token;
-        graph.setAccessToken(token);
-        Async.parallel({
-            fan: function (cb) {
-                graph.get(fUser.account_id, {
-                    access_token : fUser.account_token,
-                    fields : 'fan_count,engagement,global_brand_page_name,name,name_with_location_descriptor,posts'
-                }, function(err, response) {
-                    cb(null, response);
-                });
-            }
+    const token = fUser.token;
+    graph.setAccessToken(token);
+    Async.parallel({
+        fan: function (cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                fields : 'fan_count,engagement,global_brand_page_name,name,name_with_location_descriptor,posts'
+            }, function(err, response) {
+                cb(null, response);
+            });
         },
-        (err, data) => {
-            cb(null, data);
-        });
+        insights_aggregation: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
+                period: FT.defaults.facebookAggregationPeriod,
+                date_preset : FT.defaults.facebookDatePreset,
+			    since : since,
+			    until : until,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                cb(null, response);
+            });
+        },
+        insights_daily: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
+                period : 'day',
+			    date_preset : FT.defaults.facebookDatePreset,
+			    since : since,
+			    until : until,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                cb(null, response);
+            });
+        },
+        insights_lifetime: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_fans',
+			    period : 'lifetime',
+			    date_preset : FT.defaults.facebookDatePreset,
+			    since : since,
+			    until : until,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                cb(null, response);
+            });
+        },
+        insights_posts: function(cb) {
+            graph.get(fUser.account_id, {
+                limit : 50,
+			    fields : 'created_time,message,id,type,link,permalink_url',
+			    date_preset : FT.defaults.facebookDatePreset,
+			    since : sinceForPosts,
+			    until : untilForPosts,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                cb(null, response);
+            });
+        },
+        
+    },
+    (err, data) => {
+        cb(null, data);
+    });
 };
 
 exports.getFacebookSummaries = (fUser, done) => {

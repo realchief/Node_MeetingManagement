@@ -24,13 +24,13 @@ let oauth2Client = new OAuth2(
 exports.getFacebookMetrics = (fUser, done) => {
     const token = fUser.token;
 
-    var since_current = moment().subtract(300, 'days').format( "YYYY-MM-DD 00:00" );
+    var since_current = moment().subtract(5, 'days').format( "YYYY-MM-DD 00:00" );
     var until_current = moment().format( "YYYY-MM-DD 23:59" );
 
     var sinceForPosts_current = moment().format( "YYYY-MM-DD 00:00" );
     var untilForPosts_current = moment().format( "YYYY-MM-DD 23:59" );
 
-    var since_compare = moment().subtract(300, 'days').format( "YYYY-MM-DD 00:00" );
+    var since_compare = moment().subtract(5, 'days').format( "YYYY-MM-DD 00:00" );
     var until_compare = moment().format( "YYYY-MM-DD 23:59" );
 
     var sinceForPosts_compare = moment().format( "YYYY-MM-DD 00:00" );
@@ -291,169 +291,169 @@ exports.getGoogleMatrics = (gUser, done) => {
             })
         },
           
-        events: function (cb) {
-            google.reportRequests({
-                path: '/v4/reports:batchGet',
-                root: 'https://analyticsreporting.googleapis.com/',
-                method: 'POST',
-                body: {
-                    reportRequests: [{
-                        "viewId": gUser.view_id,
-                        "dateRanges": dateRanges,
-                        "dimensions": [{
-                            "name": "ga:eventCategory"
-                        }, ],
-                        "metrics": [{
-                            expression: 'ga:eventValue'
-                        }, ],
-                        "dimensionFilterClauses": [{
-                            "filters": [{
-                                "dimensionName": "ga:eventCategory",
-                                "operator": "REGEXP",
-                                "expressions": ["Riveted"]
-                            }]
-                        }],
-                        pageSize: 20,
-                        "orderBys": [{
-                            fieldName: "ga:eventValue",
-                            sortOrder: 'DESCENDING',
-                            orderType: "VALUE"
-                        }, ]
-                    }, ]
-                }
-            }).then(function (response) {
-                cb(null, response)
-            })
-        },
-        lists: function (cb) {
-            google.reportRequests({
-                path: '/v4/reports:batchGet',
-                root: 'https://analyticsreporting.googleapis.com/',
-                method: 'POST',
-                body: {
-                    reportRequests: [
+        // events: function (cb) {
+        //     google.reportRequests({
+        //         path: '/v4/reports:batchGet',
+        //         root: 'https://analyticsreporting.googleapis.com/',
+        //         method: 'POST',
+        //         body: {
+        //             reportRequests: [{
+        //                 "viewId": gUser.view_id,
+        //                 "dateRanges": dateRanges,
+        //                 "dimensions": [{
+        //                     "name": "ga:eventCategory"
+        //                 }, ],
+        //                 "metrics": [{
+        //                     expression: 'ga:eventValue'
+        //                 }, ],
+        //                 "dimensionFilterClauses": [{
+        //                     "filters": [{
+        //                         "dimensionName": "ga:eventCategory",
+        //                         "operator": "REGEXP",
+        //                         "expressions": ["Riveted"]
+        //                     }]
+        //                 }],
+        //                 pageSize: 20,
+        //                 "orderBys": [{
+        //                     fieldName: "ga:eventValue",
+        //                     sortOrder: 'DESCENDING',
+        //                     orderType: "VALUE"
+        //                 }, ]
+        //             }, ]
+        //         }
+        //     }).then(function (response) {
+        //         cb(null, response)
+        //     })
+        // },
+        // lists: function (cb) {
+        //     google.reportRequests({
+        //         path: '/v4/reports:batchGet',
+        //         root: 'https://analyticsreporting.googleapis.com/',
+        //         method: 'POST',
+        //         body: {
+        //             reportRequests: [
 
-                        {
-                            "viewId": gUser.view_id,
-                            "dateRanges": dateRanges,
-                            "dimensions": [
-                                //{ "name" : "ga:pageTitle" },
-                                {
-                                    "name": "ga:pagePath"
-                                }
-                            ],
-                            "metrics": [{
-                                    expression: 'ga:pageviews'
-                                },
-                                {
-                                    expression: 'ga:sessions'
-                                },
-                                {
-                                    expression: 'ga:entrances'
-                                },
-                                {
-                                    expression: 'ga:newUsers'
-                                },
-                                {
-                                    expression: 'ga:bounceRate'
-                                },
-                                {
-                                    expression: 'ga:avgTimeOnPage'
-                                },
-                                {
-                                    expression: 'ga:timeOnPage'
-                                },
-                            ],
-                            pageSize: 100,
-                            "orderBys": [{
-                                fieldName: "ga:pageviews",
-                                sortOrder: 'DESCENDING',
-                                //orderType : "DELTA"
-                            }, ]
-                        },
+        //                 {
+        //                     "viewId": gUser.view_id,
+        //                     "dateRanges": dateRanges,
+        //                     "dimensions": [
+        //                         //{ "name" : "ga:pageTitle" },
+        //                         {
+        //                             "name": "ga:pagePath"
+        //                         }
+        //                     ],
+        //                     "metrics": [{
+        //                             expression: 'ga:pageviews'
+        //                         },
+        //                         {
+        //                             expression: 'ga:sessions'
+        //                         },
+        //                         {
+        //                             expression: 'ga:entrances'
+        //                         },
+        //                         {
+        //                             expression: 'ga:newUsers'
+        //                         },
+        //                         {
+        //                             expression: 'ga:bounceRate'
+        //                         },
+        //                         {
+        //                             expression: 'ga:avgTimeOnPage'
+        //                         },
+        //                         {
+        //                             expression: 'ga:timeOnPage'
+        //                         },
+        //                     ],
+        //                     pageSize: 100,
+        //                     "orderBys": [{
+        //                         fieldName: "ga:pageviews",
+        //                         sortOrder: 'DESCENDING',
+        //                         //orderType : "DELTA"
+        //                     }, ]
+        //                 },
 
-                        {
-                            "viewId": gUser.view_id,
-                            "dateRanges": dateRanges,
-                            "dimensions": [
-                                //{ "name" : "ga:pageTitle" },
-                                {
-                                    "name": "ga:pagePath"
-                                },
-                                {
-                                    "name": "ga:userType"
-                                },
-                            ],
-                            "metrics": [{
-                                expression: 'ga:sessions'
-                            }, ],
-                            pageSize: 200,
-                            "orderBys": [{
-                                fieldName: "ga:sessions",
-                                sortOrder: 'DESCENDING',
-                                //orderType : "DELTA"
-                            }, ],
-                            "dimensionFilterClauses": [{
-                                "filters": [{
-                                    "dimensionName": "ga:userType",
-                                    "operator": "REGEXP",
-                                    "expressions": ["Returning"]
-                                }]
-                            }]
-                        },
+        //                 {
+        //                     "viewId": gUser.view_id,
+        //                     "dateRanges": dateRanges,
+        //                     "dimensions": [
+        //                         //{ "name" : "ga:pageTitle" },
+        //                         {
+        //                             "name": "ga:pagePath"
+        //                         },
+        //                         {
+        //                             "name": "ga:userType"
+        //                         },
+        //                     ],
+        //                     "metrics": [{
+        //                         expression: 'ga:sessions'
+        //                     }, ],
+        //                     pageSize: 200,
+        //                     "orderBys": [{
+        //                         fieldName: "ga:sessions",
+        //                         sortOrder: 'DESCENDING',
+        //                         //orderType : "DELTA"
+        //                     }, ],
+        //                     "dimensionFilterClauses": [{
+        //                         "filters": [{
+        //                             "dimensionName": "ga:userType",
+        //                             "operator": "REGEXP",
+        //                             "expressions": ["Returning"]
+        //                         }]
+        //                     }]
+        //                 },
 
 
-                        {
-                            "viewId": gUser.view_id,
-                            "dateRanges": dateRanges,
-                            "dimensions": [{
-                                "name": "ga:userType"
-                            }, ],
-                            "metrics": [
-                                //{ expression: 'ga:users' },
-                                {
-                                    expression: 'ga:sessions'
-                                },
-                                {
-                                    expression: 'ga:bounceRate'
-                                }
-                            ],
-                            pageSize: 20,
-                            "orderBys": [{
-                                fieldName: "ga:sessions",
-                                sortOrder: 'DESCENDING'
-                            }, ]
-                        },
+        //                 {
+        //                     "viewId": gUser.view_id,
+        //                     "dateRanges": dateRanges,
+        //                     "dimensions": [{
+        //                         "name": "ga:userType"
+        //                     }, ],
+        //                     "metrics": [
+        //                         //{ expression: 'ga:users' },
+        //                         {
+        //                             expression: 'ga:sessions'
+        //                         },
+        //                         {
+        //                             expression: 'ga:bounceRate'
+        //                         }
+        //                     ],
+        //                     pageSize: 20,
+        //                     "orderBys": [{
+        //                         fieldName: "ga:sessions",
+        //                         sortOrder: 'DESCENDING'
+        //                     }, ]
+        //                 },
 
-                        {
-                            "viewId": gUser.view_id,
-                            "dateRanges": dateRanges,
-                            "dimensions": [{
-                                "name": "ga:channelGrouping"
-                            }, ],
-                            "metrics": [
-                                //{ expression: 'ga:users' },
-                                {
-                                    expression: 'ga:sessions'
-                                },
-                                {
-                                    expression: 'ga:bounceRate'
-                                }
-                            ],
-                            pageSize: 20,
-                            "orderBys": [{
-                                fieldName: "ga:sessions",
-                                sortOrder: 'DESCENDING',
-                                // orderType : "DELTA"
-                            }, ]
-                        },
+        //                 {
+        //                     "viewId": gUser.view_id,
+        //                     "dateRanges": dateRanges,
+        //                     "dimensions": [{
+        //                         "name": "ga:channelGrouping"
+        //                     }, ],
+        //                     "metrics": [
+        //                         //{ expression: 'ga:users' },
+        //                         {
+        //                             expression: 'ga:sessions'
+        //                         },
+        //                         {
+        //                             expression: 'ga:bounceRate'
+        //                         }
+        //                     ],
+        //                     pageSize: 20,
+        //                     "orderBys": [{
+        //                         fieldName: "ga:sessions",
+        //                         sortOrder: 'DESCENDING',
+        //                         // orderType : "DELTA"
+        //                     }, ]
+        //                 },
 
-                    ]
-                }
-            }).then(function (response) {
-                cb(null, response)
-            })
-        },
+        //             ]
+        //         }
+        //     }).then(function (response) {
+        //         cb(null, response)
+        //     })
+        // },
 
         goals : (cb) => {
 
@@ -504,44 +504,44 @@ exports.getGoogleMatrics = (gUser, done) => {
             });
         },
 
-        matchups: function (cb) {
-            google.reportRequests({
-                path: '/v4/reports:batchGet',
-                root: 'https://analyticsreporting.googleapis.com/',
-                method: 'POST',
-                body: {
-                    reportRequests: [
-                        {
-                            "viewId": gUser.view_id,
-                            "dateRanges": dateRanges,
-                            "dimensions": [
-                                //{ "name" : "ga:pageTitle" },
-                                {
-                                    "name": "ga:pagePath"
-                                },
-                                {
-                                    "name": "ga:pageTitle"
-                                },
-                                {
-                                    "name": "ga:hostname"
-                                }
-                            ],
-                            "metrics": [{
-                                expression: 'ga:pageviews'
-                            }, ],
-                            pageSize: 200,
-                            "orderBys": [{
-                                fieldName: "ga:pageviews",
-                                sortOrder: 'DESCENDING',
-                            }, ]
-                        },
+        // matchups: function (cb) {
+        //     google.reportRequests({
+        //         path: '/v4/reports:batchGet',
+        //         root: 'https://analyticsreporting.googleapis.com/',
+        //         method: 'POST',
+        //         body: {
+        //             reportRequests: [
+        //                 {
+        //                     "viewId": gUser.view_id,
+        //                     "dateRanges": dateRanges,
+        //                     "dimensions": [
+        //                         //{ "name" : "ga:pageTitle" },
+        //                         {
+        //                             "name": "ga:pagePath"
+        //                         },
+        //                         {
+        //                             "name": "ga:pageTitle"
+        //                         },
+        //                         {
+        //                             "name": "ga:hostname"
+        //                         }
+        //                     ],
+        //                     "metrics": [{
+        //                         expression: 'ga:pageviews'
+        //                     }, ],
+        //                     pageSize: 200,
+        //                     "orderBys": [{
+        //                         fieldName: "ga:pageviews",
+        //                         sortOrder: 'DESCENDING',
+        //                     }, ]
+        //                 },
 
-                    ]
-                }
-            }).then(function (response) {
-                cb(null, response)
-            })
-        }
+        //             ]
+        //         }
+        //     }).then(function (response) {
+        //         cb(null, response)
+        //     })
+        // }
     }, function (err, result) {
         console.log(result);
         done(result);

@@ -50,7 +50,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_aggregation_current: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
                 period: 'day',
@@ -64,7 +64,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_aggregation_compare: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
                 period: 'day',
@@ -78,7 +78,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_daily_current: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
                 period : 'day',
@@ -92,7 +92,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_daily_compare: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
                 period : 'day',
@@ -106,7 +106,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_lifetime_current: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_fans',
 			    period : 'lifetime',
@@ -120,7 +120,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_lifetime_compare: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_fans',
 			    period : 'lifetime',
@@ -134,7 +134,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_posts_current: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + '/posts/', {
                 access_token : fUser.account_token,
                 limit : 50,
 			    fields : 'created_time,message,id,type,link,permalink_url',
@@ -148,7 +148,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_posts_compare: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + '/posts/', {
                 access_token : fUser.account_token,
                 limit : 50,
 			    fields : 'created_time,message,id,type,link,permalink_url',
@@ -162,7 +162,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_28days_current: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
                 period : 'days_28',
@@ -176,7 +176,7 @@ exports.getFacebookMetrics = (fUser, done) => {
             });
         },
         insights_28days_compare: function(cb) {
-            graph.get(fUser.account_id, {
+            graph.get(fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
 			    period : 'week',

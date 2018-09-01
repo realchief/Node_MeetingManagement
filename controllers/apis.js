@@ -24,13 +24,19 @@ let oauth2Client = new OAuth2(
 exports.getFacebookMetrics = (fUser, done) => {
     const token = fUser.token;
 
-    var since = moment().format( "YYYY-MM-DD" );
-    var until = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+    var since_current = moment().subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
+    var until_current = moment().format( "YYYY-MM-DD 23:59" );
 
-    var sinceForPosts = moment().format( "YYYY-MM-DD" );
-    var untilForPosts = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+    var sinceForPosts_current = moment().format( "YYYY-MM-DD 00:00" );
+    var untilForPosts_current = moment().format( "YYYY-MM-DD 23:59" );
 
-    var facebookDatePreset = moment().format( "YYYY-MM-DD" );
+    var since_compare = moment().subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
+    var until_compare = moment().format( "YYYY-MM-DD 23:59" );
+
+    var sinceForPosts_compare = moment().format( "YYYY-MM-DD 00:00" );
+    var untilForPosts_compare = moment().format( "YYYY-MM-DD 23:59" );
+
+    var facebookDatePreset = 'today';
 
     graph.setAccessToken(token);
     Async.parallel({
@@ -43,82 +49,143 @@ exports.getFacebookMetrics = (fUser, done) => {
                 cb(null, response);
             });
         },
-        insights_aggregation: function(cb) {
+        insights_aggregation_current: function(cb) {
             graph.get(fUser.account_id, {
                 access_token : fUser.account_token,
                 metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
                 period: 'day',
                 date_preset : facebookDatePreset,
-			    since : since,
-			    until : until,
+			    since : since_current,
+			    until : until_current,
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
                 console.log('err2:', err);
                 cb(null, response);
             });
         },
-        insights_daily: function(cb) {
+        insights_aggregation_compare: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
+                period: 'day',
+                date_preset : facebookDatePreset,
+			    since : since_compare,
+			    until : until_compare,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                console.log('err3:', err);
+                cb(null, response);
+            });
+        },
+        insights_daily_current: function(cb) {
             graph.get(fUser.account_id, {
                 access_token : fUser.account_token,
                 metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
                 period : 'day',
 			    date_preset : facebookDatePreset,
-			    since : since,
-			    until : until,
+			    since : since_current,
+			    until : until_current,
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
+                console.log('err4:', err);
                 cb(null, response);
             });
         },
-        insights_lifetime: function(cb) {
+        insights_daily_compare: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
+                period : 'day',
+			    date_preset : facebookDatePreset,
+			    since : since_compare,
+			    until : until_compare,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                console.log('err5:', err);
+                cb(null, response);
+            });
+        },
+        insights_lifetime_current: function(cb) {
             graph.get(fUser.account_id, {
                 access_token : fUser.account_token,
                 metric : 'page_fans',
 			    period : 'lifetime',
 			    date_preset : facebookDatePreset,
-			    since : since,
-			    until : until,
+			    since : since_current,
+			    until : until_current,
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
+                console.log('err6:', err);
                 cb(null, response);
             });
         },
-        insights_posts: function(cb) {
+        insights_lifetime_compare: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                metric : 'page_fans',
+			    period : 'lifetime',
+			    date_preset : facebookDatePreset,
+			    since : since_compare,
+			    until : until_compare,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                console.log('err7:', err);
+                cb(null, response);
+            });
+        },
+        insights_posts_current: function(cb) {
             graph.get(fUser.account_id, {
                 access_token : fUser.account_token,
                 limit : 50,
 			    fields : 'created_time,message,id,type,link,permalink_url',
 			    date_preset : facebookDatePreset,
-			    since : sinceForPosts,
-			    until : untilForPosts,
+			    since : sinceForPosts_current,
+			    until : untilForPosts_current,
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
+                console.log('err8:', err);
                 cb(null, response);
             });
         },
-        insights_28days: function(cb) {
+        insights_posts_compare: function(cb) {
+            graph.get(fUser.account_id, {
+                access_token : fUser.account_token,
+                limit : 50,
+			    fields : 'created_time,message,id,type,link,permalink_url',
+			    date_preset : facebookDatePreset,
+			    since : sinceForPosts_compare,
+			    until : untilForPosts_compare,
+			    show_description_from_api_doc : 'true'
+            }, function(err, response) {
+                console.log('err9:', err);
+                cb(null, response);
+            });
+        },
+        insights_28days_current: function(cb) {
             graph.get(fUser.account_id, {
                 access_token : fUser.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
                 period : 'days_28',
                 date_preset : facebookDatePreset,
-                since : since,
-                until : until,
+                since : since_current,
+                until : until_current,
                 show_description_from_api_doc : 'true'
             }, function(err, response) {
+                console.log('err10:', err);
                 cb(null, response);
             });
         },
-        insights_28days: function(cb) {
+        insights_28days_compare: function(cb) {
             graph.get(fUser.account_id, {
                 access_token : fUser.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
 			    period : 'week',
 			    date_preset : facebookDatePreset,
-			    since : since,
-			    until : until,
+			    since : since_compare,
+			    until : until_compare,
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
+                console.log('err12:', err);
                 cb(null, response);
             });
         },

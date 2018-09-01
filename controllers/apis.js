@@ -225,11 +225,14 @@ exports.getGoogleMatrics = (gUser, done) => {
     google.options({
         auth: oauth2Client
     });
-    var currentSince = moment().format( "YYYY-MM-DD" );
-    var currentUntil = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+    
+    var currentSince = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+    var currentUntil = moment().format( "YYYY-MM-DD" );
 
-    var comparedSince = moment().format( "YYYY-MM-DD" );
-    var comparedUntil = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+    
+    var comparedSince = moment().subtract(5, 'days').format( "YYYY-MM-DD" );
+    var comparedUntil = moment().format( "YYYY-MM-DD" );
+    
     var dateRanges = [
         {
             startDate: currentSince,

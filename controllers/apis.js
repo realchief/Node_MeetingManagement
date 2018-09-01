@@ -24,13 +24,13 @@ let oauth2Client = new OAuth2(
 exports.getFacebookMetrics = (fUser, done) => {
     const token = fUser.token;
 
-    var since_current = moment().subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
+    var since_current = moment().subtract(300, 'days').format( "YYYY-MM-DD 00:00" );
     var until_current = moment().format( "YYYY-MM-DD 23:59" );
 
     var sinceForPosts_current = moment().format( "YYYY-MM-DD 00:00" );
     var untilForPosts_current = moment().format( "YYYY-MM-DD 23:59" );
 
-    var since_compare = moment().subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
+    var since_compare = moment().subtract(300, 'days').format( "YYYY-MM-DD 00:00" );
     var until_compare = moment().format( "YYYY-MM-DD 23:59" );
 
     var sinceForPosts_compare = moment().format( "YYYY-MM-DD 00:00" );

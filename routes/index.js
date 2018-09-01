@@ -49,6 +49,7 @@ var facebook_data = function (user, done) {
         }, function (fUser, cb) {
             if (fUser.account_id && fUser.account_name && fUser.account_token) {
                 apiControllers.getFacebookMetrics(fUser, function (err, data) {
+                    // var data = [{'field': 'field name', 'current': 'current', 'previous': 'current', 'mapping': 'field'}]
                     cb(null, {metric_data: data, dialog_data: null});
                 });
             }

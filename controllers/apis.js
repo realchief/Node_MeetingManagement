@@ -244,7 +244,7 @@ exports.getGoogleMatrics = (gUser, done) => {
         }
     ]
     Async.parallel({
-        metrics : (done) => {
+        metrics : (cb) => {
 
             /* METRICS ==== */
 
@@ -285,7 +285,7 @@ exports.getGoogleMatrics = (gUser, done) => {
                     console.log('Google API error:', err);
                 }
 
-                done(null, response.data.reports);
+                cb(null, response.data.reports);
                 //console.log('Google API Metrics response:', response.data.reports)
 
             })
@@ -455,7 +455,7 @@ exports.getGoogleMatrics = (gUser, done) => {
             })
         },
 
-        goals : (done) => {
+        goals : (cb) => {
 
             /* GOALS ==== */
             analytics.management.goals.list({
@@ -499,7 +499,7 @@ exports.getGoogleMatrics = (gUser, done) => {
 
                     })
                 }
-                done(null, { goals : goals, metricNames : metrics });                              
+                cb(null, { goals : goals, metricNames : metrics });                              
                 //console.log('Google API goals response:', goals, metrics)
             });
         },

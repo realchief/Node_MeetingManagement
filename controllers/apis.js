@@ -12,7 +12,7 @@ const moment = require('moment');
 
 var colors = require('colors');
 var emoji = require('node-emoji');
-
+var _ = require('lodash');
 
 
 let oauth2Client = new OAuth2(

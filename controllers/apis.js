@@ -545,7 +545,7 @@ exports.getGoogleMatrics = (gUser, done) => {
         //     })
         // }
     }, function (err, result) {
-        console.log(result);
+        console.log('Finished pulling all Google data', result);
         done(result);
     });
 
@@ -637,7 +637,7 @@ exports.getGoogleSummaries = (gUser, cb) => {
         }
     }, function (err, data) {
         console.log('Google Users ',
-            data.users
+            data.users, data.gaColumns
         );
         cb(null, data)
     });

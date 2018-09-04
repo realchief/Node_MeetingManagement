@@ -20,6 +20,7 @@ var google_data = function (user, done) {
         }, function (gUser, cb) {
             if (gUser.view_id && gUser.property_id && gUser.account_id) {
                 apiControllers.getGoogleMatrics(gUser, function (err, data) {
+                    console.log('metric data from google', err, data)
                     cb(null, {metric_data: data, dialog_data: null});
                 });
             }

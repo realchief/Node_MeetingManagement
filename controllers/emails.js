@@ -157,9 +157,18 @@ exports.inboundParse = ( req ) => {
     //console.log('\n', emoji.get('email'), 'The whole email:', req.body)
 
 
+    if ( fromEmail.toLowerCase().indexOf('noreply') >= 0 ) {
+      console.log('!!!!!!!!!!!!! ', 'noreply email', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
+      requestType = "internal"
+      //resolve( { type : 'cancel'} );
+      return resolve();
+    }
+
+
      if ( fromEmail.toLowerCase().indexOf('bounce') >= 0 ) {
       console.log('!!!!!!!!!!!!! ', 'bounce in from email', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
       requestType = "bounce"
+      //console.log('Message', message)
       //resolve( { type : 'cancel'} );
       //return resolve();
     }

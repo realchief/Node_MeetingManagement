@@ -706,8 +706,8 @@ exports.checkFacebookToken = (req, res, next) => {
 
             graph.extendAccessToken({
                 "access_token": fUser.token,
-                "client_id": auth.facebookAuth.reportRequestsID,
-                "client_secret": auth.facebookAuth.reportRequestsSecret
+                "client_id": auth.facebookAuth.clientID,
+                "client_secret": auth.facebookAuth.clientSecret
             }, function (err, facebookRes) {
 
                 console.log('extend facebook access token', facebookRes)

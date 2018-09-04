@@ -458,7 +458,8 @@ exports.getGoogleMatrics = (gUser, done) => {
         goals : (cb) => {
 
             /* GOALS ==== */
-            analytics.management.goals.list({
+            
+            google.analytics('v3').management.goals.list({
                 'accountId': gUser.account_id,
                 'webPropertyId': gUser.property_id,
                 'profileId': gUser.view_id },
@@ -466,7 +467,8 @@ exports.getGoogleMatrics = (gUser, done) => {
                 function (err, response) {
 
                     if (err) {
-                    console.log('Google API error:', err);
+                        console.log('Google API error:', err);
+                        cb(err);
                     }
 
                     var goals = [];

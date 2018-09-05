@@ -165,6 +165,93 @@ router.get('/',  function (req, res) {
 });
 
 
+
+router.get('/data/google',  function (req, res) {
+    var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
+    
+    if ( redirectTo !== "/") {
+        delete req.session.redirectTo;
+        res.redirect(redirectTo);
+        return
+    }
+
+    if (req.user) {
+        Async.parallel({
+            google_data: function (cb) {
+                google_data(req.user, function (data) {
+                    cb(null, data);
+                })
+            }  
+        }, function (err, results) {
+            
+            if (err) {
+                console.log('***** Error: ', err);
+                return;
+            }
+
+            console.log('\n', emoji.get("smile"), '***** Results: ', results);
+            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_data);
+            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
+            console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+
+            req.session.currentVersion = 'fingertips'
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'googledata.handlebars',
+                register_version: 'none',
+                user : req.user,
+                google_data: results.google_data                
+            });
+        
+        });
+    }
+    else res.redirect('/signin');
+});
+
+
+router.get('/data/facebook',  function (req, res) {
+    var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
+    
+    if ( redirectTo !== "/") {
+        delete req.session.redirectTo;
+        res.redirect(redirectTo);
+        return
+    }
+
+    if (req.user) {
+        Async.parallel({        
+            facebook_data: function (cb) {
+                facebook_data(req.user, function (data) {
+                    cb(null, data);
+                })
+            }
+        }, function (err, results) {
+            
+            if (err) {
+                console.log('***** Error: ', err);
+                return;
+            }
+
+            console.log('\n', emoji.get("smile"), '***** Results: ', results);
+            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_data);
+            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
+            console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+
+            req.session.currentVersion = 'fingertips'
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'facebookdata.handlebars',
+                register_version: 'none',
+                user : req.user,            
+                facebook_data: results.facebook_data
+            });
+        
+        });
+    }
+    else res.redirect('/signin');
+});
+
+
 router.get('/frontend', function(req, res, next) {
             req.session.currentVersion = 'fingertips'
             res.render('fingertips', {
@@ -172,6 +259,22 @@ router.get('/frontend', function(req, res, next) {
                 layout: 'frontend.handlebars'
             });
         
+});
+
+router.get('/data/google', function(req, res, next) {
+    req.session.currentVersion = 'fingertips'
+    res.render('fingertips', {
+        version: 'fingertips',
+        layout: 'googledata.handlebars'
+    });
+});
+
+router.get('/data/facebook', function(req, res, next) {
+    req.session.currentVersion = 'fingertips'
+    res.render('fingertips', {
+        version: 'fingertips',
+        layout: 'facebookdata.handlebars'
+    });
 });
 
 router.get('/signin', function(req, res, next) {

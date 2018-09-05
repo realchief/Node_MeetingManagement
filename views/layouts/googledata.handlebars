@@ -1,0 +1,95 @@
+{{> head }}
+
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+
+		<div class="below-header"><div class="below-header-inside">
+
+			<div class="container">
+					<div class="row clearfix" id="connect-sources">
+
+						<h2 class="with-line">Connect API Sources</h2>
+
+						<div class="two-col cols">
+
+                            <div class="col first">
+
+                                <div class="connector">
+
+                                    <h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
+
+                                    <ul class="connectors-list">
+                                        {{#if google_data }}
+                                        <li><i class="fab fa-google"></i><h4>Connected</h4></li>
+                                        {{else}}
+                                        <li><i class="fab fa-google"></i><h4>Disconnected</h4></li>
+                                        {{/if}}
+                                    </ul>
+                                    <div class="google-accounts">
+                                        {{#if google_data }}
+                                            {{#if (hasOwn google_data 'matric_data')}}
+                                                {{google_data.metric_data}}
+                                            {{/if}}
+                                            {{#if (hasOwn google_data 'dialog_data')}}
+                                                <div class="select-google-view modal">
+                                                    <div class="modal-header">
+                                                        <h3 class="with-line"><i class="fab fa-google"></i>Select Google View</h3>				
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        
+                                                        {{#each google_data.dialog_data.users as |account|}}
+                                                            <h4 class="label ga-account"> {{ account.account_name }}</h4>
+                                                            {{#each account.web_properties as |property|}}
+                                                                <h5 class="label ga-property">Property: {{ property.property_name }}</h5>
+                                                                <ul class="views-list">
+                                                                {{#each property.views as |view|}}
+                                                                    <li class="ga-account ga-view">
+                                                                        <a href='/google/setprofile/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
+                                                                            {{view.view_name}}
+                                                                        </a>
+                                                                    </li>
+                                                                {{/each}}
+                                                                </ul>
+                                                            {{/each}}
+                                                        {{/each}}
+                                                    </div>
+                                                    <div class="modal-footer">
+
+                                                    </div>
+                                                </div>
+                                            {{/if}}
+                                        {{/if}}
+                                    </div>							
+                                </div>
+                            </div>						
+						</div>
+				
+					</div>
+
+
+				
+				</div>
+
+			</div>
+
+			<div class="section gutter footer">
+				{{> footer }}
+			</div>
+
+		</div>
+	</div>	
+
+</div>
+
+<div class="test"></div>
+	
+	{{> scripts }}
+
+</body>
+
+</html>

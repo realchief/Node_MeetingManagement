@@ -5,10 +5,12 @@ var multer  = require('multer')
 var fs = require('fs')
 const sgMail = require('@sendgrid/mail');
 var _ = require('lodash');
-var ical = require('ical')
+var ical = require('ical');
+var Async = require('async');
 var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
+var apiControllers = require('../controllers/apis');
 
 var colors = require('colors');
 var emoji = require('node-emoji')
@@ -427,26 +429,88 @@ router.post('/send', function (req, res) {
 
 })
 
+var facebook_data = function (user, done) {
+    
+    Async.waterfall([
+      function (cb) {
+          user.getFacebook().then(function (fUser) {
+              if (fUser) {
+                  cb(null, fUser)
+              }
+              else cb({'error': 'User is not connected with Facebook'})
+          })
+      }, function (fUser, cb) {
+          if (fUser.account_id && fUser.account_name && fUser.account_token) {
+              apiControllers.getFacebookMetrics(fUser, function (err, data) {                                
+                  cb(null, {metric_data: data, dialog_data: null});
+              });
+          }
+          else {
+              apiControllers.getFacebookSummaries(fUser, function (data) {
+                  cb(null, {dialog_data: data, metric_data: null})
+              });
+          }
+      }
+  ], function (err, result) {
+      if (err) {
+          console.log(err.error);
+      }
+      done(result);
+  })
+}
+
 router.get('/testsend', function (req, res) {
-  
+
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   var sentences = []
- 
-  console.log('Insights>>>', insights);
 
-  _.forEach(insights.insights, function(insight, index) {    
-    sentences.push({  
+  _.forEach(insights.insights, function(insight, index) {           
+    sentences.push({
       text: insight.phrase,
       tags: insight.tags
     })
   });
- 
-  req.session.currentVersion = 'fingertips'
-  res.render('fingertips', {
-      sentences: sentences,
-      layout: 'email_template.handlebars'
-  });
 
+  console.log(req.user);
+
+  if (req.user) {
+    Async.parallel({
+        google_data: function (cb) {
+            google_data(req.user, function (data) {
+                cb(null, data);
+            })
+        },
+        
+        facebook_data: function (cb) {
+            facebook_data(req.user, function (data) {
+                cb(null, data);
+            })
+        }
+
+    }, function (err, results) {
+        
+        if (err) {
+            console.log('***** Error: ', err);
+            return;
+        }
+        console.log('\n', emoji.get("smile"), '***** Results: ', results);       
+        console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
+        console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+
+        req.session.currentVersion = 'fingertips'
+        res.render('fingertips', {
+            version: 'fingertips',
+            layout: 'email_template.handlebars',
+            register_version: 'none',
+            user : req.user,
+            google_data: results.google_data,
+            facebook_data: results.facebook_data,
+            sentences: sentences
+        });
+    
+    });
+} 
+  
   const msg = {
     to: 'marincess000@gmail.com',
     from: {
@@ -454,8 +518,8 @@ router.get('/testsend', function (req, res) {
       name: "MeetBrief"
     },
     subject: 'test',
-    text: 'adfasdfasdfasd',
-    html: '<html><body><h1>adfasdfasdfasd</h1></body></html>'
+    text: 'sentences.text',
+    html: '<html><body><h1>test</h1></body></html>'
 
   };
 

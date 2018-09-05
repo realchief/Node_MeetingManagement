@@ -427,5 +427,37 @@ router.post('/send', function (req, res) {
 
 })
 
+router.get('/testsend', function (req, res) {
+  
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  var sentences = []
+  console.log('PHRASES>>>', phrases);
+
+  _.forEach(insights.phrases, function(phrase, index) {    
+    sentences.push({  
+      text: phrase.phrase
+    })
+  });
+ 
+  req.session.currentVersion = 'fingertips'
+  res.render('fingertips', {
+      sentences: sentences,
+      layout: 'email_template.handlebars'
+  });
+
+  const msg = {
+    to: 'marincess000@gmail.com',
+    from: {
+      email : "insights@meetbrief.com",
+      name: "MeetBrief"
+    },
+    subject: 'test',
+    text: 'adfasdfasdfasd',
+    html: '<html><body><h1>adfasdfasdfasd</h1></body></html>'
+
+  };
+
+});
+
 
 module.exports = router

@@ -431,11 +431,13 @@ router.get('/testsend', function (req, res) {
   
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   var sentences = []
-  console.log('PHRASES>>>', phrases);
+ 
+  console.log('Insights>>>', insights);
 
-  _.forEach(insights.phrases, function(phrase, index) {    
+  _.forEach(insights.insights, function(insight, index) {    
     sentences.push({  
-      text: phrase.phrase
+      text: insight.phrase,
+      tags: insight.tags
     })
   });
  

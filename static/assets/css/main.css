@@ -459,7 +459,7 @@ footer a {
 }
 
 .two-col .col {
-	width: 50%;
+	width: 100%;
 	padding: 20px;
 }
 
@@ -668,6 +668,7 @@ li.metric {
 
 .connectors-list {
 	padding: 0;
+	text-align: center;
 }
 
 .connectors-list li {
@@ -678,6 +679,23 @@ li.metric {
 	cursor: pointer;
 	background: #e5e5e5;
 	border-radius: 5px;
+	text-align: center;
+	list-style: none;
+}
+.google-accounts {
+	text-align: center;
+}
+
+.google-accounts li{
+	list-style: none;
+}
+
+.facebook-accounts {
+	text-align: center;
+}
+
+.facebook-accounts li{
+	list-style: none;
 }
 
 .connectors-list li:hover {

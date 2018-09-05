@@ -42,11 +42,9 @@
                                                     <div class="modal-body">											
                                                         <ul class="views-list">
                                                             {{#each facebook_data.dialog_data as |account|}}
-                                                                <li class="fb-account">
-                                                                    <a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
-                                                                        {{ account.account_name }}
-                                                                    </a>
-                                                                </li>
+                                                                <li class="fb-account">                                                                    
+                                                                    <h4 class="label fa-account">Connected account: {{ account.account_name }}</h4>
+                                                                </li>                                                                 
                                                             {{/each}}
                                                         </ul>
                                                     </div>

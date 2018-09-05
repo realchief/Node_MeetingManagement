@@ -500,8 +500,11 @@ exports.getGoogleMatrics = (gUser, done) => {
                         })
 
                     })
+                    cb(null, { goals : goals, metricNames : metrics });                              
                 }
-                cb(null, { goals : goals, metricNames : metrics });                              
+                if (response.error) {
+                    cb (null, {error: response.error})
+                }
                 //console.log('Google API goals response:', goals, metrics)
             });
         },
@@ -545,8 +548,9 @@ exports.getGoogleMatrics = (gUser, done) => {
         //     })
         // }
     }, function (err, result) {
-        console.log('Finished pulling all Google data', result);
-        done(result);
+        console.log('=======GOOGLE RESULT=======');
+        console.log(result);
+        done(err, result);
     });
 
 }
@@ -637,7 +641,7 @@ exports.getGoogleSummaries = (gUser, cb) => {
         }
     }, function (err, data) {
         console.log('Google Users ',
-            data.users, data.gaColumns
+            data.users
         );
         cb(null, data)
     });

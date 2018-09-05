@@ -549,13 +549,11 @@ ul.metrics .cell > li {
 
 .label {
 	font-size: 12px;
-	text-transform: uppercase;
 	padding: 0;
 }
 
 h5.label {
 	font-size: 12px;
-	text-transform: uppercase;
 	margin-top: 10px;
 }
 

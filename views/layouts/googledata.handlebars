@@ -45,10 +45,13 @@
                                                         {{#each google_data.dialog_data.users as |account|}}
                                                             <h4 class="label ga-account">Connected as: {{ account.account_name }}</h4>
                                                             {{#each account.web_properties as |property|}}
+                                                                <h5 class="label ga-property">Property: {{ property.property_name }}</h5>
                                                                 <ul class="views-list">
                                                                 {{#each property.views as |view|}}
                                                                     <li class="ga-account ga-view">
-                                                                        <h5 class="label ga-property">Connected Profile: {{ account.account_name }} : {{ property.property_name }} - {{view.view_name}}</h5>
+                                                                        <a href='/google/setprofile/?account_id={{account.account_id}}&property_id={{property.property_id}}&view_id={{view.view_id}}'>
+                                                                            {{view.view_name}}
+                                                                        </a>
                                                                     </li>
                                                                 {{/each}}
                                                                 </ul>

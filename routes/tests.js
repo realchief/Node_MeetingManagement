@@ -16,11 +16,6 @@ var emoji = require('node-emoji')
 // email content function
 const EmailContent = require('../components/EmailContent.js')
 
-// set up all phrases
-var talkingPoints = require('../schemas/phrases-talking-points');
-var insights = require('../schemas/phrases-insights');
-var phrases = require('../schemas/phrases');
-
 router.get('/testsocial/:company', function (req, res) {
 
   //console.log('PHRASES>>>', phrases)
@@ -425,7 +420,86 @@ router.post('/send', function (req, res) {
       console.log('\n', emoji.get('email'), ' email sent to: ',  to ) 
    })
 
+}),
+
+
+
+router.get('/phrasetest/', function (req, res) {
+
+  var phraseMaker = require('../controllers/phrases');
+  var talkingPointsPhrases = require('../schemas/phrases-talking-points');
+  var insightsPhrases = require('../schemas/phrases-insights');
+ 
+  var talkingPointsList = talkingPointsPhrases.get();
+  var insightsList = insightsPhrases.get();
+
+  var allPoints = [];
+  var allInsights = [];
+  var filteredPoints = [];
+  var filteredInsights = [];
+
+  _.forEach(talkingPointsList, function(phrase,index) {
+      allPoints.push(phraseMaker.make(phrase))
+  })
+
+  _.forEach(insightsList, function(phrase,index) {
+      allInsights.push(phraseMaker.make(phrase))
+  })
+
+
+  var filteredPoints = phraseMaker.matchingAllTagsFilter(allPoints, ['google_analytics'])
+  var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics'])
+
+  res.render('fingertips', {
+        layout: 'phrases-test.handlebars',
+        allPoints : allPoints,
+        allInsights : allInsights,
+        filteredPoints : filteredPoints,
+        filteredInsights : filteredInsights    
+
+    });
+
+
+}),
+
+
+router.get('/phrasetestdb/', function (req, res) {
+
+  var phraseMaker = require('../controllers/phrases');
+
+  let whereClause = { type : 'insight' }
+
+  Model.Phrase.findAll({
+      where: whereClause
+  }).then(function (phrases) {
+  
+    var allInsights = []
+
+    console.log(phrases)
+
+     _.forEach(phrases, function(phrase,index) {
+        allInsights.push( { 
+            id : phrase.id,
+            phrase : phrase.phrase + ' ' + phrase.id,
+            all_tags : phrase.all_tags
+        })
+    })
+
+
+     var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics', 'positive', 'pageviews'])
+
+    res.render('fingertips', {
+        layout: 'phrases-test.handlebars',
+       // allPoints : allPoints,
+        allInsights : allInsights,
+       // filteredPoints : filteredPoints,
+        filteredInsights : filteredInsights    
+
+    })
+
+
 })
 
+})
 
 module.exports = router

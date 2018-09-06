@@ -1,0 +1,71 @@
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+
+		<div class="below-header"><div class="below-header-inside">
+
+			<div class="container">
+
+
+{{#if allInsights}}
+
+<h3>Insights</h3>
+
+{{#each allInsights}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+<br />
+
+{{#if allPoints}}
+
+
+<h3>Points</h3>
+
+{{#each allPoints}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+<br />
+
+
+
+
+{{#if filteredPoints}}
+
+<h3>Filtered Points</h3>
+
+{{#each filteredPoints}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+<br />
+
+{{#if filteredInsights}}
+
+<h3>Filtered Insights</h3>
+
+{{#each filteredInsights}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+
+
+			</div>
+
+		</div>
+
+	</div>
+</body>

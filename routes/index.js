@@ -110,12 +110,17 @@ router.get('/facebook/setprofile', function (req, res) {
                     account_id: req.query.account_id,
                     account_name: req.query.account_name,
                     account_token: req.query.account_token
-                }).then(function (updatedResult) {
-                    console.log(updatedResult);
-                    res.render('fingertips', {
-                        version: 'fingertips',
-                        layout: 'facebookview.handlebars'
+                }).then(function (updatedResult) {                        
+                        apiControllers.getFacebookMetrics(updatedResult, function (err, data) {
+                            console.log('===================selected facebook data===========================');
+                            console.log(data);
+                            res.render('fingertips', {
+                            version: 'fingertips',
+                            layout: 'facebookview.handlebars',
+                            data: data
+                        });                    
                     });
+                    
                 })
             });
         }

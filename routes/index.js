@@ -87,12 +87,15 @@ router.get('/google/setprofile', function (req, res) {
                     property_id: req.query.property_id,
                     view_name: req.query.view_name
                 }).then(function (updatedResult) {
-                    console.log('===UPDATED RESULT');
-                    console.log(updatedResult);
-                    res.render('fingertips', {
-                        version: 'fingertips',
-                        layout: 'googleview.handlebars'
-                    });
+                    apiControllers.getGoogleMatrics(updatedResult, function (err, data){
+                        console.log('===================selected google data===========================');
+                        console.log(data);
+                        res.render('fingertips', {
+                            version: 'fingertips',
+                            layout: 'googleview.handlebars',
+                            data: data
+                        });
+                    });                 
                 })
             });
         }

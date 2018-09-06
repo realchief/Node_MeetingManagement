@@ -191,7 +191,33 @@ module.exports = {
     );     
   
     return filteredArray;
+  },
+
+  replace : function( phrases, replacementObject ) {
+
+    var replacedPhrases = []
+
+    if ( phrases.length ) {
+  
+      var replacements = replacementObject
+
+      _.forEach( phrases, function( phrase, index ) {
+
+        var replacedPhrase = phrase.phrase.replace(/{{(\w+)}}/g, function (m, m1) {
+          return replacements[m1] || m;  
+        });
+
+        replacedPhrases.push(replacedPhrase)
+
+      })
+
+    }
+
+    return replacedPhrases
+
+
   }
+
   
 
 }

@@ -446,17 +446,31 @@ router.get('/phrasetest/', function (req, res) {
       allInsights.push(phraseMaker.make(phrase))
   })
 
+  var filteredPoints = phraseMaker.matchingAllTagsFilter(allPoints, ['google_analytics', 'positive', 'pageviews'])
+  var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics', 'positive', 'pageviews'])
 
-  var filteredPoints = phraseMaker.matchingAllTagsFilter(allPoints, ['google_analytics'])
-  var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics'])
+
+  /* lets replace the {{}} areas */
+
+  var replacements = {
+      value: 500,
+      compared_value: 600,
+      total_delta : 100,
+      percent_change : Math.abs(30.44456).toFixed(2) + '%',
+      primary_dimension : 'nothing'
+  };
+
+  var filteredReplacedPoints = phraseMaker.replace( filteredPoints, replacements )
+  var filteredReplacedInsights = phraseMaker.replace( filteredInsights, replacements )
 
   res.render('fingertips', {
         layout: 'phrases-test.handlebars',
         allPoints : allPoints,
         allInsights : allInsights,
         filteredPoints : filteredPoints,
-        filteredInsights : filteredInsights    
-
+        filteredInsights : filteredInsights,
+        filteredReplacedPoints : filteredReplacedPoints,
+        filteredReplacedInsights : filteredReplacedInsights        
     });
 
 

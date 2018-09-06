@@ -76,6 +76,7 @@ var facebook_data = function (user, done) {
 }
 
 router.get('/google/setprofile', function (req, res) {
+    console.log('req.query');
     console.log(req.query);
     if (req.user) {
         if (req.query.view_id && req.query.account_id && req.query.property_id) {
@@ -83,10 +84,15 @@ router.get('/google/setprofile', function (req, res) {
                 gUser.updateAttributes({
                     view_id: req.query.view_id,
                     account_id: req.query.account_id,
-                    property_id: req.query.property_id
+                    property_id: req.query.property_id,
+                    view_name: req.query.view_name
                 }).then(function (updatedResult) {
+                    console.log('===UPDATED RESULT');
                     console.log(updatedResult);
-                    res.redirect('/');
+                    res.render('fingertips', {
+                        version: 'fingertips',
+                        layout: 'googleview.handlebars'
+                    });
                 })
             });
         }
@@ -106,7 +112,10 @@ router.get('/facebook/setprofile', function (req, res) {
                     account_token: req.query.account_token
                 }).then(function (updatedResult) {
                     console.log(updatedResult);
-                    res.redirect('/');
+                    res.render('fingertips', {
+                        version: 'fingertips',
+                        layout: 'facebookview.handlebars'
+                    });
                 })
             });
         }

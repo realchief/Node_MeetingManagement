@@ -475,8 +475,6 @@ router.get('/phrasetestdb/', function (req, res) {
   
     var allInsights = []
 
-    console.log(phrases)
-
      _.forEach(phrases, function(phrase,index) {
         allInsights.push( { 
             id : phrase.id,

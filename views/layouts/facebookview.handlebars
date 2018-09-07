@@ -29,33 +29,42 @@
                                         </ul>
 
                                     <div class="facebook-accounts">
-                                        {{#if facebook_data }}
-                                            {{#if (hasOwn facebook_data 'matric_data')}}
-                                                {{facebook.metric_data}}
-                                            {{/if}}
+                                        <div class="select-facebook-view modal">
+                                            <div class="modal-header">
+                                                <h3 class="with-line"><i class="fab fa-google"></i>View facebook data</h3>				
+                                            </div>
+                                            <div class="modal-body">
 
-                                            {{#if (hasOwn facebook_data 'dialog_data')}}
-                                                <div class="select-facebook-view modal">
-                                                    <div class="modal-header">
-                                                        <h3 class="with-line"><i class="fab fa-facebook"></i>Select Facebook View</h3>					
-                                                    </div>
-                                                    <div class="modal-body">											
-                                                        <ul class="views-list">
-                                                            {{#each facebook_data.dialog_data as |account|}}                                                                
-                                                                <li class="fb-account">
-                                                                    <a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
-                                                                        {{ account.account_name }}
-                                                                    </a>
-                                                                </li>                                                                
-                                                            {{/each}}
-                                                        </ul>
-                                                    </div>
-                                                    <div class="modal-footer">
+                                                <h4 class="label ga-account">=======Fan Data========</h4>
+                                                <ul class="views-list">
+                                                                                               
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">fan_count: {{ data.fan.fan_count }}</h5>
+                                                    </li>     
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">global_brand_page_name: {{ data.fan.global_brand_page_name }}</h5>
+                                                    </li> 
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">name: {{ data.fan.name }}</h5>
+                                                    </li>  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">name_with_location_descriptor: {{ data.fan.name_with_location_descriptor }}</h5>
+                                                    </li>     
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">id: {{ data.fan.id }}</h5>
+                                                    </li>                                           
+                                                </ul>
 
-                                                    </div>
-                                                </div>
-                                            {{/if}}
-                                        {{/if}}
+                                                <h4 class="label ga-account">=======insights_daily_current Data========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_daily_current.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>                                          
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 						    </div>

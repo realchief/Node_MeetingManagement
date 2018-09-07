@@ -18,12 +18,6 @@ const EmailContent = require('../components/EmailContent.js')
 
 router.get('/testsocial/:company', function (req, res) {
 
-  //console.log('PHRASES>>>', phrases)
-
-  /*_.forEach(insights.phrases, function(phrase, index) {
-    console.log('phrase>>>>', phrase.phrase, phrase.tags)
-  })*/
-
   const Async = require('async');
   const graph = require('fbgraph');
   const {google} = require('googleapis');

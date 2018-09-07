@@ -418,7 +418,7 @@ router.post('/send', function (req, res) {
 
 
 
-router.get('/phrasetest/', function (req, res) {
+router.get('/testphrase/', function (req, res) {
 
   var phraseMaker = require('../controllers/phrases');
   var talkingPointsPhrases = require('../schemas/phrases-talking-points');
@@ -456,6 +456,14 @@ router.get('/phrasetest/', function (req, res) {
 
   var filteredReplacedPoints = phraseMaker.replace( filteredPoints, replacements )
   var filteredReplacedInsights = phraseMaker.replace( filteredInsights, replacements )
+
+
+  /* Test asset links */
+
+  var assetLinks = require('../schemas/asset-links');
+  var assetLinksList = assetLinks.get();
+  console.log(console.log( emoji.get("sparkles"), 'Asset links list', assetLinksList ))
+
 
   res.render('fingertips', {
         layout: 'phrases-test.handlebars',

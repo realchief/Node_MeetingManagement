@@ -44,7 +44,7 @@
 															{{#each property.views as |view|}}
 																<li class="ga-account">
 																	The view is
-																	<a class='select-view' href='javascript:void(0);' data-display='To Account: {{account.account_name}} --- {{view.view_name}}'>
+																	<a class='select-view-google' href='javascript:void(0);' data-display='To Account: {{account.account_name}} --- {{view.view_name}}'>
 																			"{{view.view_name}}"
 																	</a>
 																</li>
@@ -59,7 +59,7 @@
 								</div>
 								<div class="google-selected-accounts">
 									<h2 class="label ga-account">Connected as: {{user.email}}</h2>
-									<h2 class="select-view-text label ga-account"></h2>
+									<h2 class="select-view-google-text label ga-account"></h2>
 								</div>		
 							</div>
 						</div>
@@ -73,7 +73,37 @@
 									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
 									{{/if}}
 									{{!-- <li class="facebook facebook-showdata button"><i class="fab fa-facebook"></i><a class="title" href="/data/facebook">View Data Source</a></li> --}}
-								</ul>						
+								</ul>
+								<div class="facebook-accounts">
+									{{#if facebook_data }}
+										{{#if (hasOwn facebook_data 'matric_data')}}
+											{{facebook.metric_data}}
+										{{/if}}
+
+										{{#if (hasOwn facebook_data 'dialog_data')}}
+											<div class="select-facebook-view modal">
+												<div class="modal-header">
+													<h3 class="with-line"><i class="fab fa-facebook"></i>Select Facebook View</h3>					
+												</div>
+												<div class="modal-body">											
+													<ul class="views-list">
+														{{#each facebook_data.dialog_data as |account|}}                                                                
+															<li class="fb-account">
+																<a class='select-view-facebook' href='javascript:void(0);' data-display='To Account: {{account.account_name}}'>
+																	{{ account.account_name }}
+																</a>
+															</li>                                                                
+														{{/each}}
+													</ul>
+												</div>               
+											</div>
+										{{/if}}
+									{{/if}}
+								</div>
+								<div class="facebook-selected-accounts">
+									<h2 class="label fb-account">Connected as: {{user.email}}</h2>
+									<h2 class="select-view-facebook-text label fb-account"></h2>
+								</div>					
 							</div>
 						</div>
 					</div>
@@ -91,12 +121,19 @@
 	{{> scripts }}
 <script>
 	$(document).ready(function () {
-		$('.select-view').click(function (event) {
+		$('.select-view-google').click(function (event) {
 			var display_text = $(this).attr('data-display');
 			$(this).closest('.modal-body').css('display', 'none');
-			$('.select-view-text').text(display_text);
-			$('.with-line').text('Chosen Google Info');			
+			$('.select-view-google-text').text(display_text);
+			$('.with-line').text('Info of Chosen account');			
 			$('.google-selected-accounts').css('display', 'block');
+		});
+		$('.select-view-facebook').click(function (event) {
+			var display_text = $(this).attr('data-display');
+			$(this).closest('.modal-body').css('display', 'none');
+			$('.select-view-facebook-text').text(display_text);
+			$('.with-line').text('Info of Chosen account');			
+			$('.facebook-selected-accounts').css('display', 'block');
 		});
 	});
 </script>

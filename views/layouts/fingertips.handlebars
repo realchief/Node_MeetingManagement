@@ -24,7 +24,7 @@
 									{{/if}}
 									{{!-- <li class="google google-showdata-button button"><i class="fab fa-google"></i><a class="title" href='/data/google'>View Data Source</a></li> --}}
 								</ul>
-								<div class="google-accounts">
+								<div class="google-accounts ">
 									{{#if google_data }}
 										{{#if (hasOwn google_data 'matric_data')}}
 											{{google_data.metric_data}}
@@ -42,9 +42,9 @@
 															<h3 class="label ga-property">The property is "{{ property.property_name }}"</h5>
 															<ul class="views-list">
 															{{#each property.views as |view|}}
-																<li class="ga-account ga-view">
+																<li class="ga-account">
 																	The view is
-																	<a id='{{view.view_name}}', href='/'>
+																	<a class='select-view' href='javascript:void(0);' data-display='To Account: {{account.account_name}} - View: {{view.view_name}}'>
 																			"{{view.view_name}}"
 																	</a>
 																</li>
@@ -53,16 +53,13 @@
 														{{/each}}
 													{{/each}}
 												</div>
-												<div class="modal-footer">ss
-
-												</div>
 											</div>
 										{{/if}}
 									{{/if}}
 								</div>
-								<div clarss="google-selected-accounts">
+								<div class="google-selected-accounts">
 									<h2 class="label ga-account">Connected as: {{user.email}}</h2>
-									<h2 class="label ga-account">To Account: </h2>
+									<h2 class="select-view-text label ga-account"></h2>
 								</div>		
 							</div>
 						</div>
@@ -92,6 +89,17 @@
 <div class="test"></div>
 	
 	{{> scripts }}
+<script>
+	$(document).ready(function () {
+		$('.select-view').click(function (event) {
+			var display_text = $(this).attr('data-display');
+			$(this).closest('.modal-body').css('display', 'none');
+			$('.select-view-text').text(display_text);
+			$('.with-line').text('Chosen Google Info');			
+			$('.google-selected-accounts').css('display', 'block');
+		});
+	});
+</script>
 
 </body>
 

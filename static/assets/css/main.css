@@ -1109,8 +1109,9 @@ span.metric-asset {
 	display: block;
 }
 
-.modal {
-	display: hidden;
+
+.google-selected-accounts {
+	display: none;
 }
 
 /* ==========================================================================

@@ -462,7 +462,31 @@ router.get('/testphrase/', function (req, res) {
 
   var assetLinks = require('../schemas/asset-links');
   var assetLinksList = assetLinks.get();
-  console.log(console.log( emoji.get("sparkles"), 'Asset links list', assetLinksList ))
+  console.log( emoji.get("sparkles"), 'Asset links list', assetLinksList )
+
+  /* Test buckets */
+
+  var bucketDefinition = require('../schemas/buckets');
+  var bucketList = bucketDefinition.get();
+  console.log( emoji.get("sparkles"), 'Buckets', bucketList )
+
+  /* Test platform */
+
+  var platformDefinition = require('../schemas/platform');
+  var platformList = platformDefinition.get();
+  console.log( emoji.get("sparkles"), 'Platform', platformList )
+
+  /* Test google source */
+
+  var googleDefinition = require('../schemas/source-google-analytics');
+  var googleList = googleDefinition.get();
+  console.log( emoji.get("sparkles"), 'Google', googleList )
+
+  /* Test facebook source */
+
+  var facebookDefinition = require('../schemas/source-facebook');
+  var facebookList = facebookDefinition.get();
+  console.log( emoji.get("sparkles"), 'Facebook', facebookList )
 
 
   res.render('fingertips', {

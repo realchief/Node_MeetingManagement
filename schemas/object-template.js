@@ -4,6 +4,8 @@
  * 
 */
 
+var _ = require('lodash');
+
 module.exports = {
 
 	get : function() {

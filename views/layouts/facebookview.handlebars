@@ -52,12 +52,44 @@
                                                     </li>     
                                                     <li class="ga-account ga-view">
                                                         <h5 class="label ga-account">id: {{ data.fan.id }}</h5>
-                                                    </li>                                           
+                                                    </li> 
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">social sentence: {{ data.fan.engagement.social_sentence }}</h5>
+                                                    </li>
+                                                    {{#each data.fan.posts.data as |fan_posts_data|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ fan_posts_data }}</h5>
+                                                    </li>                                                  
+                                                    {{/each}}                                             
                                                 </ul>
 
                                                 <h4 class="label ga-account">=======insights_daily_current Data========</h4>
                                                 <ul class="views-list">
                                                 {{#each data.insights_daily_current.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>   
+                                                <h4 class="label ga-account">=======insights_lifetime_current========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_lifetime_current.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>   
+                                                <h4 class="label ga-account">=======insights_28days_current========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_28days_current.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>  
+                                                <h4 class="label ga-account">=======insights_28days_compare========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_28days_compare.data as |insight|}}                                                  
                                                     <li class="ga-account ga-view">
                                                         <h5 class="label ga-account">{{ insight }}</h5>
                                                     </li>                                                  

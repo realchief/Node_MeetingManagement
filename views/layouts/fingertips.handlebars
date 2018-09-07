@@ -7,83 +7,76 @@
 		<div class="section header clearfix">
 			{{> header }}
 		</div>
-
 		<div class="below-header"><div class="below-header-inside">
-
 			<div class="container">
-					<div class="row clearfix" id="connect-sources">
+				<div class="row clearfix" id="connect-sources">
+					<h2 class="with-line">Connect API Sources</h2>
 
-						<h2 class="with-line">Connect API Sources</h2>
-
-						<div class="two-col cols">
-
-							<div class="col first">
-
-								<div class="connector">
-
-									<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
-
-									<ul class="connectors-list">
-										{{#if google_data }}
-										<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnect Google Analytics</a></li>
-										{{else}}
-										<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+					<div class="two-col cols">
+						<div class="col first">
+							<div class="connector">
+								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
+								<ul class="connectors-list">
+									{{#if google_data }}
+									<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnect Google Analytics</a></li>
+									{{else}}
+									<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									{{/if}}
+									{{!-- <li class="google google-showdata-button button"><i class="fab fa-google"></i><a class="title" href='/data/google'>View Data Source</a></li> --}}
+								</ul>
+								<div class="google-accounts">
+									{{#if google_data }}
+										{{#if (hasOwn google_data 'matric_data')}}
+											{{google_data.metric_data}}
 										{{/if}}
-										{{!-- <li class="google google-showdata-button button"><i class="fab fa-google"></i><a class="title" href='/data/google'>View Data Source</a></li> --}}
-									</ul>
-									<div class="google-accounts">
-                                        {{#if google_data }}
-                                            {{#if (hasOwn google_data 'matric_data')}}
-                                                {{google_data.metric_data}}
-                                            {{/if}}
-                                            {{#if (hasOwn google_data 'dialog_data')}}
-                                                <div class="select-google-view modal">
-                                                    <div class="modal-header">
-                                                        <h3 class="with-line"><i class="fab fa-google"></i>Select Google View</h3>				
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        
-                                                        {{#each google_data.dialog_data.users as |account|}}
-                                                            <h2 class="label ga-account">The account is "{{ account.account_name }}"</h4>
-                                                            {{#each account.web_properties as |property|}}
-                                                                <h3 class="label ga-property">The property is "{{ property.property_name }}"</h5>
-                                                                <ul class="views-list">
-                                                                {{#each property.views as |view|}}
-                                                                    <li class="ga-account ga-view">
-																		The view is
-                                                                        <a id='{{view.view_name}}', href='/'>
-                                                                             "{{view.view_name}}"
-                                                                        </a>
-                                                                    </li>
-                                                                {{/each}}
-                                                                </ul>
-                                                            {{/each}}
-                                                        {{/each}}
-                                                    </div>
-                                                    <div class="modal-footer">
+										{{#if (hasOwn google_data 'dialog_data')}}
+											<div class="select-google-view modal">
+												<div class="modal-header">
+													<h3 class="with-line"><i class="fab fa-google"></i>Select Google View</h3>				
+												</div>
+												<div class="modal-body">
+													
+													{{#each google_data.dialog_data.users as |account|}}
+														<h2 class="label ga-account">The account is "{{ account.account_name }}"</h4>
+														{{#each account.web_properties as |property|}}
+															<h3 class="label ga-property">The property is "{{ property.property_name }}"</h5>
+															<ul class="views-list">
+															{{#each property.views as |view|}}
+																<li class="ga-account ga-view">
+																	The view is
+																	<a id='{{view.view_name}}', href='/'>
+																			"{{view.view_name}}"
+																	</a>
+																</li>
+															{{/each}}
+															</ul>
+														{{/each}}
+													{{/each}}
+												</div>
+												<div class="modal-footer">ss
 
-                                                    </div>
-                                                </div>
-                                            {{/if}}
-                                        {{/if}}
-                                    </div>		
-																														
+												</div>
+											</div>
+										{{/if}}
+									{{/if}}
 								</div>
+								<div clarss="google-selected-accounts">
+									<h2 class="label ga-account">Connected as: {{user.email}}</h2>
+									<h2 class="label ga-account">To Account: </h2>
+								</div>		
 							</div>
-
-							<div class="col last">
-
-								<div class="connector">
-									<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
-									<ul class="connectors-list">
-										{{#if facebook_data }}
-										<li class="facebook facebook-authorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnect Facebook</a></li>
-										{{else}}
-										<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
-										{{/if}}
-										{{!-- <li class="facebook facebook-showdata button"><i class="fab fa-facebook"></i><a class="title" href="/data/facebook">View Data Source</a></li> --}}
-									</ul>						
-								</div>
+						</div>
+						<div class="col last">
+							<div class="connector">
+								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
+								<ul class="connectors-list">
+									{{#if facebook_data }}
+									<li class="facebook facebook-authorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnect Facebook</a></li>
+									{{else}}
+									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+									{{/if}}
+									{{!-- <li class="facebook facebook-showdata button"><i class="fab fa-facebook"></i><a class="title" href="/data/facebook">View Data Source</a></li> --}}
+								</ul>						
 							</div>
 						</div>
 					</div>
@@ -92,10 +85,8 @@
 			<div class="section gutter footer">
 				{{> footer }}
 			</div>
-
 		</div>
 	</div>	
-
 </div>
 
 <div class="test"></div>

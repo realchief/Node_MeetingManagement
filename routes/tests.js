@@ -9,6 +9,7 @@ var ical = require('ical')
 var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
+var dates = require('../controllers/dates');
 
 var colors = require('colors');
 var emoji = require('node-emoji')
@@ -219,12 +220,18 @@ router.get('/testsocial/:company', function (req, res) {
 
                             var defaultNumDays = 7
                             var range = dates.getDateRangeNumDays(defaultNumDays);
-                            var defaultDates = JSON.stringify(dates.setDateWindow(range))
+                            var defaultDates = dates.setDateWindow(range)
+                            
+                            console.log(emoji.get("sparkles"), 'current from  ', defaultDates.currentFromDate)
+                            console.log(emoji.get("sparkles"), 'current to ',defaultDates.currentToDate)
+                            console.log(emoji.get("sparkles"), 'compared from  ',defaultDates.comparedFromDate)
+                            console.log(emoji.get("sparkles"), 'compared to ',defaultDates.comparedToDate)
 
-                            var currentSince = moment('2018-08-14').format( "YYYY-MM-DD" );
-                            var currentUntil = moment('2018-08-20').format( "YYYY-MM-DD" );
-                            var comparedSince = moment( '2018-08-07' ).format( "YYYY-MM-DD" );
-                            var comparedUntil = moment( '2018-08-13' ).format( "YYYY-MM-DD" );
+
+                            var currentSince = moment( defaultDates.currentFromDate ).format( "YYYY-MM-DD" );
+                            var currentUntil = moment( defaultDates.currentToDate ).format( "YYYY-MM-DD" );
+                            var comparedSince = moment( defaultDates.comparedFromDate ).format( "YYYY-MM-DD" );
+                            var comparedUntil = moment( defaultDates.comparedToDate ).format( "YYYY-MM-DD" );
 
                             var dateRanges = [
                             {

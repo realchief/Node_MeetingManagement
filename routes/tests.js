@@ -216,6 +216,11 @@ router.get('/testsocial/:company', function (req, res) {
                               version: 'v4',
                             });
 
+
+                            var defaultNumDays = 7
+                            var range = dates.getDateRangeNumDays(defaultNumDays);
+                            var defaultDates = JSON.stringify(dates.setDateWindow(range))
+
                             var currentSince = moment('2018-08-14').format( "YYYY-MM-DD" );
                             var currentUntil = moment('2018-08-20').format( "YYYY-MM-DD" );
                             var comparedSince = moment( '2018-08-07' ).format( "YYYY-MM-DD" );
@@ -488,6 +493,12 @@ router.get('/testphrase/', function (req, res) {
   var facebookList = facebookDefinition.get();
   console.log( emoji.get("sparkles"), 'Facebook', facebookList )
 
+  /* Test facebook source */
+
+  var insightsDefinition = require('../definitions/insights');
+  var insightsList = insightsDefinition.get();
+  console.log( emoji.get("sparkles"), 'insights', insightsList )
+
 
   res.render('fingertips', {
         layout: 'phrases-test.handlebars',
@@ -501,6 +512,79 @@ router.get('/testphrase/', function (req, res) {
 
 
 }),
+
+
+router.get('/testdates/', function (req, res) {
+
+  
+    var dates = require('../controllers/dates');
+    var output = [];
+
+    // using the day before today as the start date
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(3) )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(3, 'on') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(7) )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(28) )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(30) )
+
+    // using the day before today as the start date
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(3) )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(3, 'on') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(7) )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(28) )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeNumDays(30) )
+
+    // console.log( emoji.get("sparkles"), dates.getDateRange('week') )
+    // console.log( emoji.get("sparkles"), dates.getDateRange('isoWeek') )
+    // console.log( emoji.get("sparkles"), dates.getDateRange('month') )
+    // console.log( emoji.get("sparkles"), dates.getDateRange('quarter') )
+    // console.log( emoji.get("sparkles"), dates.getDateRange('year') )
+
+    // console.log( emoji.get("sparkles"), dates.getDateRange('week', "on") )
+  
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('week') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('isoWeek') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('month') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('quarter') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('year') )
+
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('month', "on") )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('quarter', "on") )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeUpToThis('year', "on") )
+
+    // compared to last meeting, same timeframe to compare to
+    
+    // console.log( emoji.get("sparkles"), dates.getDateRangeSince('2018-02-18') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeSince('2018-02-18', 'on') )
+    
+    // since last meeting - but compared to an arbitrary before "since" (meeting 2 months ago, perhaps)
+    
+    // console.log( emoji.get("sparkles"), dates.getDateRangeSincePreLastDate('2018-02-18', '2018-02-10') )
+
+    // between a date range, compared to same timeframe
+    
+    // console.log( emoji.get("sparkles"), dates.getDateRangeBetween('2018-02-10', '2018-02-20') )
+    // console.log( emoji.get("sparkles"), dates.getDateRangeBetween('2018-02-10', '2018-02-20', 'on') )
+
+    // between two date ranges
+    
+    // console.log( emoji.get("sparkles"), dates.getDateRangeBetweenCustom('2018-02-10', '2018-02-20', '2018-01-15', '2018-01-19') )
+
+    var card = dates.getDateRangeNumDays(7).card
+
+    /* set date for all */
+    var defaultNumDays = 7
+    var range = dates.getDateRangeNumDays(defaultNumDays);
+    var defaultDates = JSON.stringify(dates.setDateWindow(range))
+
+    res.render('fingertips', {
+        layout: 'dates-test.handlebars',
+        dates : defaultDates
+
+    })
+
+
+})
 
 
 router.get('/phrasetestdb/', function (req, res) {
@@ -536,7 +620,7 @@ router.get('/phrasetestdb/', function (req, res) {
     })
 
 
-})
+  })
 
 })
 

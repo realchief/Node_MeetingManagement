@@ -421,8 +421,8 @@ router.post('/send', function (req, res) {
 router.get('/testphrase/', function (req, res) {
 
   var phraseMaker = require('../controllers/phrases');
-  var talkingPointsPhrases = require('../schemas/phrases-talking-points');
-  var insightsPhrases = require('../schemas/phrases-insights');
+  var talkingPointsPhrases = require('../definitions/phrases-talking-points');
+  var insightsPhrases = require('../definitions/phrases-insights');
  
   var talkingPointsList = talkingPointsPhrases.get();
   var insightsList = insightsPhrases.get();
@@ -460,31 +460,31 @@ router.get('/testphrase/', function (req, res) {
 
   /* Test asset links */
 
-  var assetLinks = require('../schemas/asset-links');
+  var assetLinks = require('../definitions/asset-links');
   var assetLinksList = assetLinks.get();
   console.log( emoji.get("sparkles"), 'Asset links list', assetLinksList )
 
   /* Test buckets */
 
-  var bucketDefinition = require('../schemas/buckets');
+  var bucketDefinition = require('../definitions/buckets');
   var bucketList = bucketDefinition.get();
   console.log( emoji.get("sparkles"), 'Buckets', bucketList )
 
   /* Test platform */
 
-  var platformDefinition = require('../schemas/platform');
+  var platformDefinition = require('../definitions/platform');
   var platformList = platformDefinition.get();
   console.log( emoji.get("sparkles"), 'Platform', platformList )
 
   /* Test google source */
 
-  var googleDefinition = require('../schemas/source-google-analytics');
+  var googleDefinition = require('../definitions/source-google-analytics');
   var googleList = googleDefinition.get();
   console.log( emoji.get("sparkles"), 'Google', googleList )
 
   /* Test facebook source */
 
-  var facebookDefinition = require('../schemas/source-facebook');
+  var facebookDefinition = require('../definitions/source-facebook');
   var facebookList = facebookDefinition.get();
   console.log( emoji.get("sparkles"), 'Facebook', facebookList )
 

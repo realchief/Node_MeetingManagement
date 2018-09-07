@@ -21,8 +21,8 @@ module.exports = {
 
 
     var phraseMaker = require('../controllers/phrases');
-    var talkingPointsPhrases = require('../schemas/phrases-talking-points');
-    var insightsPhrases = require('../schemas/phrases-insights');
+    var talkingPointsPhrases = require('../definitions/phrases-talking-points');
+    var insightsPhrases = require('../definitions/phrases-insights');
  
     var talkingPointsList = talkingPointsPhrases.get();
     var insightsList = insightsPhrases.get();

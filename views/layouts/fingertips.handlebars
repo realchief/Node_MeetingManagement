@@ -32,7 +32,7 @@
 										{{#if (hasOwn google_data 'dialog_data')}}
 											<div class="select-google-view modal">
 												<div class="modal-header">
-													<h3 class="with-line"><i class="fab fa-google"></i>Select Google View</h3>				
+													<h3 class="with-line with-line-google"><i class="fab fa-google"></i>Select Google View</h3>				
 												</div>
 												<div class="modal-body">
 													
@@ -83,7 +83,7 @@
 										{{#if (hasOwn facebook_data 'dialog_data')}}
 											<div class="select-facebook-view modal">
 												<div class="modal-header">
-													<h3 class="with-line"><i class="fab fa-facebook"></i>Select Facebook View</h3>					
+													<h3 class="with-line with-line-facebook"><i class="fab fa-facebook"></i>Select Facebook View</h3>					
 												</div>
 												<div class="modal-body">											
 													<ul class="views-list">
@@ -125,14 +125,14 @@
 			var display_text = $(this).attr('data-display');
 			$(this).closest('.modal-body').css('display', 'none');
 			$('.select-view-google-text').text(display_text);
-			$('.with-line').text('Info of Chosen account');			
+			$('.with-line-google').text('');			
 			$('.google-selected-accounts').css('display', 'block');
 		});
 		$('.select-view-facebook').click(function (event) {
 			var display_text = $(this).attr('data-display');
 			$(this).closest('.modal-body').css('display', 'none');
 			$('.select-view-facebook-text').text(display_text);
-			$('.with-line').text('Info of Chosen account');			
+			$('.with-line-facebook').text('');			
 			$('.facebook-selected-accounts').css('display', 'block');
 		});
 	});

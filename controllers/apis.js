@@ -548,8 +548,6 @@ exports.getGoogleMatrics = (gUser, done) => {
         //     })
         // }
     }, function (err, result) {
-        console.log('=======GOOGLE RESULT=======');
-        console.log(result);
         done(err, result);
     });
 

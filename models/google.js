@@ -32,8 +32,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         account_id: {
             type: DataTypes.STRING
+        },
+        account_name: {
+            type: DataTypes.STRING
+        },
+        view_name: {
+            type: DataTypes.STRING
         }
-
     });
 
     Google.associate = function(models) {

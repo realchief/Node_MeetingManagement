@@ -26,9 +26,7 @@
 								</ul>
 								<div class="google-accounts ">
 									{{#if google_data }}
-										{{#if (hasOwn google_data 'matric_data')}}
-											{{google_data.metric_data}}
-										{{/if}}
+
 										{{#if (hasOwn google_data 'dialog_data')}}
 											<div class="select-google-view modal">
 												<div class="modal-header">
@@ -43,9 +41,9 @@
 															<ul class="views-list">
 															{{#each property.views as |view|}}
 																<li class="ga-account">
-																	The view is
-																	<a class='select-view-google' href='javascript:void(0);' data-display='To Account: {{account.account_name}} --- {{view.view_name}}'>
-																			"{{view.view_name}}"
+																	The view is																	
+																	<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}'>
+																		{{view.view_name}}
 																	</a>
 																</li>
 															{{/each}}
@@ -57,10 +55,16 @@
 										{{/if}}
 									{{/if}}
 								</div>
-								<div class="google-selected-accounts">
-									<h2 class="label ga-account">Connected as: {{user.email}}</h2>
-									<h2 class="select-view-google-text label ga-account"></h2>
-								</div>		
+								{{#if google_data }}
+									{{#if (hasOwn google_data 'metric_data')}}
+									<div class="google-selected-accounts">
+										<h2 class="label ga-account">Connected as: {{user.email}}</h2>										
+										<h2 class="select-view-google-text label ga-account">
+											To Account: {{google_data.metric_data.account_name}} --- {{google_data.metric_data.view_name}}
+										</h2>
+									</div>
+									{{/if}}
+								{{/if}}
 							</div>
 						</div>
 						<div class="col last">
@@ -71,15 +75,10 @@
 									<li class="facebook facebook-authorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnect Facebook</a></li>
 									{{else}}
 									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
-									{{/if}}
-									{{!-- <li class="facebook facebook-showdata button"><i class="fab fa-facebook"></i><a class="title" href="/data/facebook">View Data Source</a></li> --}}
+									{{/if}}									
 								</ul>
 								<div class="facebook-accounts">
-									{{#if facebook_data }}
-										{{#if (hasOwn facebook_data 'matric_data')}}
-											{{facebook.metric_data}}
-										{{/if}}
-
+									{{#if facebook_data }}								
 										{{#if (hasOwn facebook_data 'dialog_data')}}
 											<div class="select-facebook-view modal">
 												<div class="modal-header">
@@ -89,7 +88,7 @@
 													<ul class="views-list">
 														{{#each facebook_data.dialog_data as |account|}}                                                                
 															<li class="fb-account">
-																<a class='select-view-facebook' href='javascript:void(0);' data-display='To Account: {{account.account_name}}'>
+																<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
 																	{{ account.account_name }}
 																</a>
 															</li>                                                                
@@ -100,10 +99,16 @@
 										{{/if}}
 									{{/if}}
 								</div>
-								<div class="facebook-selected-accounts">
-									<h2 class="label fb-account">Connected as: {{user.email}}</h2>
-									<h2 class="select-view-facebook-text label fb-account"></h2>
-								</div>					
+								{{#if facebook_data }}							
+									{{#if (hasOwn facebook_data 'metric_data')}}
+									<div class="facebook-selected-accounts">
+										<h2 class="label fb-account">Connected as: {{user.email}}</h2>
+										<h2 class="select-view-facebook-text label fb-account">
+											To Account: {{facebook_data.metric_data.account_name}}
+										</h2>
+									</div>
+									{{/if}}
+								{{/if}}
 							</div>
 						</div>
 					</div>
@@ -119,7 +124,8 @@
 <div class="test"></div>
 	
 	{{> scripts }}
-<script>
+
+{{!-- <script>
 	$(document).ready(function () {
 		$('.select-view-google').click(function (event) {
 			var display_text = $(this).attr('data-display');
@@ -136,7 +142,7 @@
 			$('.facebook-selected-accounts').css('display', 'block');
 		});
 	});
-</script>
+</script> --}}
 
 </body>
 

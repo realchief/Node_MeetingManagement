@@ -18,14 +18,15 @@ var google_data = function (user, done) {
                 else cb({error: 'User is not connected with Google'}, false)
             });
         }, function (gUser, cb) {
-            if (gUser.view_id && gUser.property_id && gUser.account_id) {
-                apiControllers.getGoogleMatrics(gUser, function (err, data) {
-                    console.log('metric data from google', err, data)
-                    cb(null, {metric_data: data, dialog_data: null});
-                });
+            if (gUser.view_id && gUser.property_id && gUser.account_id) {               
+                cb(null, {metric_data: {
+                    view_name: gUser.view_name,
+                    account_name: gUser.account_name
+                }, dialog_data: null});
             }
             else {
                 apiControllers.getGoogleSummaries(gUser, function (err, data) {
+                    console.log('There is no gUser data');
                     cb(null, {dialog_data: data, metric_data: null})
                 });
             }
@@ -49,17 +50,10 @@ var facebook_data = function (user, done) {
             })
         }, function (fUser, cb) {
             if (fUser.account_id && fUser.account_name && fUser.account_token) {
-                apiControllers.getFacebookMetrics(fUser, function (err, data) {
-                    console.log('%%%%%%%%%%%facebook%%%%%%%%%%');
-                    console.log('=======insights_daily_current=======');
-                    console.log(data.insights_daily_current);
-                    console.log('=======fan=======');
-                    console.log(data.fan);
-                    console.log('=======insights_posts_current=======');
-                    console.log(data.insights_posts_current);
-                    // var data = [{'field': 'field name', 'current': 'current', 'previous': 'current', 'mapping': 'field'}]
-                    cb(null, {metric_data: data, dialog_data: null});
-                });
+
+                cb(null, {metric_data: {
+                    account_name: fUser.account_name
+                }, dialog_data: null});
             }
             else {
                 apiControllers.getFacebookSummaries(fUser, function (data) {
@@ -75,27 +69,20 @@ var facebook_data = function (user, done) {
     })
 }
 
-router.get('/google/setprofile', function (req, res) {
-    console.log('req.query');
-    console.log(req.query);
+router.get('/google/setprofile', function (req, res) {   
     if (req.user) {
-        if (req.query.view_id && req.query.account_id && req.query.property_id) {
+        if (req.query.view_id && req.query.account_name && req.query.property_id) {
             req.user.getGoogle().then(function (gUser) {
                 gUser.updateAttributes({
                     view_id: req.query.view_id,
                     account_id: req.query.account_id,
                     property_id: req.query.property_id,
-                    view_name: req.query.view_name
+                    view_name: req.query.view_name,
+                    account_name: req.query.account_name
                 }).then(function (updatedResult) {
-                    apiControllers.getGoogleMatrics(updatedResult, function (err, data){
-                        console.log('===================selected google data===========================');
-                        console.log(data);
-                        res.render('fingertips', {
-                            version: 'fingertips',
-                            layout: 'googleview.handlebars',
-                            data: data
-                        });
-                    });                 
+                    res.redirect('/');
+                    console.log('========updated result======');
+                    console.log(updatedResult);
                 })
             });
         }
@@ -105,8 +92,10 @@ router.get('/google/setprofile', function (req, res) {
 })
 
 router.get('/facebook/setprofile', function (req, res) {
-    console.log(req.query);
     if (req.user) {
+        console.log('--------------- Account id ---------------- ', req.query.account_id);
+        console.log('--------------- Account name ---------------- ', req.query.account_name);
+        console.log('--------------- account_token ---------------- ', req.query.account_token);   
         if (req.query.account_id && req.query.account_name && req.query.account_token) {
             req.user.getFacebook().then(function (fUser) {
                 fUser.updateAttributes({
@@ -114,16 +103,9 @@ router.get('/facebook/setprofile', function (req, res) {
                     account_name: req.query.account_name,
                     account_token: req.query.account_token
                 }).then(function (updatedResult) {                        
-                        apiControllers.getFacebookMetrics(updatedResult, function (err, data) {
-                            console.log('===================selected facebook data===========================');
-                            console.log(data);
-                            res.render('fingertips', {
-                            version: 'fingertips',
-                            layout: 'facebookview.handlebars',
-                            data: data
-                        });                    
-                    });
-                    
+                    res.redirect('/');
+                    console.log('========updated result======');
+                    console.log(updatedResult);             
                 })
             });
         }

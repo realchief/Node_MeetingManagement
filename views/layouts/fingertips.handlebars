@@ -21,8 +21,7 @@
 									<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnect Google Analytics</a></li>
 									{{else}}
 									<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
-									{{/if}}
-									{{!-- <li class="google google-showdata-button button"><i class="fab fa-google"></i><a class="title" href='/data/google'>View Data Source</a></li> --}}
+									{{/if}}									
 								</ul>
 								<div class="google-accounts ">
 									{{#if google_data }}
@@ -57,12 +56,14 @@
 								</div>
 								{{#if google_data }}
 									{{#if (hasOwn google_data 'metric_data')}}
-									<div class="google-selected-accounts">
-										<h2 class="label ga-account">Connected as: {{user.email}}</h2>										
-										<h2 class="select-view-google-text label ga-account">
-											To Account: {{google_data.metric_data.account_name}} --- {{google_data.metric_data.view_name}}
-										</h2>
-									</div>
+										{{#if google_data.metric_data.view_name}}
+											<div class="google-selected-accounts">
+												<h2 class="label ga-account">Connected as: {{user.email}}</h2>										
+												<h2 class="select-view-google-text label ga-account">
+													To Account: {{google_data.metric_data.account_name}} --- {{google_data.metric_data.view_name}}
+												</h2>
+											</div>
+										{{/if}}
 									{{/if}}
 								{{/if}}
 							</div>
@@ -101,12 +102,14 @@
 								</div>
 								{{#if facebook_data }}							
 									{{#if (hasOwn facebook_data 'metric_data')}}
-									<div class="facebook-selected-accounts">
-										<h2 class="label fb-account">Connected as: {{user.email}}</h2>
-										<h2 class="select-view-facebook-text label fb-account">
-											To Account: {{facebook_data.metric_data.account_name}}
-										</h2>
-									</div>
+										{{#if facebook_data.metric_data.account_name}}
+											<div class="facebook-selected-accounts">
+												<h2 class="label fb-account">Connected as: {{user.email}}</h2>
+												<h2 class="select-view-facebook-text label fb-account">
+													To Account: {{facebook_data.metric_data.account_name}}
+												</h2>
+											</div>
+										{{/if}}
 									{{/if}}
 								{{/if}}
 							</div>

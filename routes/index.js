@@ -97,7 +97,7 @@ router.get('/facebook/setprofile', function (req, res) {
         console.log('--------------- Account name ---------------- ', req.query.account_name);
         console.log('--------------- account_token ---------------- ', req.query.account_token);   
         if (req.query.account_id && req.query.account_name && req.query.account_token) {
-            req.user.getFacebook().then(function (fUser) {
+            req.user.getFacebook().then(function (fUser) {                
                 fUser.updateAttributes({
                     account_id: req.query.account_id,
                     account_name: req.query.account_name,

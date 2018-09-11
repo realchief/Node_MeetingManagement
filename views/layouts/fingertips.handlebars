@@ -89,9 +89,11 @@
 													<ul class="views-list">
 														{{#each facebook_data.dialog_data as |account|}}                                                                
 															<li class="fb-account">
+																
 																<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
 																	{{ account.account_name }}
 																</a>
+																
 															</li>                                                                
 														{{/each}}
 													</ul>

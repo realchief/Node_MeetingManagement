@@ -1,0 +1,39 @@
+<!-- Scripts
+	================================================== -->
+
+	<script src="/assets/js/platform.js"></script>
+	<script src="/assets/js/asset-links.js"></script>
+	<script src="/assets/js/data-sources.js"></script>
+	<script src="/assets/js/source-google-analytics.js"></script>
+	<script src="/assets/js/source-facebook.js"></script>
+	<script src="/assets/js/buckets.js"></script>
+	<script src="/assets/js/phrases.js"></script>
+	<script src="/assets/js/phrases-talking-points.js"></script>
+	<script src="/assets/js/phrases-insights.js"></script>
+	<script src="/assets/js/insights.js"></script>
+	<script src="/assets/js/utilities.js"></script>
+	<script src="/assets/js/process.js"></script>
+	<script src="/assets/js/dates.js"></script>
+	<script src="/assets/js/debug.js"></script>
+	<script src="/assets/js/app.js"></script>
+	
+	<script>
+		function authorize(event) {
+			FT.connector.google.init()
+		}
+		function open_dialog() {
+			$('.select-google-view').css('display', 'block');
+			$('.select-facebook-view').css('display', 'block');
+		}
+		function init() {
+			open_dialog();
+		}
+		init();
+
+	</script>
+
+	<script src="https://apis.google.com/js/client.js?onload=authorize"></script>
+
+	<script src="/assets/js/connector-google.js"></script>
+	
+	<script src="/assets/js/connector-facebook.js"></script>

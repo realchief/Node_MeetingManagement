@@ -21,7 +21,8 @@ var google_summaries = function (user, done) {
             if (gUser.view_id && gUser.property_id && gUser.account_id) {               
                 cb(null, {display_content: {
                     view_name: gUser.view_name,
-                    account_name: gUser.account_name
+                    account_name: gUser.account_name,
+                    email: gUser.email
                 }, dialog_content: null});
             }
             else {
@@ -52,7 +53,8 @@ var facebook_summaries = function (user, done) {
             if (fUser.account_id && fUser.account_name && fUser.account_token) {
 
                 cb(null, {display_content: {
-                    account_name: fUser.account_name
+                    account_name: fUser.account_name,
+                    email: fUser.email
                 }, dialog_content: null});
             }
             else {

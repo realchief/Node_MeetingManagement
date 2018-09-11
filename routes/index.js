@@ -53,7 +53,8 @@ var facebook_data = function (user, done) {
             if (fUser.account_id && fUser.account_name && fUser.account_token) {
 
                 cb(null, {metric_data: {
-                    account_name: fUser.account_name
+                    account_name: fUser.account_name,
+                    email: fUser.email
                 }, dialog_data: null});
             }
             else {

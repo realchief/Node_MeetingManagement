@@ -58,7 +58,7 @@
 									{{#if (hasOwn google_data 'metric_data')}}
 										{{#if google_data.metric_data.view_name}}
 											<div class="google-selected-accounts">
-												<h2 class="label ga-account">Connected as: {{user.email}}</h2>										
+												<h2 class="label ga-account">Connected as: {{google_data.metric_data.email}}</h2>										
 												<h2 class="select-view-google-text label ga-account">
 													To Account: {{google_data.metric_data.account_name}} --- {{google_data.metric_data.view_name}}
 												</h2>
@@ -106,7 +106,7 @@
 									{{#if (hasOwn facebook_data 'metric_data')}}
 										{{#if facebook_data.metric_data.account_name}}
 											<div class="facebook-selected-accounts">
-												<h2 class="label fb-account">Connected as: {{user.email}}</h2>
+												<h2 class="label fb-account">Connected as: {{facebook_data.metric_data.email}}</h2>
 												<h2 class="select-view-facebook-text label fb-account">
 													To Account: {{facebook_data.metric_data.account_name}}
 												</h2>

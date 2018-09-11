@@ -83,14 +83,5 @@ router.get('/google/unlink',  function (req, res) {
 router.get('/google/callback',
     passport.authenticate('google', { successRedirect: '/', failureRedirect: '/signin'}));
 
-router.get('/twitter', passport.authenticate('twitter'));   
-
-router.get('/twitter/callback',
-    passport.authenticate('twitter', {
-        successRedirect: '/',
-        failureRedirect: '/signin',
-        failureFlash: true
-        })
-);
 
 module.exports = router;

@@ -3,7 +3,6 @@
 var auth             = require('./config/auth.js'),
     LocalStrategy    = require('passport-local').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy,
-    TwitterStrategy  = require('passport-twitter').Strategy,
     GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy,
     Model            = require('./models'),
     bcrypt           = require('bcrypt'),
@@ -190,37 +189,4 @@ module.exports = function(passport) {
         });
     }));
 
-
-    passport.use(new TwitterStrategy({
-        consumerKey    : auth.twitterAuth.consumerKey,
-        consumerSecret : auth.twitterAuth.consumerSecret,
-        callbackURL    : auth.twitterAuth.callbackURL
-    }, function(token, tokenSecret, profile, done) {
-        process.nextTick(function() {
-            req.usedStrategy = 'twitter';
-            new Model.Twitter({twitter_id: profile.id}).fetch().then(function(twUser) {
-                if (twUser) {
-                    return done(null, twUser);
-                } else {
-                    // Twitter user not found. Create a new one.
-                    new User().save().then(function(user) {
-                        var newUserId = user.toJSON().id;
-
-                        var newTWUser = {
-                            id           : newUserId,
-                            token        : token,
-                            twitter_id   : profile.id,
-                            username     : profile.username,
-                            display_name : profile.displayName
-                        };
-
-                        // Create new Facebook user with token.
-                        new Model.Twitter(newTWUser).save({}, { method: 'insert' }).then(function(newlyMadeTWUser) {
-                            return done(null, newTWUser);
-                        });
-                    });
-                }
-            });
-        });
-    }));
 }

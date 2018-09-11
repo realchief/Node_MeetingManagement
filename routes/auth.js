@@ -14,6 +14,9 @@ router.get('/google', passport.authenticate('google', {
     accessType: 'offline', prompt: 'consent'
 }));
 
+router.get('/google/callback',
+    passport.authenticate('google', { successRedirect: '/', failureRedirect: '/signin'}));
+
 router.get('/facebook/unlink',  function (req, res) {
     if (!req.user) {
         return res.redirect('/signin')
@@ -79,9 +82,5 @@ router.get('/google/unlink',  function (req, res) {
         })
     }
 });
-
-router.get('/google/callback',
-    passport.authenticate('google', { successRedirect: '/', failureRedirect: '/signin'}));
-
 
 module.exports = router;

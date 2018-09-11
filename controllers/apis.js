@@ -214,7 +214,7 @@ exports.getFacebookSummaries = (fUser, done) => {
 
 }
 
-exports.getGoogleMatrics = (gUser, done) => {
+exports.getGoogleMetrics = (gUser, done) => {
     oauth2Client.credentials = {
         refresh_token: gUser.refresh_token,
         expiry_date: gUser.expiry_date,

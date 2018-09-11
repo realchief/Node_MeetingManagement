@@ -8,7 +8,7 @@ let apiControllers = require('../controllers/apis');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
-var google_data = function (user, done) {
+var google_summaries = function (user, done) {
     Async.waterfall([
         function (cb) {
             user.getGoogle().then(function (gUser) {
@@ -19,15 +19,15 @@ var google_data = function (user, done) {
             });
         }, function (gUser, cb) {
             if (gUser.view_id && gUser.property_id && gUser.account_id) {               
-                cb(null, {metric_data: {
+                cb(null, {display_content: {
                     view_name: gUser.view_name,
                     account_name: gUser.account_name
-                }, dialog_data: null});
+                }, dialog_content: null});
             }
             else {
                 apiControllers.getGoogleSummaries(gUser, function (err, data) {
                     console.log('There is no gUser data');
-                    cb(null, {dialog_data: data, metric_data: null})
+                    cb(null, {dialog_content: data, display_content: null})
                 });
             }
         }
@@ -39,7 +39,7 @@ var google_data = function (user, done) {
     })
 }
 
-var facebook_data = function (user, done) {
+var facebook_summaries = function (user, done) {
     Async.waterfall([
         function (cb) {
             user.getFacebook().then(function (fUser) {
@@ -51,13 +51,13 @@ var facebook_data = function (user, done) {
         }, function (fUser, cb) {
             if (fUser.account_id && fUser.account_name && fUser.account_token) {
 
-                cb(null, {metric_data: {
+                cb(null, {display_content: {
                     account_name: fUser.account_name
-                }, dialog_data: null});
+                }, dialog_content: null});
             }
             else {
                 apiControllers.getFacebookSummaries(fUser, function (data) {
-                    cb(null, {dialog_data: data, metric_data: null})
+                    cb(null, {dialog_content: data, display_content: null})
                 });
             }
         }
@@ -125,14 +125,14 @@ router.get('/',  function (req, res) {
 
     if (req.user) {
         Async.parallel({
-            google_data: function (cb) {
-                google_data(req.user, function (data) {
+            google_summaries: function (cb) {
+                google_summaries(req.user, function (data) {
                     cb(null, data);
                 })
             },
             
-            facebook_data: function (cb) {
-                facebook_data(req.user, function (data) {
+            facebook_summaries: function (cb) {
+                facebook_summaries(req.user, function (data) {
                     cb(null, data);
                 })
             }
@@ -144,8 +144,8 @@ router.get('/',  function (req, res) {
             }
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_data);
-            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
+            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
+            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             req.session.currentVersion = 'fingertips'
@@ -154,8 +154,8 @@ router.get('/',  function (req, res) {
                 layout: 'fingertips.handlebars',
                 register_version: 'none',
                 user : req.user,
-                google_data: results.google_data,
-                facebook_data: results.facebook_data
+                google_summaries: results.google_summaries,
+                facebook_summaries: results.facebook_summaries
             });
         
         });
@@ -176,8 +176,8 @@ router.get('/data/google',  function (req, res) {
 
     if (req.user) {
         Async.parallel({
-            google_data: function (cb) {
-                google_data(req.user, function (data) {
+            google_summaries: function (cb) {
+                google_summaries(req.user, function (data) {
                     cb(null, data);
                 })
             }  
@@ -189,8 +189,8 @@ router.get('/data/google',  function (req, res) {
             }
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_data);
-            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
+            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
+            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             req.session.currentVersion = 'fingertips'
@@ -199,7 +199,7 @@ router.get('/data/google',  function (req, res) {
                 layout: 'googledata.handlebars',
                 register_version: 'none',
                 user : req.user,
-                google_data: results.google_data                
+                google_data: JSON.stringify(results.google_summaries)                
             });
         
         });
@@ -219,8 +219,8 @@ router.get('/data/facebook',  function (req, res) {
 
     if (req.user) {
         Async.parallel({        
-            facebook_data: function (cb) {
-                facebook_data(req.user, function (data) {
+            facebook_summaries: function (cb) {
+                facebook_summaries(req.user, function (data) {
                     cb(null, data);
                 })
             }
@@ -232,8 +232,8 @@ router.get('/data/facebook',  function (req, res) {
             }
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_data);
-            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
+            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
+            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             req.session.currentVersion = 'fingertips'
@@ -242,7 +242,7 @@ router.get('/data/facebook',  function (req, res) {
                 layout: 'facebookdata.handlebars',
                 register_version: 'none',
                 user : req.user,            
-                facebook_data: results.facebook_data
+                facebook_data: JSON.stringify(results.facebook_summaries)
             });
         
         });

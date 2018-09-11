@@ -30,25 +30,17 @@
 
                                     <div class="facebook-accounts">
                                         {{#if facebook_data }}
-                                            {{#if (hasOwn facebook_data 'matric_data')}}
-                                                {{facebook.metric_data}}
+                                            {{#if (hasOwn facebook_data 'display_content')}}
+                                                {{facebook.display_content}}
                                             {{/if}}
 
-                                            {{#if (hasOwn facebook_data 'dialog_data')}}
+                                            {{#if (hasOwn facebook_data 'dialog_content')}}
                                                 <div class="select-facebook-view modal">
-                                                    <div class="modal-header">
-                                                        <h3 class="with-line"><i class="fab fa-facebook"></i>Select Facebook View</h3>					
-                                                    </div>
                                                     <div class="modal-body">											
-                                                        <ul class="views-list">
-                                                            {{#each facebook_data.dialog_data as |account|}}                                                                
-                                                                <li class="fb-account">
-                                                                    <a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
-                                                                        {{ account.account_name }}
-                                                                    </a>
-                                                                </li>                                                                
-                                                            {{/each}}
-                                                        </ul>
+                                                        
+                                                         show account here
+
+
                                                     </div>
                                                     <div class="modal-footer">
 

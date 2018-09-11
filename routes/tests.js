@@ -608,12 +608,12 @@ var facebook_data = function (user, done) {
       }, function (fUser, cb) {
           if (fUser.account_id && fUser.account_name && fUser.account_token) {
               apiControllers.getFacebookMetrics(fUser, function (err, data) {                                
-                  cb(null, {metric_data: data, dialog_data: null});
+                  cb(null, {display_content: data, dialog_content: null});
               });
           }
           else {
               apiControllers.getFacebookSummaries(fUser, function (data) {
-                  cb(null, {dialog_data: data, metric_data: null})
+                  cb(null, {dialog_content: data, display_content: null})
               });
           }
       }
@@ -624,6 +624,14 @@ var facebook_data = function (user, done) {
       done(result);
   })
 }
+
+
+router.get('/testapis', function (req, res) {
+
+  var thisModule = this
+  console.log(thisModule.facebook_data(req.user))
+
+})
 
 router.get('/testsend', function (req, res) {
 

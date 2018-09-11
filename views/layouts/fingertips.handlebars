@@ -40,7 +40,7 @@
 															<ul class="views-list">
 															{{#each property.views as |view|}}
 																<li>
-																	<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}'>{{view.view_name}}</a>
+																	<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}'>{{view.view_name}}</a>
 																</li>
 															{{/each}}
 															</ul>
@@ -57,7 +57,7 @@
 											<div class="google-selected-accounts">
 												<h2 class="label ga-account">Connected as: {{google_summaries.display_content.email}}</h2>										
 												<h2 class="select-view-google-text label ga-account">
-													To Account: {{google_summaries.display_content.account_name}} --- {{google_summaries.display_content.view_name}}
+													To Account: {{google_summaries.display_content.account_name}} : {{google_summaries.display_content.property_name}} - {{google_summaries.display_content.view_name}}
 												</h2>
 											</div>
 										{{/if}}

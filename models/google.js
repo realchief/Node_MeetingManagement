@@ -38,6 +38,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         view_name: {
             type: DataTypes.STRING
+        },
+        property_name: {
+            type: DataTypes.STRING
         }
     });
 

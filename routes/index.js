@@ -22,6 +22,7 @@ var google_summaries = function (user, done) {
                 cb(null, {display_content: {
                     view_name: gUser.view_name,
                     account_name: gUser.account_name,
+                    property_name: gUser.property_name,
                     email: gUser.email
                 }, dialog_content: null});
             }
@@ -80,6 +81,7 @@ router.get('/google/setprofile', function (req, res) {
                     account_id: req.query.account_id,
                     property_id: req.query.property_id,
                     view_name: req.query.view_name,
+                    property_name: req.query.property_name,
                     account_name: req.query.account_name
                 }).then(function (updatedResult) {
                     res.redirect('/');

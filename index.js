@@ -6,7 +6,7 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var exphbs  = require('express-handlebars');
-var handlebarsHelpers = require('handlebars-helpers');
+var handlebarsHelpers = require('handlebars-helpers')();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -50,8 +50,6 @@ var session = require('express-session');
 var cookieSession = require('cookie-session');
 
 var app = express();
-
-var comparison = handlebarsHelpers.comparison();
 
 app.engine('handlebars', exphbs({
     defaultLayout: process.env.HOME_VERSION,

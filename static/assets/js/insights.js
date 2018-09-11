@@ -338,9 +338,10 @@ FT.insights = {
 
 				//console.log('UNDEFINED INSIGHTS PHRASE', metric)
 			}
-
+			var data = [];
 			$.each( metric.assetInsights, function( index, assetInsight ) {
-
+					// datum = {};
+					// datum['inlineStyle'] = inlineStyle
 					var asset = assetInsight.meta
 					//console.log('Asset Insight:', factor)
 					var inlineStyle = FT.utilities.getInlineStyle('status', asset.status);
@@ -352,7 +353,6 @@ FT.insights = {
 					}
 					asset.completePhrase = completePhrase
 				})
-
 		})
 
 

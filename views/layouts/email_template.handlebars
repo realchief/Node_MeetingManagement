@@ -1,0 +1,15 @@
+{{> head }}
+
+    <body class="home">
+        <div class="app-container">        
+            <div class="content">
+                <ul class="lines">
+                    {{#each sentences as |sentence|}}                       
+                        <li><span>{{sentence.text}}</span></li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+        {{> scripts }}
+    </body>
+</html>

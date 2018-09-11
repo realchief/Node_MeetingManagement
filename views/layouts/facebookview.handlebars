@@ -1,0 +1,124 @@
+{{> head }}
+
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+
+		<div class="below-header"><div class="below-header-inside">
+
+			<div class="container">
+					<div class="row clearfix" id="connect-sources">
+                        <a class="redirect" href="/data/facebook">Back</a>
+						<h2 class="with-line">View API Sources</h2>
+
+						<div class="two-col cols">
+							<div class="col last">                                
+                                <div class="connector">
+                                    <h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
+
+                                        <ul class="connectors-list">
+                                            {{#if facebook_data }} 
+                                             <li><i class="fab fa-facebook"></i><h4>Connected</h4></li>                                           
+                                            {{else}}  
+                                            <li><i class="fab fa-facebook"></i><h4>Disconnected</h4></li>                                           
+                                            {{/if}}                                            
+                                        </ul>
+
+                                    <div class="facebook-accounts">
+                                        <div class="select-facebook-view modal">
+                                            <div class="modal-header">
+                                                <h3 class="with-line"><i class="fab fa-google"></i>View facebook data</h3>				
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <h4 class="label ga-account">=======Fan Data========</h4>
+                                                <ul class="views-list">
+                                                                                               
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">fan_count: {{ data.fan.fan_count }}</h5>
+                                                    </li>     
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">global_brand_page_name: {{ data.fan.global_brand_page_name }}</h5>
+                                                    </li> 
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">name: {{ data.fan.name }}</h5>
+                                                    </li>  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">name_with_location_descriptor: {{ data.fan.name_with_location_descriptor }}</h5>
+                                                    </li>     
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">id: {{ data.fan.id }}</h5>
+                                                    </li> 
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">social sentence: {{ data.fan.engagement.social_sentence }}</h5>
+                                                    </li>
+                                                    {{#each data.fan.posts.data as |fan_posts_data|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ fan_posts_data }}</h5>
+                                                    </li>                                                  
+                                                    {{/each}}                                             
+                                                </ul>
+
+                                                <h4 class="label ga-account">=======insights_daily_current Data========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_daily_current.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>   
+                                                <h4 class="label ga-account">=======insights_lifetime_current========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_lifetime_current.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>   
+                                                <h4 class="label ga-account">=======insights_28days_current========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_28days_current.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>  
+                                                <h4 class="label ga-account">=======insights_28days_compare========</h4>
+                                                <ul class="views-list">
+                                                {{#each data.insights_28days_compare.data as |insight|}}                                                  
+                                                    <li class="ga-account ga-view">
+                                                        <h5 class="label ga-account">{{ insight }}</h5>
+                                                    </li>                                                  
+                                                {{/each}}  
+                                                </ul>                                          
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+						    </div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="section gutter footer">
+				{{> footer }}
+			</div>
+
+		</div>
+	</div>	
+
+</div>
+
+<div class="test"></div>
+	
+	{{> scripts }}
+  
+</body>
+
+</html>

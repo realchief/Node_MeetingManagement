@@ -7,78 +7,145 @@
 		<div class="section header clearfix">
 			{{> header }}
 		</div>
-
 		<div class="below-header"><div class="below-header-inside">
-
 			<div class="container">
+				<div class="row clearfix" id="connect-sources">
+					<h2 class="with-line">Connect API Sources</h2>
 
-
-					<div class="row clearfix" id="connect-sources">
-
-						<h2 class="with-line">Connect API Sources</h2>
-
-						<div class="two-col cols">
-
+					<div class="two-col cols">
 						<div class="col first">
-
 							<div class="connector">
-
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
+								<ul class="connectors-list">
+									{{#if google_data }}
+									<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnect Google Analytics</a></li>
+									{{else}}
+									<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									{{/if}}									
+								</ul>
+								<div class="google-accounts ">
+									{{#if google_data }}
 
-								{{#unless google_data }}
-									<ul class="connectors-list">
-									<a class="title" href='/auth/google'>Connect Google Analytics</a>
-									</ul>
-								{{/unless}}
-
-								<div class="google-accounts"></div>
-						
+										{{#if (hasOwn google_data 'dialog_data')}}
+											<div class="select-google-view modal">
+												<div class="modal-header">
+													<h3 class="with-line with-line-google"><i class="fab fa-google"></i>Select Google View</h3>				
+												</div>
+												<div class="modal-body">
+													
+													{{#each google_data.dialog_data.users as |account|}}
+														<h2 class="label ga-account">The account is "{{ account.account_name }}"</h4>
+														{{#each account.web_properties as |property|}}
+															<h3 class="label ga-property">The property is "{{ property.property_name }}"</h5>
+															<ul class="views-list">
+															{{#each property.views as |view|}}
+																<li class="ga-account">
+																	The view is																	
+																	<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}'>
+																		{{view.view_name}}
+																	</a>
+																</li>
+															{{/each}}
+															</ul>
+														{{/each}}
+													{{/each}}
+												</div>
+											</div>
+										{{/if}}
+									{{/if}}
+								</div>
+								{{#if google_data }}
+									{{#if (hasOwn google_data 'metric_data')}}
+										{{#if google_data.metric_data.view_name}}
+											<div class="google-selected-accounts">
+												<h2 class="label ga-account">Connected as: {{user.email}}</h2>										
+												<h2 class="select-view-google-text label ga-account">
+													To Account: {{google_data.metric_data.account_name}} --- {{google_data.metric_data.view_name}}
+												</h2>
+											</div>
+										{{/if}}
+									{{/if}}
+								{{/if}}
 							</div>
-
 						</div>
-
 						<div class="col last">
-
 							<div class="connector">
-
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
-
-								{{#unless facebook_data }}
-									<ul class="connectors-list">
-										<a class="title" href="/auth/facebook">Connect Facebook Account</a>
-									</ul>
-								{{/unless}}
-
-								<div class="facebook-accounts"></div>
-						
+								<ul class="connectors-list">
+									{{#if facebook_data }}
+									<li class="facebook facebook-authorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnect Facebook</a></li>
+									{{else}}
+									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
+									{{/if}}									
+								</ul>
+								<div class="facebook-accounts">
+									{{#if facebook_data }}								
+										{{#if (hasOwn facebook_data 'dialog_data')}}
+											<div class="select-facebook-view modal">
+												<div class="modal-header">
+													<h3 class="with-line with-line-facebook"><i class="fab fa-facebook"></i>Select Facebook View</h3>					
+												</div>
+												<div class="modal-body">											
+													<ul class="views-list">
+														{{#each facebook_data.dialog_data as |account|}}                                                                
+															<li class="fb-account">
+																<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
+																	{{ account.account_name }}
+																</a>
+															</li>                                                                
+														{{/each}}
+													</ul>
+												</div>               
+											</div>
+										{{/if}}
+									{{/if}}
+								</div>
+								{{#if facebook_data }}							
+									{{#if (hasOwn facebook_data 'metric_data')}}
+										{{#if facebook_data.metric_data.account_name}}
+											<div class="facebook-selected-accounts">
+												<h2 class="label fb-account">Connected as: {{user.email}}</h2>
+												<h2 class="select-view-facebook-text label fb-account">
+													To Account: {{facebook_data.metric_data.account_name}}
+												</h2>
+											</div>
+										{{/if}}
+									{{/if}}
+								{{/if}}
 							</div>
-
 						</div>
-						</div>
-				
 					</div>
-
-
-				
 				</div>
-
 			</div>
-
 			<div class="section gutter footer">
 				{{> footer }}
 			</div>
+		</div>
+	</div>	
+</div>
 
-		</div></div>
-
-		
-
-	</div>
-	
 <div class="test"></div>
-
 	
 	{{> scripts }}
 
+{{!-- <script>
+	$(document).ready(function () {
+		$('.select-view-google').click(function (event) {
+			var display_text = $(this).attr('data-display');
+			$(this).closest('.modal-body').css('display', 'none');
+			$('.select-view-google-text').text(display_text);
+			$('.with-line-google').text('');			
+			$('.google-selected-accounts').css('display', 'block');
+		});
+		$('.select-view-facebook').click(function (event) {
+			var display_text = $(this).attr('data-display');
+			$(this).closest('.modal-body').css('display', 'none');
+			$('.select-view-facebook-text').text(display_text);
+			$('.with-line-facebook').text('');			
+			$('.facebook-selected-accounts').css('display', 'block');
+		});
+	});
+</script> --}}
 
 </body>
 

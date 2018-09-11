@@ -24,7 +24,7 @@ router.get('/ical', function (req, res) {
   console.log('\n', emoji.get('eyes'), ' ical start ===============================', '\n')
 
   // add awesome pizza meeting
-  var getMeetingInfo = emails.meetingFileParse('./uploads/invite-1534959593903.ics') 
+  var getMeetingInfo = emails.meetingFileParse('./uploads/test/iCal-20180618-061247-1529327568024.ics') 
 
   getMeetingInfo.then( function(meetingInfo) {
 

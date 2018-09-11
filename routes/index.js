@@ -21,7 +21,8 @@ var google_data = function (user, done) {
             if (gUser.view_id && gUser.property_id && gUser.account_id) {               
                 cb(null, {metric_data: {
                     view_name: gUser.view_name,
-                    account_name: gUser.account_name
+                    account_name: gUser.account_name,
+                    email: gUser.email
                 }, dialog_data: null});
             }
             else {
@@ -77,6 +78,7 @@ router.get('/google/setprofile', function (req, res) {
                     view_id: req.query.view_id,
                     account_id: req.query.account_id,
                     property_id: req.query.property_id,
+                    property_name: req.query.property_name,
                     view_name: req.query.view_name,
                     account_name: req.query.account_name
                 }).then(function (updatedResult) {

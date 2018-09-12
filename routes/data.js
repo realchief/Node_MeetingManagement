@@ -10,87 +10,109 @@ let googleApi = require('../controllers/google-api');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
-router.get('/data/google',  function (req, res) {
-    var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
+var userInfo = require('../controllers/users')
+
+router.get('/data/google/:company',  function (req, res) {
     
-    if ( redirectTo !== "/") {
-        delete req.session.redirectTo;
-        res.redirect(redirectTo);
-        return
+    var userId = req.params.company ? req.params.company : req.user.id
+
+    if ( req.params.company == "loggedin") {
+
+       if ( req.user ) {
+           userId = req.user.id
+        } else {
+            req.session.redirectTo = "/data/google/loggedin"
+            res.redirect('/signin');
+            return
+       }
+
     }
 
-    if (req.user) {
+
+    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+
+        var accountResults = results;
+
         Async.parallel({
-            google_summaries: function (cb) {
-                google_summaries(req.user, function (data) {
-                    cb(null, data);
+
+            metrics : ( cb ) => {
+
+                googleApi.getMetrics(accountResults.googleUser, function( err, response ) {
+                    cb( null, response )
                 })
-            }  
-        }, function (err, results) {
-            
-            if (err) {
-                console.log('***** Error: ', err);
-                return;
+
             }
 
-            console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
-            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
-            console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+        }, function( err, results ) {
 
-            
             res.render('fingertips', {
                 version: 'fingertips',
-                layout: 'googledata.handlebars',
-                user : req.user,
-                google_data: JSON.stringify(results.google_summaries)                
+                layout: 'data.handlebars',
+                accountResults: accountResults,
+                user: accountResults.user,
+                googleUser: accountResults.googleUser,
+                facebookUser: null,
+                metrics : results.metrics
             });
-        
-        });
-    }
-    else res.redirect('/signin');
+
+        })
+
+    })
+
+
+
+    
 });
 
 
-router.get('/data/facebook',  function (req, res) {
-    var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
+router.get('/data/facebook/:company',  function (req, res) {
     
-    if ( redirectTo !== "/") {
-        delete req.session.redirectTo;
-        res.redirect(redirectTo);
-        return
+    var userId = req.params.company ? req.params.company : req.user.id
+
+    if ( req.params.company == "loggedin") {
+
+       if ( req.user ) {
+           userId = req.user.id
+        } else {
+            req.session.redirectTo = "/data/facebook/loggedin"
+            res.redirect('/signin');
+            return
+       }
+
     }
 
-    if (req.user) {
-        Async.parallel({        
-            facebook_summaries: function (cb) {
-                facebook_summaries(req.user, function (data) {
-                    cb(null, data);
+
+    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+
+        var accountResults = results;
+
+        Async.parallel({
+
+            metrics : ( cb ) => {
+
+                facebookApi.getMetrics(accountResults.facebookUser, function( err, response ) {
+                    cb( null, response )
                 })
-            }
-        }, function (err, results) {
-            
-            if (err) {
-                console.log('***** Error: ', err);
-                return;
+
             }
 
-            console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
-            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
-            console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+        }, function( err, results ) {
 
-            
             res.render('fingertips', {
                 version: 'fingertips',
-                layout: 'facebookdata.handlebars',
-                user : req.user,            
-                facebook_data: JSON.stringify(results.facebook_summaries)
+                layout: 'data.handlebars',
+                accountResults: accountResults,
+                user: accountResults.user,
+                googleUser: null,
+                facebookUser: accountResults.facebookUser,
+                metrics : results.metrics
             });
-        
-        });
-    }
-    else res.redirect('/signin');
+
+        })
+
+    })
+
+    
 });
 
 

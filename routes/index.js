@@ -11,6 +11,7 @@ var colors = require('colors');
 var emoji = require('node-emoji')
 
 router.get('/',  function (req, res) {
+
     var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
     
     if ( redirectTo !== "/") {

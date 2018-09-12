@@ -21,9 +21,8 @@ var Model = require('./models');
 var Async = require('async');
 var moment = require('moment');
 
-var facebookApi = require('./controllers/facebook-api');
-var googleApi = require('./controllers/google-api');
-
+let facebookApi = require('./controllers/facebook-api');
+let googleApi = require('./controllers/google-api');
 
 var routes = require('./routes/index');
 var authRoutes = require('./routes/auth.js');
@@ -31,6 +30,7 @@ var parseRoutes = require('./routes/parse');
 var testRoutes = require('./routes/tests');
 var scheduleRoutes = require('./routes/schedule');
 var dataRoutes = require('./routes/data');
+var userRoutes = require('./routes/user');
 
 
 var colors = require('colors');
@@ -130,8 +130,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(facebookApi.checkToken);
 app.use(googleApi.checkToken);
+app.use(facebookApi.checkToken);
 
 // route incoming requests to the correct pages
 app.use('/', routes)
@@ -139,6 +139,7 @@ app.use('/', parseRoutes)
 app.use('/', testRoutes)
 app.use('/', dataRoutes)
 app.use('/', scheduleRoutes)
+app.use('/', userRoutes)
 app.use('/auth', authRoutes);
 
 // lastly, handle any errors 

@@ -11,12 +11,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helpers = require('./helpers');
-var routes = require('./routes/index');
-var parseRoutes = require('./routes/parse');
-var testRoutes = require('./routes/tests');
 
 var passport = require('passport');
-var auth = require('./routes/auth.js');
+
 var models = require('./models');
 var flash = require('connect-flash');
 var apis = require('./controllers/apis');
@@ -24,6 +21,15 @@ var emails = require('./controllers/emails');
 var Model = require('./models');
 var Async = require('async');
 var moment = require('moment');
+
+
+var routes = require('./routes/index');
+var authRoutes = require('./routes/auth.js');
+var parseRoutes = require('./routes/parse');
+var testRoutes = require('./routes/tests');
+var scheduleRoutes = require('./routes/schedule');
+var dataRoutes = require('./routes/data');
+
 
 var colors = require('colors');
 var emoji = require('node-emoji')
@@ -129,9 +135,9 @@ app.use(apis.checkFacebookToken);
 app.use('/', routes)
 app.use('/', parseRoutes)
 app.use('/', testRoutes)
-
-// route incoming requests to the correct pages
-app.use('/auth', auth);
+app.use('/', dataRoutes)
+app.use('/', scheduleRoutes)
+app.use('/auth', authRoutes);
 
 // lastly, handle any errors 
 app.use(function(req, res, next){

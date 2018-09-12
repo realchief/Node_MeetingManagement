@@ -202,9 +202,12 @@ exports.getFacebookSummaries = (fUser, done) => {
     graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, response) => {
         var data = [];
         for (var i = 0; i < response.accounts.data.length; i ++) {
+            var account_name_assert = response.accounts.data[i].global_brand_page_name       
+            account_name_assert = account_name_assert.replace('&', 'and'); 
+                 
             var datum = {
                 'account_id': response.accounts.data[i].id,
-                'account_name': response.accounts.data[i].global_brand_page_name,
+                'account_name': account_name_assert,
                 'account_token': response.accounts.data[i].access_token
             };
             data.push(datum)

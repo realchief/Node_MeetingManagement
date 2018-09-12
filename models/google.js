@@ -30,6 +30,9 @@ module.exports = (sequelize, DataTypes) => {
         property_id: {
             type: DataTypes.STRING
         },
+        property_name: {
+            type: DataTypes.STRING
+        },
         account_id: {
             type: DataTypes.STRING
         },

@@ -52,7 +52,6 @@ var facebook_summaries = function (user, done) {
             })
         }, function (fUser, cb) {
             if (fUser.account_id && fUser.account_name && fUser.account_token) {
-
                 cb(null, {display_content: {
                     account_name: fUser.account_name,
                     email: fUser.email
@@ -80,6 +79,7 @@ router.get('/google/setprofile', function (req, res) {
                     view_id: req.query.view_id,
                     account_id: req.query.account_id,
                     property_id: req.query.property_id,
+                    property_name: req.query.property_name,
                     view_name: req.query.view_name,
                     property_name: req.query.property_name,
                     account_name: req.query.account_name
@@ -101,7 +101,7 @@ router.get('/facebook/setprofile', function (req, res) {
         console.log('--------------- Account name ---------------- ', req.query.account_name);
         console.log('--------------- account_token ---------------- ', req.query.account_token);   
         if (req.query.account_id && req.query.account_name && req.query.account_token) {
-            req.user.getFacebook().then(function (fUser) {
+            req.user.getFacebook().then(function (fUser) {                
                 fUser.updateAttributes({
                     account_id: req.query.account_id,
                     account_name: req.query.account_name,

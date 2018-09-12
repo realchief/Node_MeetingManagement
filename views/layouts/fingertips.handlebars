@@ -86,9 +86,11 @@
 													<ul class="views-list">
 														{{#each facebook_summaries.dialog_content as |account|}}                                                                
 															<li class="fb-account">
+																
 																<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
 																	{{ account.account_name }}
 																</a>
+																
 															</li>                                                                
 														{{/each}}
 													</ul>
@@ -101,7 +103,11 @@
 									{{#if (hasOwn facebook_summaries 'display_content')}}
 										{{#if facebook_summaries.display_content.account_name}}
 											<div class="facebook-selected-accounts">
+<<<<<<< HEAD
 												<h2 class="label fb-account">Connected as: {{facebook_summaries.display_content.email}}</h2>
+=======
+												<h2 class="label fb-account">Connected as: {{facebook_data.metric_data.email}}</h2>
+>>>>>>> marin-integration
 												<h2 class="select-view-facebook-text label fb-account">
 													To Account: {{facebook_summaries.display_content.account_name}}
 												</h2>

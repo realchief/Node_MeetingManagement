@@ -2,6 +2,10 @@ var express = require('express'),
     router = express.Router(),
     passport = require('passport'),
     Async = require('async');
+    apiControllers = require('../controllers/apis');
+
+var colors = require('colors');
+var emoji = require('node-emoji');
 
 router.get('/facebook', passport.authenticate('facebook', {scope : ['email,read_insights,manage_pages']}));
 
@@ -32,10 +36,18 @@ router.get('/facebook/unlink',  function (req, res) {
                         cb({error: 'This user is not connected with facebook account.'});
                     }
                 })
-            }, function (fUser, cb) {
-                req.user.setFacebook(null).then(function () {
-                    cb(null, fUser);
+            }, function (fUser, cb ) {
+
+                apiControllers.deauthorizeFacebook(fUser, function(result) {
+
+                    console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook app deauthorize response:', result)
+
+                    req.user.setFacebook(null).then(function () {
+                        cb(null, fUser);
+                    })
+
                 })
+
             }, function (fUser, cb) {
                 fUser.destroy().then(function () {
                     cb(null);

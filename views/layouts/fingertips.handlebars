@@ -28,9 +28,6 @@
 
 										{{#if (hasOwn google_summaries 'dialog_content')}}
 											<div class="select-google-view modal">
-												<div class="modal-header">
-													<h3 class="with-line with-line-google"><i class="fab fa-google"></i>Select Google View</h3>				
-												</div>
 												<div class="modal-body">
 													
 													{{#each google_summaries.dialog_content.users as |account|}}
@@ -79,9 +76,6 @@
 									{{#if facebook_summaries }}								
 										{{#if (hasOwn facebook_summaries 'dialog_content')}}
 											<div class="select-facebook-view modal">
-												<div class="modal-header">
-													<h3 class="with-line with-line-facebook"><i class="fab fa-facebook"></i>Select Facebook View</h3>					
-												</div>
 												<div class="modal-body">											
 													<ul class="views-list">
 														{{#each facebook_summaries.dialog_content as |account|}}                                                                
@@ -103,11 +97,7 @@
 									{{#if (hasOwn facebook_summaries 'display_content')}}
 										{{#if facebook_summaries.display_content.account_name}}
 											<div class="facebook-selected-accounts">
-<<<<<<< HEAD
 												<h2 class="label fb-account">Connected as: {{facebook_summaries.display_content.email}}</h2>
-=======
-												<h2 class="label fb-account">Connected as: {{facebook_data.metric_data.email}}</h2>
->>>>>>> marin-integration
 												<h2 class="select-view-facebook-text label fb-account">
 													To Account: {{facebook_summaries.display_content.account_name}}
 												</h2>

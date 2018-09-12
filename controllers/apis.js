@@ -199,23 +199,49 @@ exports.getFacebookSummaries = (fUser, done) => {
     const token = fUser.token;
     graph.setAccessToken(token);
     
-    graph.get(`${fUser.profile_id}?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}`, (err, response) => {
+    graph.get(fUser.profile_id, {
+        fields: 'name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}'
+    }, (err, response) => {
         var data = [];
-        for (var i = 0; i < response.accounts.data.length; i ++) {
-            var account_name_assert = response.accounts.data[i].global_brand_page_name       
-            account_name_assert = account_name_assert.replace('&', 'and'); 
-                 
-            var datum = {
-                'account_id': response.accounts.data[i].id,
-                'account_name': account_name_assert,
-                'account_token': response.accounts.data[i].access_token
-            };
-            data.push(datum)
+        
+        console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook summary response:', response)
+        
+        if ( typeof response.accounts !== 'undefined') {
+
+            for (var i = 0; i < response.accounts.data.length; i ++) {
+                var account_name_assert = response.accounts.data[i].global_brand_page_name       
+                account_name_assert = account_name_assert.replace('&', 'and'); 
+                     
+                var datum = {
+                    'account_id': response.accounts.data[i].id,
+                    'account_name': account_name_assert,
+                    'account_token': response.accounts.data[i].access_token
+                };
+                data.push(datum)
+            }
+
         }
+
         done(data);
     });
 
 }
+
+
+exports.deauthorizeFacebook = (fUser, done) => {
+    const token = fUser.token;
+    const profileId = fUser.profile_id;
+    graph.setAccessToken(token);
+
+    graph.del(profileId + "/permissions", {
+        access_token : fUser.account_token
+    }, function (err, response) {
+         console.log("\n", emoji.get("rain_cloud"), '>>>>>> deauthorized app on facebook:', response)
+        done(response);
+    });
+
+}
+
 
 exports.getGoogleMetrics = (gUser, done) => {
     oauth2Client.credentials = {

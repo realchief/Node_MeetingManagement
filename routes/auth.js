@@ -2,7 +2,11 @@ var express = require('express'),
     router = express.Router(),
     passport = require('passport'),
     Async = require('async');
-    apiControllers = require('../controllers/apis');
+
+    facebookApi = require('../controllers/facebook-api');
+    googleApi = require('../controllers/google-api');
+
+
 
 var colors = require('colors');
 var emoji = require('node-emoji');
@@ -38,7 +42,7 @@ router.get('/facebook/unlink',  function (req, res) {
                 })
             }, function (fUser, cb ) {
 
-                apiControllers.deauthorizeFacebook(fUser, function(result) {
+                facebookApi.deauthorize(fUser, function(result) {
 
                     console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook app deauthorize response:', result)
 

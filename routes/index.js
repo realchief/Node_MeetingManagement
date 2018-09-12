@@ -3,7 +3,9 @@ let router = express.Router();
 let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
-let apiControllers = require('../controllers/apis');
+
+let facebookApi = require('../controllers/facebook-api');
+let googleApi = require('../controllers/google-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')
@@ -27,7 +29,7 @@ var google_summaries = function (user, done) {
                 }, dialog_content: null});
             }
             else {
-                apiControllers.getGoogleSummaries(gUser, function (err, data) {
+                googleApi.getSummaries(gUser, function (err, data) {
                     console.log('There is no gUser data');
                     cb(null, {dialog_content: data, display_content: null})
                 });
@@ -58,7 +60,7 @@ var facebook_summaries = function (user, done) {
                 }, dialog_content: null});
             }
             else {
-                apiControllers.getFacebookSummaries(fUser, function (data) {
+                facebookApi.getSummaries(fUser, function (data) {
                     cb(null, {dialog_content: data, display_content: null})
                 });
             }

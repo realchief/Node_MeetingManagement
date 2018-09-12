@@ -16,11 +16,13 @@ var passport = require('passport');
 
 var models = require('./models');
 var flash = require('connect-flash');
-var apis = require('./controllers/apis');
 var emails = require('./controllers/emails');
 var Model = require('./models');
 var Async = require('async');
 var moment = require('moment');
+
+var facebookApi = require('./controllers/facebook-api');
+var googleApi = require('./controllers/google-api');
 
 
 var routes = require('./routes/index');
@@ -128,8 +130,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(apis.checkGoogleToken);
-app.use(apis.checkFacebookToken);
+app.use(facebookApi.checkToken);
+app.use(googleApi.checkToken);
 
 // route incoming requests to the correct pages
 app.use('/', routes)

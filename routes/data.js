@@ -3,7 +3,9 @@ let router = express.Router();
 let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
-let apiControllers = require('../controllers/apis');
+
+let facebookApi = require('../controllers/facebook-api');
+let googleApi = require('../controllers/google-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')

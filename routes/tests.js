@@ -11,7 +11,9 @@ var moment = require('moment');
 var Model = require('../models');
 var schedule = require('node-schedule');
 var dates = require('../controllers/dates');
-var apiControllers = require('../controllers/apis');
+
+let facebookApi = require('../controllers/facebook-api');
+let googleApi = require('../controllers/google-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')
@@ -607,12 +609,12 @@ var facebook_data = function (user, done) {
           })
       }, function (fUser, cb) {
           if (fUser.account_id && fUser.account_name && fUser.account_token) {
-              apiControllers.getFacebookMetrics(fUser, function (err, data) {                                
+              facebookApi.getMetrics(fUser, function (err, data) {                                
                   cb(null, {display_content: data, dialog_content: null});
               });
           }
           else {
-              apiControllers.getFacebookSummaries(fUser, function (data) {
+              facebookApi.getSummaries(fUser, function (data) {
                   cb(null, {dialog_content: data, display_content: null})
               });
           }
@@ -629,8 +631,12 @@ var facebook_data = function (user, done) {
 router.get('/testapis', function (req, res) {
 
   var thisModule = this
-  console.log(thisModule.facebook_data(req.user))
 
+  if ( req.user ) {
+    console.log(facebook_data(req.user), function(){})
+  } else {
+    res.send("No Logged in User Found")
+  }
 })
 
 router.get('/testsend', function (req, res) {

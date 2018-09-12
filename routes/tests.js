@@ -25,12 +25,27 @@ const EmailContent = require('../components/EmailContent.js')
 
 router.get('/getuser/:company', function (req, res) {
 
-  userInfo.getConnectedAccountsFromId(req.params.company, function( err, results ) {
+  var userId = req.params.company ? req.params.company : req.user.id
+
+  if ( req.params.company == "loggedin") {
+
+    if ( req.user ) {
+       userId = req.user.id
+    } else {
+        req.session.redirectTo = "/getuser/loggedin"
+        res.redirect('/signin');
+        return
+   }
+
+  }
+
+  userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
 
     res.render('fingertips', {
         version: 'fingertips',
-        layout: 'data.handlebars',
+        layout: 'accounts.handlebars',
         results: results,
+        user: results.user,
         googleUser: results.googleUser,
         facebookUser: results.facebookUser
     });
@@ -51,9 +66,6 @@ router.get('/testsocial/:company', function (req, res) {
   var company = req.params.company
 
   userInfo.getConnectedAccountsFromId(company, function( err, results ) {
-
-            //console.log('Results>>>', results)
-            var user = results.user 
 
             Async.parallel({
 
@@ -278,7 +290,7 @@ router.get('/testsocial/:company', function (req, res) {
                     res.render('fingertips', {
                         layout: 'social-test.handlebars',
                         company : company,
-                        user : user,
+                        user : results.user,
                         data: output
                     });
 

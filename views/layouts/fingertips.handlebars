@@ -15,32 +15,45 @@
 					<div class="two-col cols">
 						<div class="col first">
 							<div class="connector">
+
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
+								
 								<ul class="connectors-list">
 									{{#if google_summaries }}
 									<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnect Google Analytics</a></li>
 									{{else}}
 									<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
 									{{/if}}									
+								
 								</ul>
 								<div class="google-accounts ">
+
 									{{#if google_summaries }}
 
-										{{#if (hasOwn google_summaries 'dialog_content')}}
+										{{#if google_summaries.account_list }}
+
 											<div class="select-google-view modal">
+
+											<h5 class="label ga-user">GA Accounts for {{google_summaries.user.email}} </h5>
+
 												<div class="modal-body">
 													
-													{{#each google_summaries.dialog_content.users as |account|}}
-														<h2 class="label ga-account">{{ account.account_name }}</h4>
+													{{#each google_summaries.account_list.users as |account|}}
+														<h4 class="label ga-account">{{ account.account_name }}</h4>
 														{{#each account.web_properties as |property|}}
-															<h3 class="label ga-property">{{ property.property_name }}</h5>
+															<h5 class="label ga-property">{{ property.property_name }}</h5>
+															
 															<ul class="views-list">
 															{{#each property.views as |view|}}
 																<li>
-																	<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}'>{{view.view_name}}</a>
+																	{{view.view_name}}
+																	<span class="property-chooser">
+																	<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}'>Use</a>
+																	</span>
 																</li>
 															{{/each}}
 															</ul>
+
 														{{/each}}
 													{{/each}}
 												</div>
@@ -49,12 +62,12 @@
 									{{/if}}
 								</div>
 								{{#if google_summaries }}
-									{{#if (hasOwn google_summaries 'display_content')}}
-										{{#if google_summaries.display_content.view_name}}
+									{{#if google_summaries.chosen_account }}
+										{{#if google_summaries.chosen_account.view_name}}
 											<div class="google-selected-accounts">
-												<h2 class="label ga-account">Connected as: {{google_summaries.display_content.email}}</h2>										
+												<h2 class="label ga-account">Connected as: {{google_summaries.chosen_account.email}}</h2>										
 												<h2 class="select-view-google-text label ga-account">
-													To Account: {{google_summaries.display_content.account_name}} : {{google_summaries.display_content.property_name}} - {{google_summaries.display_content.view_name}}
+													To Account: {{google_summaries.chosen_account.account_name}} : {{google_summaries.chosen_account.property_name}} - {{google_summaries.chosen_account.view_name}}
 												</h2>
 											</div>
 										{{/if}}
@@ -62,6 +75,13 @@
 								{{/if}}
 							</div>
 						</div>
+
+
+
+
+
+
+
 						<div class="col last">
 							<div class="connector">
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
@@ -73,17 +93,23 @@
 									{{/if}}									
 								</ul>
 								<div class="facebook-accounts">
-									{{#if facebook_summaries }}								
-										{{#if (hasOwn facebook_summaries 'dialog_content')}}
+									{{#if facebook_summaries }}					
+
+										{{#if facebook_summaries.account_list}}
 											<div class="select-facebook-view modal">
+												
+												<h5 class="label ga-user">Facebook Page Accounts for {{facebook_summaries.user.email}}</h5>
+
 												<div class="modal-body">											
 													<ul class="views-list">
-														{{#each facebook_summaries.dialog_content as |account|}}                                                                
+														{{#each facebook_summaries.account_list as |account|}}                                                              
 															<li class="fb-account">
-																
+																{{ account.account_name }}
+																<span class="property-chooser">
 																<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
-																	{{ account.account_name }}
+																Use
 																</a>
+																</span>
 																
 															</li>                                                                
 														{{/each}}
@@ -94,12 +120,13 @@
 									{{/if}}
 								</div>
 								{{#if facebook_summaries }}							
-									{{#if (hasOwn facebook_summaries 'display_content')}}
-										{{#if facebook_summaries.display_content.account_name}}
+									{{#if facebook_summaries.chosen_account}}
+
+										{{#if facebook_summaries.chosen_account.account_name}}
 											<div class="facebook-selected-accounts">
-												<h2 class="label fb-account">Connected as: {{facebook_summaries.display_content.email}}</h2>
+												<h2 class="label fb-account">Connected as: {{facebook_summaries.chosen_account.email}}</h2>
 												<h2 class="select-view-facebook-text label fb-account">
-													To Account: {{facebook_summaries.display_content.account_name}}
+													To Account: {{facebook_summaries.chosen_account.account_name}}
 												</h2>
 											</div>
 										{{/if}}

@@ -626,6 +626,52 @@ router.get('/testapis', function (req, res) {
   }
 })
 
+router.get('/phrasetestdb/', function (req, res) {
+
+  var phraseMaker = require('../controllers/phrases');
+
+  let whereClause = { type : 'insight' }
+
+  Model.Phrase.findAll({
+      where: whereClause
+  }).then(function (phrases) {
+  
+    var allInsights = []
+
+     _.forEach(phrases, function(phrase,index) {
+        allInsights.push( { 
+            id : phrase.id,
+            phrase : phrase.phrase + ' ' + phrase.id,
+            all_tags : phrase.all_tags
+        })
+    })
+
+
+     var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics', 'positive', 'pageviews'])
+
+    res.render('fingertips', {
+        layout: 'phrases-test.handlebars',
+       // allPoints : allPoints,
+        allInsights : allInsights,
+       // filteredPoints : filteredPoints,
+        filteredInsights : filteredInsights    
+
+    })
+
+
+  })
+
+})
+
+
+
+
+/* 
+ * MARIN'S TEST STUFF 
+ *
+ *
+ */
+
 router.get('/testsend', function (req, res) {
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -692,42 +738,8 @@ router.get('/testsend', function (req, res) {
 
 });
 
-
-router.get('/phrasetestdb/', function (req, res) {
-
-  var phraseMaker = require('../controllers/phrases');
-
-  let whereClause = { type : 'insight' }
-
-  Model.Phrase.findAll({
-      where: whereClause
-  }).then(function (phrases) {
-  
-    var allInsights = []
-
-     _.forEach(phrases, function(phrase,index) {
-        allInsights.push( { 
-            id : phrase.id,
-            phrase : phrase.phrase + ' ' + phrase.id,
-            all_tags : phrase.all_tags
-        })
-    })
-
-
-     var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics', 'positive', 'pageviews'])
-
-    res.render('fingertips', {
-        layout: 'phrases-test.handlebars',
-       // allPoints : allPoints,
-        allInsights : allInsights,
-       // filteredPoints : filteredPoints,
-        filteredInsights : filteredInsights    
-
-    })
-
-
-  })
-
-})
+/* 
+ * / end MARIN'S TEST STUFF 
+ */
 
 module.exports = router

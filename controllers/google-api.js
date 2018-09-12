@@ -48,6 +48,7 @@ exports.getMetrics = (gUser, done) => {
         }
     ]
     Async.parallel({
+
         metrics : (cb) => {
 
             /* METRICS ==== */
@@ -354,10 +355,9 @@ exports.getMetrics = (gUser, done) => {
     }, function (err, result) {
         done(err, result);
     });
-
 }
 
-exports.getSummaries = (gUser, cb) => {
+exports.getAccountList = (gUser, cb) => {
 
     oauth2Client.credentials = {
         refresh_token: gUser.refresh_token,
@@ -414,32 +414,6 @@ exports.getSummaries = (gUser, cb) => {
                     done(null, response);
                 }
             });
-        },
-        gaColumns: function (done) {
-            google.analytics('v3').metadata.columns.list({
-                'reportType': 'ga'
-            }, function (err, response) {
-
-                //console.log('get google data - columns all', response.data)
-
-                if (err) {
-                    console.log('Google API error:', err);
-                    return;
-                }
-
-                let gaColumns = {};
-
-                if (typeof response.items !== 'undefined') {
-
-                    for (var i = 0; i < response.items.length; i++) {
-                        let column = response.result.items[i];
-                        gaColumns[column.id] = column.attributes;
-                    }
-
-
-                }
-                done(null, response.data);
-            });
         }
     }, function (err, data) {
         console.log('Google Users ',
@@ -447,9 +421,50 @@ exports.getSummaries = (gUser, cb) => {
         );
         cb(null, data)
     });
-
-
 };
+
+
+exports.getAccountListOrSelectView = function (user, done) {
+    Async.waterfall([
+        function (cb) {
+            user.getGoogle().then(function (gUser) {
+                if (gUser) {
+                    cb(null, gUser)
+                }
+                else cb({error: 'User is not connected with Google'}, false)
+            });
+        }, function (gUser, cb) {
+            if (gUser.view_id && gUser.property_id && gUser.account_id) {               
+                cb(null, {
+                    chosen_account: {
+                        view_name: gUser.view_name,
+                        account_name: gUser.account_name,
+                        property_name: gUser.property_name,
+                        email: gUser.email
+                    }, 
+                    account_list: null
+                });
+            }
+            else {
+                googleApi.getAccountList(gUser, function (err, data) {
+                    console.log('There is no gUser data');
+                    cb(null, {
+                        account_list: data, 
+                        user : gUser,
+                        chosen_account: null
+                    })
+                });
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            console.log(err.error);
+        }
+        done(err, result);
+    })
+}
+
+
 
 exports.checkToken = (req, res, next) => {
 
@@ -497,4 +512,6 @@ exports.checkToken = (req, res, next) => {
         } else next();
     });
 };
+
+
 

@@ -1,0 +1,54 @@
+{{> head }}
+
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+		<div class="below-header"><div class="below-header-inside">
+			<div class="container">
+				
+				
+
+				<div class="google-selected-accounts">
+					<h2 class="label ga-account">Connected as: {{google_summaries.display_content.email}}</h2>			
+					{{#if googleUser }}		
+
+					<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>	
+					<h2 class="label fb-account">Connected as: {{googleUser.email}}</h2>		
+					<h2 class="select-view-google-text label ga-account">
+						To Account: {{googleUser.account_name}} : {{googleUser.property_name}} - {{results.googleUser.view_name}}
+					</h2>
+					{{toJSON results.googleUser}}
+					{{/if}}
+
+					{{#if facebookUser }}			
+					<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>	
+					<h2 class="label fb-account">Connected as: {{facebookUser.email}}</h2>
+					<h2 class="select-view-facebook-text label fb-account">
+						To Account: {{facebookUser.account_name}}
+					</h2>
+					{{toJSON facebookUser}}
+					{{/if}}
+
+				</div>
+
+
+			</div>
+			<div class="section gutter footer">
+				{{> footer }}
+			</div>
+		</div>
+	</div>	
+</div>
+
+<div class="test"></div>
+	
+	{{> scripts }}
+
+
+</body>
+
+</html>

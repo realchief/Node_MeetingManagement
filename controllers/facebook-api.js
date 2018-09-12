@@ -184,7 +184,7 @@ exports.getMetrics = (fUser, done) => {
     });
 };
 
-exports.getSummaries = (fUser, done) => {
+exports.getAccountList = (fUser, done) => {
     const token = fUser.token;
     graph.setAccessToken(token);
     
@@ -216,6 +216,42 @@ exports.getSummaries = (fUser, done) => {
 
 }
 
+exports.getAccountListOrSelectView = function (user, done) {
+    Async.waterfall([
+        function (cb) {
+            user.getFacebook().then(function (fUser) {
+                if (fUser) {
+                    cb(null, fUser)
+                }
+                else cb({'error': 'User is not connected with Facebook'})
+            })
+        }, function (fUser, cb) {
+            if (fUser.account_id && fUser.account_name && fUser.account_token) {
+                cb(null, {
+                    chosen_account: {
+                        account_name: fUser.account_name,
+                        email: fUser.email
+                    }, 
+                    account_list: null
+                });
+            }
+            else {
+                facebookApi.getAccountList(fUser, function (data) {
+                    cb(null, {
+                        account_list: data, 
+                        user : fUser,
+                        chosen_account: null
+                    })
+                });
+            }
+        }
+    ], function (err, result) {
+        if (err) {
+            console.log(err.error);
+        }
+        done(err, result);
+    })
+}
 
 exports.deauthorize = (fUser, done) => {
     const token = fUser.token;

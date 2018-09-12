@@ -18,8 +18,27 @@ let googleApi = require('../controllers/google-api');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+var userInfo = require('../controllers/users')
+
 // email content function
 const EmailContent = require('../components/EmailContent.js')
+
+router.get('/getuser/:company', function (req, res) {
+
+  userInfo.getConnectedAccountsFromId(req.params.company, function( err, results ) {
+
+    res.render('fingertips', {
+        version: 'fingertips',
+        layout: 'data.handlebars',
+        results: results,
+        googleUser: results.googleUser,
+        facebookUser: results.facebookUser
+    });
+
+  })
+
+
+})
 
 router.get('/testsocial/:company', function (req, res) {
 
@@ -29,66 +48,23 @@ router.get('/testsocial/:company', function (req, res) {
   const OAuth2 = google.auth.OAuth2;
   const auth = require('../config/auth');
 
-  let company = req.params.company;
-  let type = ( isNaN(Number(company)) ) ? 'company_id' : 'id'
+  var company = req.params.company
 
-  let whereClause = ( type == "company_id" ) ? { 'company_id' : company } : { 'id' : company }
-
-  Model.User.findOne({
-      where: whereClause
-  }).then(function (user) {
-  
-      if (!user) {
-          console.log('>>> Cant Find user', user)
-          res.send("No User Found")
-          return
-      }
-    
-    let token = "";
-  
-    Async.parallel({
-
-      retrieveFacebookUser : function( done ) {
-
-        user.getFacebook().then(function (fUser) {
-          if (fUser) {
-              console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
-          }
-
-          done( null, fUser )
-
-        })
-
-      },
-
-      retrieveGoogleUser : function ( done ) {
-
-        user.getGoogle().then(function (gUser) {
-          if (gUser) {
-              console.log( emoji.get("smile"), 'Google User>>>', "id", gUser.id )
-          }
-
-          done( null, gUser )
-
-        })
-
-      }
-
-    },
-
-    function ( err, results ) {
+  userInfo.getConnectedAccountsFromId(company, function( err, results ) {
 
             //console.log('Results>>>', results)
-            
+            var user = results.user 
+
             Async.parallel({
+
                   getFacebookData: (done) => {
                       
-                      if ( results.retrieveFacebookUser  == null  ) {
+                      if ( results.facebookUser  == null  ) {
                         done( err, 'no facebook data')
                         return
                       }
 
-                      let fUser = results.retrieveFacebookUser
+                      let fUser = results.facebookUser
 
                       graph.setAccessToken(fUser.token);
                       graph.get("me/?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}", (err, response) => {
@@ -99,14 +75,14 @@ router.get('/testsocial/:company', function (req, res) {
 
                   getGoogleData : (done) => {
 
-                      if ( results.retrieveGoogleUser == null ) {
+                      if ( results.googleUser == null ) {
                         done( err, { data: 'no google data'})
                         return
                       }
 
                       // Set the global Google credentials for the user //
 
-                      let gUser = results.retrieveGoogleUser
+                      let gUser = results.googleUser
 
                       let oauth2Client = new OAuth2(
                           auth.googleAuth.clientID,
@@ -308,7 +284,6 @@ router.get('/testsocial/:company', function (req, res) {
 
                 });
 
-          })
     })
 
 })
@@ -623,17 +598,17 @@ var facebook_data = function (user, done) {
       if (err) {
           console.log(err.error);
       }
-      done(result);
+      done(null, result);
   })
 }
 
 
 router.get('/testapis', function (req, res) {
 
-  var thisModule = this
-
   if ( req.user ) {
-    console.log(facebook_data(req.user), function(){})
+    facebook_data(req.user, function( err, result) {
+      res.send(result)
+    })
   } else {
     res.send("No Logged in User Found")
   }
@@ -677,7 +652,7 @@ router.get('/testsend', function (req, res) {
         console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_data);
         console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
-        req.session.currentVersion = 'fingertips'
+        
         res.render('fingertips', {
             version: 'fingertips',
             layout: 'email_template.handlebars',

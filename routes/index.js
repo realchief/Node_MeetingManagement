@@ -10,7 +10,7 @@ let googleApi = require('../controllers/google-api');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
-var google_summaries = function (user, done) {
+var google_summaryOrSelectView = function (user, done) {
     Async.waterfall([
         function (cb) {
             user.getGoogle().then(function (gUser) {
@@ -43,7 +43,7 @@ var google_summaries = function (user, done) {
     })
 }
 
-var facebook_summaries = function (user, done) {
+var facebook_summaryOrSelectView = function (user, done) {
     Async.waterfall([
         function (cb) {
             user.getFacebook().then(function (fUser) {
@@ -84,14 +84,15 @@ router.get('/',  function (req, res) {
 
     if (req.user) {
         Async.parallel({
+            
             google_summaries: function (cb) {
-                google_summaries(req.user, function (data) {
+                google_summaryOrSelectView(req.user, function (data) {
                     cb(null, data);
                 })
             },
             
             facebook_summaries: function (cb) {
-                facebook_summaries(req.user, function (data) {
+                facebook_summaryOrSelectView(req.user, function (data) {
                     cb(null, data);
                 })
             }
@@ -103,11 +104,11 @@ router.get('/',  function (req, res) {
             }
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
-            console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
+            //console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
+            //console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
-            req.session.currentVersion = 'fingertips'
+            
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'fingertips.handlebars',
@@ -123,7 +124,7 @@ router.get('/',  function (req, res) {
 });
 
 router.get('/frontend', function(req, res, next) {
-            req.session.currentVersion = 'fingertips'
+            
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'frontend.handlebars'

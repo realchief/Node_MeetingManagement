@@ -38,7 +38,7 @@ router.get('/data/google',  function (req, res) {
             console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
-            req.session.currentVersion = 'fingertips'
+            
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'googledata.handlebars',
@@ -81,7 +81,7 @@ router.get('/data/facebook',  function (req, res) {
             console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
-            req.session.currentVersion = 'fingertips'
+            
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'facebookdata.handlebars',

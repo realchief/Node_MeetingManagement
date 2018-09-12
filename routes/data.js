@@ -42,7 +42,6 @@ router.get('/data/google',  function (req, res) {
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'googledata.handlebars',
-                register_version: 'none',
                 user : req.user,
                 google_data: JSON.stringify(results.google_summaries)                
             });
@@ -85,7 +84,6 @@ router.get('/data/facebook',  function (req, res) {
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'facebookdata.handlebars',
-                register_version: 'none',
                 user : req.user,            
                 facebook_data: JSON.stringify(results.facebook_summaries)
             });

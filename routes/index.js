@@ -50,7 +50,6 @@ router.get('/',  function (req, res) {
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'fingertips.handlebars',
-                register_version: 'none',
                 user : req.user,
                 google_summaries: results.google_summaries,
                 facebook_summaries: results.facebook_summaries

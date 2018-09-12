@@ -3,7 +3,6 @@ let router = express.Router();
 let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
-let apiControllers = require('../controllers/apis');
 
 var colors = require('colors');
 var emoji = require('node-emoji')

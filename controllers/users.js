@@ -58,7 +58,7 @@ var users = {
 
             results.user = user
             results.company = company
-            //console.log( emoji.get("smile"), 'User from id results>>>', results )
+           // console.log( emoji.get("smile"), 'User from id results>>>', err, results )
             callback(err, results)
            
         })

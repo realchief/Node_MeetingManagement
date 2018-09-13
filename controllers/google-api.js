@@ -44,7 +44,7 @@ exports.getMetrics = (gUser, done) => {
     var defaultNumDays = 7
     var range = dates.getDateRangeNumDays(defaultNumDays);
     var defaultDates = dates.setDateWindow(range)
-    
+
     var currentSince = moment( defaultDates.currentFromDate ).format( "YYYY-MM-DD" );
     var currentUntil = moment( defaultDates.currentToDate ).format( "YYYY-MM-DD" );
     var comparedSince = moment( defaultDates.comparedFromDate ).format( "YYYY-MM-DD" );
@@ -95,62 +95,151 @@ exports.getMetrics = (gUser, done) => {
             });
         },
 
-        all_goals : (cb) => {
+        goals : (cb) => {
 
             /* GOALS ==== */
             
-            analytics.management.goals.list({
-              'accountId': gUser.account_id,
-              'webPropertyId': gUser.property_id,
-              'profileId': gUser.view_id },
-               
-                function (err, response) {
+            Async.waterfall([
 
-                    if (err) {
-                        console.log('Google API error:', err);
-                        cb(err);
-                    }
+                function ( cb ) {
 
-                    var goals = [];
-                    var metrics = [];
+                    analytics.management.goals.list({
+                      'accountId': gUser.account_id,
+                      'webPropertyId': gUser.property_id,
+                      'profileId': gUser.view_id },
+                       
+                        function (err, response) {
 
-                    if ( typeof response.data != 'undefined') {
-
-                        //console.log(response.result.items)
-
-                        _.each( response.data.items, function(goal, index) {
-                            
-                            var details = ""
-                            if (goal.urlDestinationDetails) {
-                                details = goal.urlDestinationDetails
-                                } else if (goal.eventDetails) {
-                                details = goal.eventDetails
+                            if (err) {
+                                console.log('Google API error:', err);
+                                cb(err);
                             }
 
-                            goals.push( {
-                                id : goal.id,
-                                name : goal.name,
-                                type : goal.type,
-                                details : details
-                            })
+                            var goals = [];
+                            var metrics = [];
 
-                            metrics.push( {  
-                                metricName: 'ga:goal' + goal.id + 'Completions',
-                                name : goal.name
+                            if ( typeof response.data != 'undefined') {
+
+                                //console.log(response.result.items)
+
+                                _.each( response.data.items, function(goal, index) {
+                                    
+                                    var details = ""
+                                    if (goal.urlDestinationDetails) {
+                                        details = goal.urlDestinationDetails
+                                        } else if (goal.eventDetails) {
+                                        details = goal.eventDetails
+                                    }
+
+                                    goals.push( {
+                                        id : goal.id,
+                                        name : goal.name,
+                                        type : goal.type,
+                                        details : details
+                                    })
+
+                                    metrics.push( {  
+                                        metricName: 'ga:goal' + goal.id + 'Completions',
+                                        name : goal.name
+                                    })
+
                             })
+                        
+                            cb(null, { 
+                                goals : goals, 
+                                metricsList : metrics 
+                            });        
+
+                            //console.log('Google API goals response:', goals, metrics)                      
+                        }
+                    });
+
+                },
+
+                function ( goalsObject ) {
+
+                    var goalExpressions = [];
+
+                     console.log("\n", emoji.get("medal"), '>>>>>> google goals list:', goalsObject.goals )
+      
+
+                    _.forEach( goalsObject.metricsList, function( goal, index) {
+                        goalExpressions.push( { 
+                            expression: goal.metricName,
+                            //alias : goal.name
+                        })
+                    })
+
+                    goalExpressions = goalExpressions.slice(0,9)
+
+                    goalExpressions.push( { 
+                       expression: 'ga:goalCompletionsAll', 
+                       //alias: 'All Completions' 
+                    })
+
+                    analyticsreporting.reports.batchGet({
+                        "requestBody": {
+                            reportRequests: [
+                                
+                                {
+                                "viewId" : gUser.view_id,
+                                "dateRanges" : dateRanges,
+                                "metrics" : goalExpressions.slice(0,10),
+                                 pageSize : 10,
+                                includeEmptyRows : 'true'
+                              },
+
+                              {
+                                "viewId" : gUser.view_id,
+                                "dateRanges" : dateRanges,
+                                 "metrics" : [
+                                    { expression: 'ga:transactionRevenue' },
+                                    { expression: 'ga:transactions' },
+                                    
+                                ],
+                                 pageSize : 200,
+                                includeEmptyRows : 'true'
+                              },
+
+                              {
+                                "viewId" : gUser.view_id,
+                                "dateRanges" : dateRanges,
+                                 "dimensions" : [
+                                    { "name" : "ga:productName" },
+                               ],
+                                 "metrics" : [
+                                    { expression: 'ga:itemRevenue' },
+                                    
+                                ],
+                                 "orderBys" : [
+                                    {
+                                      fieldName : "ga:itemRevenue",
+                                      sortOrder : 'DESCENDING',
+                                     // orderType : "DELTA"
+                                    }
+                                 ],
+
+                                 pageSize : 200,
+                                includeEmptyRows : 'true'
+                              }
+
+                            ]
+                        }
+                    }, function ( err, response ) {
+
+                        cb ( null, response.data.reports )
 
                     })
-                
-                    cb(null, { 
-                        goals : goals, 
-                        metricNames : metrics 
-                    });        
 
-                    //console.log('Google API goals response:', goals, metrics)                      
+                    
+
                 }
-                
-                
-            });
+
+            ], function ( err, result ) {
+
+                cb( null, result )
+
+            })
         },
 
         metrics : (cb) => {
@@ -381,16 +470,6 @@ exports.getMetrics = (gUser, done) => {
         },     
 
 
-        goals : (cb) => {
-
-            cb(null,null)
-
-            /* METRICS ==== */
-
-            
-        },     
-
-        
 
          matchups: function (cb) {
              analyticsreporting.reports.batchGet({
@@ -420,7 +499,7 @@ exports.getMetrics = (gUser, done) => {
                  }
         
         
-             }, function( err, response){
+             }, function( err, response ){
 
                 cb(null, response.data.reports);
              
@@ -429,7 +508,13 @@ exports.getMetrics = (gUser, done) => {
          }
     }, function (err, results) {
 
-        done(err, results);
+        var resultsObject = {
+            results : results,
+            dateRange : range,
+            aggregationPeriod : 'combined'
+        }
+
+        done(err, resultsObject);
 
     });
 }

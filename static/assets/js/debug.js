@@ -668,6 +668,8 @@ FT.debug = {
 
 	facebookOutput : function(current, compared, insightGroup) {
 
+		//console.log('IG>>>', insightGroup)
+
 		var rows = [];
 		var table = [];
 
@@ -689,7 +691,9 @@ FT.debug = {
 
     	$.each( current[insightGroup].response.data, function(index, metric) {
     		
-        		/**
+    		table = [];
+
+        	/**
 			 * compared and current values
 	 		*/
         	
@@ -717,7 +721,6 @@ FT.debug = {
 			 		*/
 
 		        	if ( typeof value == 'object') {
-
 
 		        		values = [metric.title, metric.name, "&nbsp", "&nbsp", "&nbsp", "&nbsp", "&nbsp"];
 			        	table.push('<tr><td>', values.join('</td><td>'), '</td>');

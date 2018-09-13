@@ -22,6 +22,8 @@
 							To Account: {{googleUser.account_name}} : {{googleUser.property_name}} - {{googleUser.view_name}}
 						</h2>
 
+						{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
+
 						{{#each metrics}}
 
 							<h4>{{@key}}</h4>
@@ -40,6 +42,8 @@
 						<h2 class="select-view-facebook-text label fb-account">
 							To Account: {{facebookUser.account_name}}
 						</h2>
+
+						{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
 
 						{{#each metrics}}
 

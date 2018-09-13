@@ -672,12 +672,12 @@ FT.connector.facebook = {
 				var basedIndex = index+1;
 			
 				FT.connector.facebook.processMetrics(current, compared, insightGroup);
-				//FT.debug.facebookOutput(current, compared, insightGroup)
+				FT.debug.facebookOutput(current, compared, insightGroup)
 
 			})
 
 			FT.connector.facebook.listPosts(current.postListing, compared.postListing);
-			//FT.debug.facebookAssetsOutput(current.postListing, compared.postListing)
+			FT.debug.facebookAssetsOutput(current.postListing, compared.postListing)
 
 			//console.log('*** Facebook: DO ALL ***')
 			FT.app.doAll();

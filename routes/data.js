@@ -52,7 +52,8 @@ router.get('/data/google/:company',  function (req, res) {
                 user: accountResults.user,
                 googleUser: accountResults.googleUser,
                 facebookUser: null,
-                metrics : results.metrics
+                metrics : results.metrics.results,
+                dateRange : results.metrics.dateRange
             });
 
         })
@@ -81,7 +82,6 @@ router.get('/data/facebook/:company',  function (req, res) {
 
     }
 
-
     userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
 
         var accountResults = results;
@@ -105,7 +105,8 @@ router.get('/data/facebook/:company',  function (req, res) {
                 user: accountResults.user,
                 googleUser: null,
                 facebookUser: accountResults.facebookUser,
-                metrics : results.metrics
+                metrics : results.metrics.results,
+                dateRange : results.metrics.dateRange
             });
 
         })

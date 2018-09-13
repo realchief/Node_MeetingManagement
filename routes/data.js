@@ -33,17 +33,9 @@ router.get('/data/google/:company',  function (req, res) {
 
         var accountResults = results;
 
-        Async.parallel({
+        googleApi.getAllMetrics(accountResults.googleUser, function( err, results ) {
 
-            metrics : ( cb ) => {
-
-                googleApi.getMetrics(accountResults.googleUser, function( err, response ) {
-                    cb( null, response )
-                })
-
-            }
-
-        }, function( err, results ) {
+            console.log(results)
 
             res.render('fingertips', {
                 version: 'fingertips',
@@ -52,8 +44,8 @@ router.get('/data/google/:company',  function (req, res) {
                 user: accountResults.user,
                 googleUser: accountResults.googleUser,
                 facebookUser: null,
-                metrics : results.metrics.results,
-                dateRange : results.metrics.dateRange
+                metrics : results.metrics.both,
+                dateRange : results.metrics.both.dateRange
             });
 
         })
@@ -86,17 +78,7 @@ router.get('/data/facebook/:company',  function (req, res) {
 
         var accountResults = results;
 
-        Async.parallel({
-
-            metrics : ( cb ) => {
-
-                facebookApi.getMetrics(accountResults.facebookUser, function( err, response ) {
-                    cb( null, response )
-                })
-
-            }
-
-        }, function( err, results ) {
+        facebookApi.getAllMetrics(accountResults.facebookUser, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',
@@ -105,8 +87,8 @@ router.get('/data/facebook/:company',  function (req, res) {
                 user: accountResults.user,
                 googleUser: null,
                 facebookUser: accountResults.facebookUser,
-                metrics : results.metrics.results,
-                dateRange : results.metrics.dateRange
+                metrics : results.metrics,
+                dateRange : results.metrics.current.dateRange,
             });
 
         })

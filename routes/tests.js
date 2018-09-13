@@ -23,38 +23,6 @@ var userInfo = require('../controllers/users')
 // email content function
 const EmailContent = require('../components/EmailContent.js')
 
-router.get('/getuser/:company', function (req, res) {
-
-  var userId = req.params.company ? req.params.company : req.user.id
-
-  if ( req.params.company == "loggedin") {
-
-    if ( req.user ) {
-       userId = req.user.id
-    } else {
-        req.session.redirectTo = "/getuser/loggedin"
-        res.redirect('/signin');
-        return
-   }
-
-  }
-
-  userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
-
-    res.render('fingertips', {
-        version: 'fingertips',
-        layout: 'accounts.handlebars',
-        results: results,
-        user: results.user,
-        googleUser: results.googleUser,
-        facebookUser: results.facebookUser
-    });
-
-  })
-
-
-})
-
 router.get('/testsocial/:company', function (req, res) {
 
   const Async = require('async');

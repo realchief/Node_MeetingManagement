@@ -24,7 +24,7 @@
 
 						{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
 
-						{{#each metrics}}
+						{{#each metrics.results}}
 
 							<h4>{{@key}}</h4>
 
@@ -43,9 +43,22 @@
 							To Account: {{facebookUser.account_name}}
 						</h2>
 
-						{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
+						<h5>{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}</h5>
 
-						{{#each metrics}}
+						<h3>{{metrics.current.timeWindow}}</h3>
+
+						{{#each metrics.current.results}}
+
+							<h4>{{@key}}</h4>
+
+							<p>{{toJSON this}}</p>
+
+						{{/each}}
+
+
+						<h3>{{metrics.compared.timeWindow}}</h3>
+
+						{{#each metrics.compared.results}}
 
 							<h4>{{@key}}</h4>
 

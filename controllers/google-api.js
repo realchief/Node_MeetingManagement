@@ -19,7 +19,7 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
-exports.getMetrics = (gUser, done) => {
+exports.getMetrics = (gUser, timeframe, done) => {
     
     oauth2Client.credentials = {
         refresh_token: gUser.refresh_token,
@@ -41,6 +41,9 @@ exports.getMetrics = (gUser, done) => {
         version: 'v3',
       });
     
+
+     /* dates and timeframes */
+
     var defaultNumDays = 7
     var range = dates.getDateRangeNumDays(defaultNumDays);
     var defaultDates = dates.setDateWindow(range)
@@ -511,12 +514,52 @@ exports.getMetrics = (gUser, done) => {
         var resultsObject = {
             results : results,
             dateRange : range,
-            aggregationPeriod : 'combined'
+            timeframe : timeframe,
         }
 
         done(err, resultsObject);
 
     });
+}
+
+exports.getAllMetrics = ( gUser, done ) => {
+
+    var thisModule = this
+
+    Async.parallel({
+
+        metrics : ( cb ) => {
+
+            Async.parallel({
+
+                both : ( cb ) => {
+
+                    thisModule.getMetrics(gUser, 'both', function( err, response ) {
+                        cb( null, response )
+                    })
+
+                },
+
+            }, function( err, results ) {
+
+                var allResults = {
+                    both: results.both,
+                }
+
+                cb( null, allResults )
+
+            })
+           
+
+        }
+
+    }, function( err, results ) {
+
+        done( null, results )
+
+    })
+
+
 }
 
 exports.getAccountList = (gUser, cb) => {
@@ -625,7 +668,6 @@ exports.getAccountListOrSelectView = function (user, done) {
         done(err, result);
     })
 }
-
 
 
 exports.checkToken = (req, res, next) => {

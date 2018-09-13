@@ -7,8 +7,10 @@ let Async = require('async');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+var userInfo = require('../controllers/users')
 
 router.get('/google/setprofile', function (req, res) {   
+    
     if (req.user) {
         if (req.query.view_id && req.query.account_name && req.query.property_id) {
             req.user.getGoogle().then(function (gUser) {
@@ -22,8 +24,11 @@ router.get('/google/setprofile', function (req, res) {
                     account_name: req.query.account_name
                 }).then(function (updatedResult) {
                     res.redirect('/');
-                    console.log('========updated result======');
-                    console.log(updatedResult);
+                   //console.log('========updated result======');
+                    //console.log(updatedResult);
+
+                    console.log("\n", emoji.get("moneybag"), '>>>>>> set google profile', 'property name: ', req.query.view_name, req.query.property_name, req.query.account_name )
+
                 })
             });
         }
@@ -33,10 +38,9 @@ router.get('/google/setprofile', function (req, res) {
 })
 
 router.get('/facebook/setprofile', function (req, res) {
+    
     if (req.user) {
-        console.log('--------------- Account id ---------------- ', req.query.account_id);
-        console.log('--------------- Account name ---------------- ', req.query.account_name);
-        console.log('--------------- account_token ---------------- ', req.query.account_token);   
+    
         if (req.query.account_id && req.query.account_name && req.query.account_token) {
             req.user.getFacebook().then(function (fUser) {                
                 fUser.updateAttributes({
@@ -44,9 +48,14 @@ router.get('/facebook/setprofile', function (req, res) {
                     account_name: req.query.account_name,
                     account_token: req.query.account_token
                 }).then(function (updatedResult) {                        
+                    
                     res.redirect('/');
-                    console.log('========updated result======');
-                    console.log(updatedResult);             
+                   
+                    console.log("\n", emoji.get("moneybag"), '>>>>>> set facebook profile', 'account name: ', req.query.account_name )
+
+                   // console.log('========updated result======');
+                   // console.log(updatedResult);             
+
                 })
             });
         }
@@ -123,5 +132,37 @@ router.get('/signout', function(req, res, next) {
     }
 });
 
+
+router.get('/getuser/:company', function (req, res) {
+
+  var userId = req.params.company ? req.params.company : req.user.id
+
+  if ( req.params.company == "loggedin") {
+
+    if ( req.user ) {
+       userId = req.user.id
+    } else {
+        req.session.redirectTo = "/getuser/loggedin"
+        res.redirect('/signin');
+        return
+   }
+
+  }
+
+  userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+
+    res.render('fingertips', {
+        version: 'fingertips',
+        layout: 'accounts.handlebars',
+        results: results,
+        user: results.user,
+        googleUser: results.googleUser,
+        facebookUser: results.facebookUser
+    });
+
+  })
+
+
+})
 
 module.exports = router

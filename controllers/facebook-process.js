@@ -274,57 +274,6 @@ exports.getMetrics = (fUser, timeframe, done) => {
     });
 };
 
-
-exports.getAllMetrics = ( fUser, done ) => {
-
-    var thisModule = this
-
-    Async.parallel({
-
-        metrics : ( cb ) => {
-
-            
-            Async.parallel({
-
-                current : ( cb ) => {
-
-                    thisModule.getMetrics(fUser, 'current', function( err, response ) {
-                        cb( null, response )
-                    })
-
-                },
-
-                compared : ( cb ) => {
-
-                    thisModule.getMetrics(fUser, 'compared', function( err, response ) {
-                        cb( null, response )
-                    })
-
-                }
-
-            }, function( err, results ) {
-
-                var allResults = {
-                    current: results.current,
-                    compared: results.compared
-                }
-
-                cb( null, allResults )
-
-            })
-           
-
-        }
-
-    }, function( err, results ) {
-
-        done( null, results )
-
-    })
-
-
-}
-
 exports.getAccountList = (fUser, done) => {
     const token = fUser.token;
     graph.setAccessToken(token);

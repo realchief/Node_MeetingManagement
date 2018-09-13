@@ -19,8 +19,8 @@ exports.process = ( gUser, cb ) => {
 
     googleApi.getAllMetrics(gUser, function( err, results ) {
 
-        thisModule.gaColumns = results.metrics.both.results.gaColumns
-        thisModule.goalNames = results.metrics.both.results.goals.metricsList
+        thisModule.gaColumns = results.metrics.both.responses.gaColumns
+        thisModule.goalNames = results.metrics.both.responses.goals.metricsList
         thisModule.dateWindowReadable = results.metrics.both.dateWindow.dateWindowReadable
 
         var insightGroups = [ 'metrics', 'events', 'lists', 'goals', 'matchups']
@@ -37,7 +37,7 @@ exports.process = ( gUser, cb ) => {
 
         _.forEach( insightGroups, function( insightGroup, index ) {
 
-            var group = results.metrics.both.results[insightGroup]
+            var group = results.metrics.both.responses[insightGroup]
         
             _.forEach( group.data.reports, function( report, index ) {
 

@@ -38,8 +38,6 @@ router.get('/data/google/:company',  function (req, res) {
 
         googleProcessor.process(accountResults.googleUser, function( err, results ) {
 
-            console.log(results.metrics.both)
-
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'data.handlebars',

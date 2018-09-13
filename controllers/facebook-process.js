@@ -16,11 +16,11 @@ exports.process = ( fUser, cb ) => {
 
     var thisModule = this
 
-    facebookApi.getAllMetrics(fUser, function( err, results ) {
+    facebookApi.getAllMetrics( fUser, function( err, results ) {
       
         var insightGroups = [ 'page_info', 'insights_aggregation', 'insights_daily', 'insights_lifetime', 'insights_7days', 'insights_28days' ]
 
-        var postsTable = thisModule.listPostsTable(results.metrics.current.results.insights_posts, results.metrics.compared.results.insights_posts, null)
+        var postsTable = thisModule.listPostsTable(results.metrics.current.responses.insights_posts, results.metrics.compared.responses.insights_posts, null)
 
        results.postsTable = postsTable.join('')
 
@@ -28,7 +28,7 @@ exports.process = ( fUser, cb ) => {
 
         _.forEach( insightGroups, function( insightGroup, index ) {
 
-            var tableResponse = thisModule.metricsTable(results.metrics.current.results, results.metrics.compared.results, insightGroup)
+            var tableResponse = thisModule.metricsTable(results.metrics.current.responses, results.metrics.compared.responses, insightGroup)
 
              metricsOutputTable.push(tableResponse)
         })

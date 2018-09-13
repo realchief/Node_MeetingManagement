@@ -19,7 +19,7 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
-exports.getMetrics = (gUser, timeframe, done) => {
+exports.getMetrics = (gUser, timeframe, cb) => {
     
     oauth2Client.credentials = {
         refresh_token: gUser.refresh_token,
@@ -67,7 +67,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
 
     Async.parallel({
 
-        gaColumns: (cb) => {
+        gaColumns: ( cb ) => {
 
             analytics.metadata.columns.list({
                 'reportType': 'ga'
@@ -98,7 +98,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
             });
         },
 
-        goals : (cb) => {
+        goals : ( cb ) => {
 
             /* GOALS ==== */
             
@@ -246,7 +246,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
             })
         },
 
-        metrics : (cb) => {
+        metrics : ( cb ) => {
 
             /* METRICS ==== */
 
@@ -311,7 +311,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
             })
         },
 
-        events : (cb) => {
+        events : ( cb ) => {
 
             /* METRICS ==== */
 
@@ -352,7 +352,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
             })
         },
           
-        lists : (cb) => {
+        lists : ( cb ) => {
 
             /* METRICS ==== */
 
@@ -475,7 +475,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
 
 
 
-         matchups: function (cb) {
+         matchups: function ( cb ) {
              analyticsreporting.reports.batchGet({
                 "requestBody": {
                      reportRequests: [
@@ -510,21 +510,21 @@ exports.getMetrics = (gUser, timeframe, done) => {
              })
          
          }
-    }, function (err, results) {
+    }, function (err, responses) {
 
         var resultsObject = {
-            results : results,
+            responses : responses,
             dateRange : range,
             timeframe : timeframe,
             dateWindow : dateWindow
         }
 
-        done(err, resultsObject);
+        cb(err, resultsObject);
 
     });
 }
 
-exports.getAllMetrics = ( gUser, done ) => {
+exports.getAllMetrics = ( gUser, cb ) => {
 
     var thisModule = this
 
@@ -562,7 +562,7 @@ exports.getAllMetrics = ( gUser, done ) => {
         results.metrics.compared
         } */
 
-        done( null, results )
+        cb( null, results )
 
     })
 
@@ -582,7 +582,7 @@ exports.getAccountList = (gUser, cb) => {
         auth: oauth2Client
     });
     Async.parallel({
-        users: function (done) {
+        users: function ( cb ) {
 
             google.analytics('v3').management.accountSummaries.list(function (err, response) {
 
@@ -620,10 +620,10 @@ exports.getAccountList = (gUser, cb) => {
                         }
                         data.push(datum);
                     }
-                    done(null, data);
+                    cb(null, data);
                 } else {
                     // console.log('get google data - account summary error', response.data)
-                    done(null, response);
+                    cb(null, response);
                 }
             });
         }
@@ -636,9 +636,9 @@ exports.getAccountList = (gUser, cb) => {
 };
 
 
-exports.getAccountListOrSelectView = function (user, done) {
+exports.getAccountListOrSelectView = function (user, cb) {
     Async.waterfall([
-        function (cb) {
+        function ( cb ) {
             user.getGoogle().then(function (gUser) {
                 if (gUser) {
                     cb(null, gUser)
@@ -672,7 +672,7 @@ exports.getAccountListOrSelectView = function (user, done) {
         if (err) {
             console.log(err.error);
         }
-        done(err, result);
+        cb(err, result);
     })
 }
 

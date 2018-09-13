@@ -12,7 +12,8 @@ var _ = require('lodash');
 
 
 
-exports.getMetrics = (fUser, timeframe, done) => {
+exports.getMetrics = ( fUser, timeframe, done) => {
+    
     const token = fUser.token;
 
     /* dates and timeframes */
@@ -68,9 +69,12 @@ exports.getMetrics = (fUser, timeframe, done) => {
 
 
     graph.setAccessToken(token);
+    
     Async.parallel({
-        page_info: function (cb) {
-            graph.get(fUser.account_id, {
+    
+        page_info: function ( cb ) {
+    
+            graph.get( fUser.account_id, {
                 access_token : fUser.account_token,
                 fields : 'fan_count,engagement,global_brand_page_name,name,name_with_location_descriptor,posts'
             }, function(err, response) {
@@ -87,8 +91,8 @@ exports.getMetrics = (fUser, timeframe, done) => {
             
             });
         },
-        insights_aggregation: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
+        insights_aggregation: function( cb ) {
+            graph.get( fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
                 period: 'day',
@@ -112,8 +116,8 @@ exports.getMetrics = (fUser, timeframe, done) => {
             });
         },
        
-        insights_daily: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
+        insights_daily: function( cb ) {
+            graph.get( fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
                 period : 'day',
@@ -136,8 +140,8 @@ exports.getMetrics = (fUser, timeframe, done) => {
             
             });
         },
-        insights_lifetime: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
+        insights_lifetime: function( cb ) {
+            graph.get( fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_fans',
 			    period : 'lifetime',
@@ -161,8 +165,8 @@ exports.getMetrics = (fUser, timeframe, done) => {
             });
         },
        
-        insights_posts: function(cb) {
-            graph.get(fUser.account_id + '/posts/', {
+        insights_posts: function( cb ) {
+            graph.get( fUser.account_id + '/posts/', {
             
                 access_token : fUser.account_token,
                 limit : 50,
@@ -235,8 +239,8 @@ exports.getMetrics = (fUser, timeframe, done) => {
             });
         },
 
-        insights_7days: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
+        insights_7days: function( cb ) {
+            graph.get( fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
                 period : 'week',
@@ -260,8 +264,8 @@ exports.getMetrics = (fUser, timeframe, done) => {
             });
         },
        
-        insights_28days: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
+        insights_28days: function( cb ) {
+            graph.get( fUser.account_id + "/insights", {
                 access_token : fUser.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
                 period : 'days_28',
@@ -286,10 +290,11 @@ exports.getMetrics = (fUser, timeframe, done) => {
         },
        
     },
-    (err, data) => {
+
+    (err, responses) => {
 
         var resultsObject = {
-            results : data,
+            responses : responses,
             dateRange : range,
             timeframe : timeframe,
             timeWindow : sinceDisplay + ' - ' + untilDisplay,
@@ -313,7 +318,7 @@ exports.getAllMetrics = ( fUser, done ) => {
 
                 current : ( cb ) => {
 
-                    thisModule.getMetrics(fUser, 'current', function( err, response ) {
+                    thisModule.getMetrics( fUser, 'current', function( err, response ) {
                         cb( null, response )
                     })
 
@@ -321,7 +326,7 @@ exports.getAllMetrics = ( fUser, done ) => {
 
                 compared : ( cb ) => {
 
-                    thisModule.getMetrics(fUser, 'compared', function( err, response ) {
+                    thisModule.getMetrics( fUser, 'compared', function( err, response ) {
                         cb( null, response )
                     })
 
@@ -355,11 +360,11 @@ exports.getAllMetrics = ( fUser, done ) => {
 
 }
 
-exports.getAccountList = (fUser, done) => {
+exports.getAccountList = ( fUser, done) => {
     const token = fUser.token;
     graph.setAccessToken(token);
     
-    graph.get(fUser.profile_id, {
+    graph.get( fUser.profile_id, {
         fields: 'name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}'
     }, (err, response) => {
         var data = [];
@@ -389,15 +394,15 @@ exports.getAccountList = (fUser, done) => {
 
 exports.getAccountListOrSelectView = function (user, done) {
     Async.waterfall([
-        function (cb) {
-            user.getFacebook().then(function (fUser) {
-                if (fUser) {
+        function ( cb ) {
+            user.getFacebook().then(function ( fUser) {
+                if ( fUser) {
                     cb(null, fUser)
                 }
                 else cb({'error': 'User is not connected with Facebook'})
             })
-        }, function (fUser, cb) {
-            if (fUser.account_id && fUser.account_name && fUser.account_token) {
+        }, function ( fUser, cb) {
+            if ( fUser.account_id && fUser.account_name && fUser.account_token) {
                 cb(null, {
                     chosen_account: {
                         account_name: fUser.account_name,
@@ -407,7 +412,7 @@ exports.getAccountListOrSelectView = function (user, done) {
                 });
             }
             else {
-                facebookApi.getAccountList(fUser, function (data) {
+                facebookApi.getAccountList( fUser, function (data) {
                     cb(null, {
                         account_list: data, 
                         user : fUser,
@@ -424,7 +429,7 @@ exports.getAccountListOrSelectView = function (user, done) {
     })
 }
 
-exports.deauthorize = (fUser, done) => {
+exports.deauthorize = ( fUser, done) => {
     const token = fUser.token;
     const profileId = fUser.profile_id;
     graph.setAccessToken(token);
@@ -442,13 +447,13 @@ exports.checkToken = (req, res, next) => {
     if (!req.user) {
         return next();
     }
-    req.user.getFacebook().then(function (fUser) {
+    req.user.getFacebook().then(function ( fUser) {
 
         if ( fUser ) {
-            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract(fUser.expiry_date, "s").format("X"))
+            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract( fUser.expiry_date, "s").format("X"))
         }
 
-        if (fUser && moment().subtract(fUser.expiry_date, "s").format("X") > 86400) {
+        if ( fUser && moment().subtract( fUser.expiry_date, "s").format("X") > 86400) {
 
             graph.extendAccessToken({
                 "access_token": fUser.token,

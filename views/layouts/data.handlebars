@@ -32,7 +32,7 @@
 
 						{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
 
-						{{#each metrics.results }}
+						{{#each metrics.responses }}
 
 							<h4>{{@key}}</h4>
 
@@ -71,7 +71,7 @@
 
 						<h3>{{metrics.current.timeWindow}}</h3>
 
-						{{#each metrics.current.results}}
+						{{#each metrics.current.responses}}
 
 							<h4>{{@key}}</h4>
 
@@ -82,7 +82,7 @@
 
 						<h3>{{metrics.compared.timeWindow}}</h3>
 
-						{{#each metrics.compared.results}}
+						{{#each metrics.compared.responses}}
 
 							<h4>{{@key}}</h4>
 

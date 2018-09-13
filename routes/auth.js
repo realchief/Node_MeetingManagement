@@ -31,18 +31,18 @@ router.get('/facebook/unlink',  function (req, res) {
     }
     else {
         Async.waterfall([
-            function (cb) {
-                req.user.getFacebook().then(function (fUser) {
-                    if (fUser) {
+            function ( cb ) {
+                req.user.getFacebook().then(function ( fUser) {
+                    if ( fUser) {
                         cb(null, fUser)
                     }
                     else {
                         cb({error: 'This user is not connected with facebook account.'});
                     }
                 })
-            }, function (fUser, cb ) {
+            }, function ( fUser, cb ) {
 
-                facebookApi.deauthorize(fUser, function(result) {
+                facebookApi.deauthorize( fUser, function(result) {
 
                     console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook app deauthorize response:', result)
 
@@ -52,7 +52,7 @@ router.get('/facebook/unlink',  function (req, res) {
 
                 })
 
-            }, function (fUser, cb) {
+            }, function ( fUser, cb) {
                 fUser.destroy().then(function () {
                     cb(null);
                 })
@@ -72,7 +72,7 @@ router.get('/google/unlink',  function (req, res) {
     }
     else {
         Async.waterfall([
-            function (cb) {
+            function ( cb ) {
                 req.user.getGoogle().then(function (gUser) {
                     if (gUser) {
                         cb(null, gUser)

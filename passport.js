@@ -61,7 +61,7 @@ module.exports = function(passport) {
         req.usedStrategy = 'facebook';
         process.nextTick(function() {
             Async.waterfall([
-                function (cb) {
+                function ( cb ) {
                     Model.Facebook.findOne({
                         where: {
                             profile_id: profile.id
@@ -132,7 +132,7 @@ module.exports = function(passport) {
         process.nextTick(function() {
             req.usedStrategy = 'google';
             Async.waterfall([
-                function (cb) {
+                function ( cb ) {
                     Model.Google.findOne({
                         where: {
                             profile_id: profile.id

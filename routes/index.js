@@ -24,13 +24,13 @@ router.get('/',  function (req, res) {
 
         Async.parallel({
             
-            google_summaries: function (cb) {
+            google_summaries: function ( cb ) {
                 googleApi.getAccountListOrSelectView(req.user, function (err, data) {
                     cb(null, data);
                 })
             },
             
-            facebook_summaries: function (cb) {
+            facebook_summaries: function ( cb ) {
                 facebookApi.getAccountListOrSelectView(req.user, function (err, data) {
                     cb(null, data);
                 })

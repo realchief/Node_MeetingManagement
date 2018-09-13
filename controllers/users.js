@@ -6,7 +6,7 @@ var emoji = require('node-emoji')
 
 var users = {
 
-  getConnectedAccountsFromId : function(userId, callback) {
+  getConnectedAccountsFromId : function( userId, cb ) {
 
       let company = userId
       
@@ -23,33 +23,33 @@ var users = {
           if (!user) {
               console.log('>>> Cant Find user', user)
               var results = "No User Found"
-              callback(null, results)
+              cb( null, results )
               return
           }
         
         Async.parallel({
 
-          facebookUser : function( done ) {
+          facebookUser : function( cb ) {
 
-            user.getFacebook().then(function (fUser) {
-              if (fUser) {
+            user.getFacebook().then(function ( fUser) {
+              if ( fUser) {
                   console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
               }
 
-              done( null, fUser )
+              cb( null, fUser )
 
             })
 
           },
 
-          googleUser : function ( done ) {
+          googleUser : function ( cb ) {
 
             user.getGoogle().then(function (gUser) {
               if (gUser) {
                   console.log( emoji.get("smile"), 'Google User>>>', "id", gUser.id )
               }
 
-              done( null, gUser )
+              cb( null, gUser )
 
             })
 
@@ -59,7 +59,7 @@ var users = {
             results.user = user
             results.company = company
            // console.log( emoji.get("smile"), 'User from id results>>>', err, results )
-            callback(err, results)
+            cb( err, results )
            
         })
 

@@ -46,7 +46,7 @@ router.get('/testsocial/:company', function (req, res) {
 
                       let fUser = results.facebookUser
 
-                      graph.setAccessToken(fUser.token);
+                      graph.setAccessToken( fUser.token);
                       graph.get("me/?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}", (err, response) => {
                           //console.log('get facebook data - me', me)
                           done(err, response);
@@ -552,48 +552,6 @@ router.get('/testdates/', function (req, res) {
 
 })
 
-var facebook_data = function (user, done) {
-    
-    Async.waterfall([
-      function (cb) {
-          user.getFacebook().then(function (fUser) {
-              if (fUser) {
-                  cb(null, fUser)
-              }
-              else cb({'error': 'User is not connected with Facebook'})
-          })
-      }, function (fUser, cb) {
-          if (fUser.account_id && fUser.account_name && fUser.account_token) {
-              facebookApi.getMetrics(fUser, function (err, data) {                                
-                  cb(null, {display_content: data, dialog_content: null});
-              });
-          }
-          else {
-              facebookApi.getSummaries(fUser, function (data) {
-                  cb(null, {dialog_content: data, display_content: null})
-              });
-          }
-      }
-  ], function (err, result) {
-      if (err) {
-          console.log(err.error);
-      }
-      done(null, result);
-  })
-}
-
-
-router.get('/testapis', function (req, res) {
-
-  if ( req.user ) {
-    facebook_data(req.user, function( err, result) {
-      res.send(result)
-    })
-  } else {
-    res.send("No Logged in User Found")
-  }
-})
-
 router.get('/phrasetestdb/', function (req, res) {
 
   var phraseMaker = require('../controllers/phrases');
@@ -656,13 +614,13 @@ router.get('/testsend', function (req, res) {
 
   if (req.user) {
     Async.parallel({
-        google_data: function (cb) {
+        google_data: function ( cb ) {
             google_data(req.user, function (data) {
                 cb(null, data);
             })
         },
         
-        facebook_data: function (cb) {
+        facebook_data: function ( cb ) {
             facebook_data(req.user, function (data) {
                 cb(null, data);
             })

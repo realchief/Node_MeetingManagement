@@ -4,6 +4,8 @@ let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
 
+var userInfo = require('../controllers/users')
+
 let facebookApi = require('../controllers/facebook-api');
 let googleApi = require('../controllers/google-api');
 
@@ -22,20 +24,7 @@ router.get('/',  function (req, res) {
 
     if (req.user) {
 
-        Async.parallel({
-            
-            google_summaries: function ( cb ) {
-                googleApi.getAccountListOrSelectView(req.user, function (err, data) {
-                    cb(null, data);
-                })
-            },
-            
-            facebook_summaries: function ( cb ) {
-                facebookApi.getAccountListOrSelectView(req.user, function (err, data) {
-                    cb(null, data);
-                })
-            }
-        }, function (err, results) {
+        userInfo.getSummaries(req.user, function (err, results) {
             
             if (err) {
                 console.log('***** Error: ', err);
@@ -43,8 +32,6 @@ router.get('/',  function (req, res) {
             }
 
             console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            //console.log('\n', emoji.get("smile"), '***** Google data in Results: ', results.google_summaries);
-            //console.log('\n', emoji.get("smile"), '***** Facebook data in Results: ', results.facebook_summaries);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
             

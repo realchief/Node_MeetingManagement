@@ -65,6 +65,30 @@ var users = {
 
     })
 
+  },
+
+  getSummaries : function( user, cb ) {
+
+
+    Async.parallel({
+            
+          google_summaries: function ( cb ) {
+              googleApi.getAccountListOrSelectView( user, function (err, data) {
+                  cb(null, data);
+              })
+          },
+          
+          facebook_summaries: function ( cb ) {
+              facebookApi.getAccountListOrSelectView( user, function (err, data) {
+                  cb(null, data);
+              })
+          }
+      }, function (err, results) {
+
+        cb ( null, results )
+
+      })
+
   }
 
 }

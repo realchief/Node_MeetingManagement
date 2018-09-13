@@ -19,6 +19,10 @@ exports.process = ( gUser, cb ) => {
 
     googleApi.getAllMetrics(gUser, function( err, results ) {
 
+        thisModule.gaColumns = results.metrics.both.results.gaColumns
+        thisModule.goalNames = results.metrics.both.results.goals.metricsList
+        thisModule.dateWindowReadable = results.metrics.both.dateWindow.dateWindowReadable
+
         var insightGroups = [ 'metrics', 'events', 'lists', 'goals', 'matchups']
         var reportNames = {
             'metrics' : {
@@ -30,10 +34,6 @@ exports.process = ( gUser, cb ) => {
         }
 
          var metricsOutputTable = []
-
-         thisModule.gaColumns = results.metrics.both.results.gaColumns
-         thisModule.goalNames = results.metrics.both.results.goals.metricsList
-         thisModule.dateWindowReadable = results.metrics.both.dateWindow.dateWindowReadable
 
         _.forEach( insightGroups, function( insightGroup, index ) {
 
@@ -50,8 +50,6 @@ exports.process = ( gUser, cb ) => {
                     }
                 }                   
 
-
-                console.log(index)
 
                 var tableResponse = thisModule.metricsTable(report, index, reportName, insightGroup)
                 metricsOutputTable.push(tableResponse)
@@ -81,6 +79,8 @@ exports.metricsTable = ( report, index, reportName, insightGroup ) => {
     var reportName = reportName || "";
     var table = ['<table>'];
     var thisModule = this
+
+    table.push('<h4>', reportName, ' ', index, ' ', insightGroup, '</h4>');
     
     if (report.data.rows && report.data.rows.length) {
         

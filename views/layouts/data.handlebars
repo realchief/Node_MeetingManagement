@@ -22,9 +22,13 @@
 							To Account: {{googleUser.account_name}} : {{googleUser.property_name}} - {{googleUser.view_name}}
 						</h2>
 
+						<div class="row">
+
 						<h2>Metrics Table</h2>
 
 						{{{ metricsTable }}}
+
+						</div>
 
 						{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
 
@@ -47,14 +51,21 @@
 							To Account: {{facebookUser.account_name}}
 						</h2>
 
-						
+						<div class="row">
+
 						<h2>Metrics Table</h2>
 
 						{{{ metricsTable }}}
 
+						</div>
+
+						<div class="row">
+
 						<h2>Posts Table</h2>
 
 						{{{ postsTable }}}
+
+						</div>
 
 						<h5>{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}</h5>
 

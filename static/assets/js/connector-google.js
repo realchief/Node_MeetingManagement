@@ -813,7 +813,8 @@ FT.connector.google = {
 
 						//console.log('GA REPORT>>>', reportName, index, insightGroup, report)
 						FT.connector.google.processMetrics(report, index, reportName, insightGroup)
-						//FT.debug.googleOutput(report, index, reportName, insightGroup)
+						
+						FT.debug.googleOutput(report, index, reportName, insightGroup)
 					})
 
 				} else {

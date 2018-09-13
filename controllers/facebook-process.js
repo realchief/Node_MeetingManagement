@@ -18,7 +18,7 @@ exports.process = ( fUser, cb ) => {
 
     facebookApi.getAllMetrics(fUser, function( err, results ) {
       
-        var insightGroups = [ 'page_info', 'insights_daily', 'insights_lifetime', 'insights_7days', 'insights_28days' ]
+        var insightGroups = [ 'page_info', 'insights_aggregation', 'insights_daily', 'insights_lifetime', 'insights_7days', 'insights_28days' ]
 
         var postsTable = thisModule.listPostsTable(results.metrics.current.results.insights_posts, results.metrics.compared.results.insights_posts, null)
 

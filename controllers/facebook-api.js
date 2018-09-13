@@ -385,3 +385,8 @@ exports.checkToken = (req, res, next) => {
         } else return next();
     });
 };
+
+
+exports.extendToken = (req, res, next) => {
+    //write this
+};

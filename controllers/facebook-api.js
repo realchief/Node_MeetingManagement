@@ -87,7 +87,12 @@ exports.getMetrics = (fUser, timeframe, done) => {
                 var aggregationPeriod = 'lifetime'
                  console.log("\n", emoji.get("sparkles"), '>>>>>> facebook page_info', ' ', timeframe)
         
-                cb(null, response);
+                 var responseObject = {
+                    aggregationPeriod : aggregationPeriod,
+                    response : response
+                 }
+
+                cb(null, responseObject);
             
             });
         },
@@ -105,7 +110,13 @@ exports.getMetrics = (fUser, timeframe, done) => {
                 var aggregationPeriod = 'day'
               
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_aggregation', ' ', timeframe)
-                cb(null, response);
+               
+               var responseObject = {
+                    aggregationPeriod : aggregationPeriod,
+                    response : response
+                 }
+
+                cb(null, responseObject);
             
             });
         },
@@ -124,7 +135,13 @@ exports.getMetrics = (fUser, timeframe, done) => {
                  var aggregationPeriod = 'day'
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_daily', ' ', timeframe)
-                cb(null, response);
+                
+                var responseObject = {
+                    aggregationPeriod : aggregationPeriod,
+                    response : response
+                 }
+
+                cb(null, responseObject);
             
             });
         },
@@ -142,7 +159,13 @@ exports.getMetrics = (fUser, timeframe, done) => {
                 var aggregationPeriod = 'lifetime'
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_lifetime', ' ', timeframe)
-                cb(null, response);
+                
+                var responseObject = {
+                    aggregationPeriod : aggregationPeriod,
+                    response : response
+                 }
+
+                cb(null, responseObject);
             
             });
         },
@@ -236,7 +259,12 @@ exports.getMetrics = (fUser, timeframe, done) => {
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_7days', ' ', timeframe)
                 
-                cb(null, response);
+                var responseObject = {
+                    aggregationPeriod : aggregationPeriod,
+                    response : response
+                 }
+
+                cb(null, responseObject);
             
             });
         },
@@ -255,8 +283,14 @@ exports.getMetrics = (fUser, timeframe, done) => {
                 var aggregationPeriod = '28_days'
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_28days', ' ', timeframe)
-                cb(null, response);
-            
+                
+                var responseObject = {
+                    aggregationPeriod : aggregationPeriod,
+                    response : response
+                 }
+
+                cb(null, responseObject);
+                
             });
         },
        
@@ -283,7 +317,6 @@ exports.getAllMetrics = ( fUser, done ) => {
 
         metrics : ( cb ) => {
 
-            
             Async.parallel({
 
                 current : ( cb ) => {
@@ -304,12 +337,12 @@ exports.getAllMetrics = ( fUser, done ) => {
 
             }, function( err, results ) {
 
-                var allResults = {
+                var metricTimeframes = {
                     current: results.current,
                     compared: results.compared
                 }
 
-                cb( null, allResults )
+                cb( null, metricTimeframes )
 
             })
            
@@ -318,6 +351,11 @@ exports.getAllMetrics = ( fUser, done ) => {
 
     }, function( err, results ) {
 
+        /* returns {
+        results.metrics.current
+        results.metrics.compared
+        } */
+        
         done( null, results )
 
     })

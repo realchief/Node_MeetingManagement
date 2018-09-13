@@ -542,11 +542,11 @@ exports.getAllMetrics = ( gUser, done ) => {
 
             }, function( err, results ) {
 
-                var allResults = {
+                var metricTimeframes = {
                     both: results.both,
                 }
 
-                cb( null, allResults )
+                cb( null, metricTimeframes )
 
             })
            
@@ -554,6 +554,11 @@ exports.getAllMetrics = ( gUser, done ) => {
         }
 
     }, function( err, results ) {
+
+        /* returns {
+        results.metrics.current
+        results.metrics.compared
+        } */
 
         done( null, results )
 

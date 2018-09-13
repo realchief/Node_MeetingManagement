@@ -671,6 +671,7 @@ FT.connector.facebook = {
 
 				var basedIndex = index+1;
 			
+				console.log(current)
 				FT.connector.facebook.processMetrics(current, compared, insightGroup);
 				FT.debug.facebookOutput(current, compared, insightGroup)
 

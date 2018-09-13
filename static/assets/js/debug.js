@@ -673,13 +673,15 @@ FT.debug = {
 		var rows = [];
 		var table = [];
 
+		console.log(current, insightGroup)
+
     	switch ( insightGroup ) {
 
 			case "pageInfo" :
 
 				
 				var response = current[insightGroup].response
-				//console.log(response)
+				
 		     	var values = [response.name + ' Fan Count', "fan_count", response.engagement.count, "&nbsp;", "&nbsp;",  "&nbsp;", current[insightGroup].aggregationPeriod];
 		     	table.push('<tr><td>', values.join('</td><td>'), '</td>');
          		table.push('</tr>');

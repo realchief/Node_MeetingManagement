@@ -12,6 +12,10 @@ var emoji = require('node-emoji')
 
 var userInfo = require('../controllers/users')
 
+var facebookProcessor = require('../controllers/facebook-process')
+//var googleProcessor = require('../controllers/google-process')
+
+
 router.get('/data/google/:company',  function (req, res) {
     
     var userId = req.params.company ? req.params.company : req.user.id
@@ -28,14 +32,11 @@ router.get('/data/google/:company',  function (req, res) {
 
     }
 
-
     userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
 
         var accountResults = results;
 
         googleApi.getAllMetrics(accountResults.googleUser, function( err, results ) {
-
-            console.log(results)
 
             res.render('fingertips', {
                 version: 'fingertips',
@@ -78,7 +79,9 @@ router.get('/data/facebook/:company',  function (req, res) {
 
         var accountResults = results;
 
-        facebookApi.getAllMetrics(accountResults.facebookUser, function( err, results ) {
+        facebookProcessor.process(accountResults.facebookUser, function( err, results ) {
+
+            console.log(results.postsTable)
 
             res.render('fingertips', {
                 version: 'fingertips',
@@ -89,12 +92,13 @@ router.get('/data/facebook/:company',  function (req, res) {
                 facebookUser: accountResults.facebookUser,
                 metrics : results.metrics,
                 dateRange : results.metrics.current.dateRange,
+                postsTable : results.postsTable,
+                metricsTable : results.metricsTable
             });
 
         })
 
     })
-
     
 });
 

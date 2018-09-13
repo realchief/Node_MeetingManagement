@@ -43,6 +43,15 @@
 							To Account: {{facebookUser.account_name}}
 						</h2>
 
+						
+						<h2>Metrics Table</h2>
+
+						{{{ metricsTable }}}
+
+						<h2>Posts Table</h2>
+
+						{{{ postsTable }}}
+
 						<h5>{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}</h5>
 
 						<h3>{{metrics.current.timeWindow}}</h3>
@@ -66,6 +75,8 @@
 
 						{{/each}}
 
+
+						
 					{{/if}}
 				
 

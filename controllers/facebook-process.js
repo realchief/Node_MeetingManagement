@@ -1,394 +1,429 @@
-'use strict';
-const Async = require('async');
-const graph = require('fbgraph');
-const auth = require('../config/auth');
-const moment = require('moment');
-var dates = require('../controllers/dates');
-const querystring = require('querystring');
+let express = require('express');
+let router = express.Router();
+let passport = require('passport');
+let Model = require('../models');
+let Async = require('async');
+const moment = require("moment");
+
+let facebookApi = require('../controllers/facebook-api');
 
 var colors = require('colors');
-var emoji = require('node-emoji');
+var emoji = require('node-emoji')
 var _ = require('lodash');
 
 
+exports.process = ( fUser, cb ) => {
 
-exports.getMetrics = (fUser, timeframe, done) => {
-    const token = fUser.token;
+    var thisModule = this
 
-    /* dates and timeframes */
+    facebookApi.getAllMetrics(fUser, function( err, results ) {
+      
+        var insightGroups = [ 'page_info', 'insights_daily', 'insights_lifetime', 'insights_7days', 'insights_28days' ]
 
-    var defaultNumDays = 7
-    var range = dates.getDateRangeNumDays(defaultNumDays);
-    var defaultDates = dates.setDateWindow(range)
+        var postsTable = thisModule.listPostsTable(results.metrics.current.results.insights_posts, results.metrics.compared.results.insights_posts, null)
 
-    var facebookDatePreset = 'today';
+       results.postsTable = postsTable.join('')
+
+        var metricsOutputTable = []
+
+        _.forEach( insightGroups, function( insightGroup, index ) {
+
+            var tableResponse = thisModule.metricsTable(results.metrics.current.results, results.metrics.compared.results, insightGroup)
+
+             metricsOutputTable.push(tableResponse)
+        })
+
+        results.metricsTable = metricsOutputTable.join('')
+       
+        cb ( null, results )
     
 
-    /*
 
-    when giving dates for the since and until parameters,
-    best to use unix epochs or make sure to include seconds.
-
-    2018-03-01 will default to  Thu March 1, 2018 - 12:00:00 am
-    with the last metric being from 2-27-2018 (with aggregated end_date as 2-28-2018 at 3AM) 2018-02-28T08:00:00+0000
-
-    2018-03-01 reads as 12AM - make the 27th the last day reported.
-    2018-03-01 08:01:00 will make the 28th the last day reported.
-    REMEMBER, facebook uses "end_date" on the metrics, so the "current day" for the value is the day previous on the data.
-
-    */
-
-    if ( timeframe == "current") {
-
-        /*
-        var since = moment(defaultDates.currentFromDate).format( "YYYY-MM-DD 00:00" );
-        var until = moment(defaultDates.currentToDate).add(1, 'day').format( "YYYY-MM-DD 23:59" );
-        */
+    })
+    
+}
 
 
-        // MAKE INLINE WITH FB SUMMARY
-        var since = moment(defaultDates.currentFromDate).subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
-        var until = moment(defaultDates.currentToDate).format( "YYYY-MM-DD 23:59" );
+exports.metricsTable = ( current, compared, insightGroup ) => {
 
-        var sinceForPosts = moment(defaultDates.currentFromDate).format( "YYYY-MM-DD 00:00" );
-        var untilForPosts = moment(defaultDates.currentToDate).format( "YYYY-MM-DD 23:59" );
+    //console.log('IG>>>', insightGroup)
 
-        var sinceDisplay = defaultDates.currentFromDate;
-        var untilDisplay = defaultDates.currentToDate;
+        var rows = [];
+        var table = [];
 
+        switch ( insightGroup ) {
 
-    } else {
+            case "page_info" :
+                
+                var results = current[insightGroup].response
+                //console.log(results)
+                var values = [results.name + ' Fan Count', "fan_count", results.engagement.count, "&nbsp;", "&nbsp;",  "&nbsp;", current[insightGroup].aggregationPeriod];
+                table.push('<tr><td>', values.join('</td><td>'), '</td>');
+                table.push('</tr>');
+                rows.push(table.join(''));
 
-        /*var since = moment( defaultDates.comparedFromDate).format( "YYYY-MM-DD 00:00" );
-        var until = moment( defaultDates.comparedToDate ).add(1, 'day').format( "YYYY-MM-DD 23:59" );
-        */
+            break
 
-        // MAKE INLINE WITH FB SUMMARY
-        var since = moment( defaultDates.comparedFromDate).subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
-        var until = moment( defaultDates.comparedToDate ).format( "YYYY-MM-DD 23:59" );
+         }
 
-        var sinceForPosts = moment(defaultDates.comparedFromDate).format( "YYYY-MM-DD 00:00" );
-        var untilForPosts = moment(defaultDates.comparedToDate).format( "YYYY-MM-DD 23:59" );
-
-        var sinceDisplay = defaultDates.comparedFromDate;
-        var untilDisplay = defaultDates.comparedToDate;
-
-    }
-
-
-    graph.setAccessToken(token);
-    Async.parallel({
-        page_info: function (cb) {
-            graph.get(fUser.account_id, {
-                access_token : fUser.account_token,
-                fields : 'fan_count,engagement,global_brand_page_name,name,name_with_location_descriptor,posts'
-            }, function(err, response) {
+        _.forEach( current[insightGroup].response.data, function( metric, index ) {
             
-                var aggregationPeriod = 'lifetime'
-                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook page_info', ' ', timeframe)
-        
-                cb(null, response);
+            table = [];
+
+            /**
+             * compared and current values
+            */
             
-            });
-        },
-        insights_aggregation: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
-                metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
-                period: 'day',
-                date_preset : facebookDatePreset,
-			    since : since,
-			    until : until,
-			    show_description_from_api_doc : 'true'
-            }, function(err, response) {
-
-                var aggregationPeriod = 'day'
-              
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_aggregation', ' ', timeframe)
-                cb(null, response);
+            var comparedMetric = compared[insightGroup].response.data[index]
+            var attributedDateIndex = (metric.values.length > 1) ? metric.values.length-2 : metric.values.length-1
+            var value = metric.values[metric.values.length-1].value 
+            var date = (metric.values.length > 1) ? moment(metric.values[attributedDateIndex].end_time).format('MM/DD/YYYY') : moment(metric.values[attributedDateIndex].end_time).subtract(1, 'day').format('MM/DD/YYYY')
             
-            });
-        },
-       
-        insights_daily: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
-                metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
-                period : 'day',
-			    date_preset : facebookDatePreset,
-			    since : since,
-			    until : until,
-			    show_description_from_api_doc : 'true'
-            }, function(err, response) {
-              
-                 var aggregationPeriod = 'day'
+            var comparedAttributedDateIndex = (comparedMetric.values.length > 1) ? comparedMetric.values.length-2 : comparedMetric.values.length-1
+            var comparedValue = comparedMetric.values[comparedMetric.values.length-1].value 
+            var comparedDate = (comparedMetric.values.length > 1) ? moment(comparedMetric.values[comparedAttributedDateIndex].end_time).format('MM/DD/YYYY') : moment(comparedMetric.values[comparedAttributedDateIndex].end_time).subtract(1, 'day').format('MM/DD/YYYY')
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_daily', ' ', timeframe)
-                cb(null, response);
-            
-            });
-        },
-        insights_lifetime: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
-                metric : 'page_fans',
-			    period : 'lifetime',
-			    date_preset : facebookDatePreset,
-			    since : since,
-			    until : until,
-			    show_description_from_api_doc : 'true'
-            }, function(err, response) {
-              
-                var aggregationPeriod = 'lifetime'
+            var values = [];
+            var aggregationPeriod = current[insightGroup].aggregationPeriod
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_lifetime', ' ', timeframe)
-                cb(null, response);
-            
-            });
-        },
-       
-        insights_posts: function(cb) {
-            graph.get(fUser.account_id + '/posts/', {
-            
-                access_token : fUser.account_token,
-                limit : 50,
-			    fields : 'created_time,message,id,type,link,permalink_url',
-			    date_preset : facebookDatePreset,
-			    since : sinceForPosts,
-			    until : untilForPosts,
-			    show_description_from_api_doc : 'true'
-            
-            }, function(err, response) {
 
-                if ( response.error ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> facebook posts pre', err, response, ' ', timeframe)
-                }
+            switch ( insightGroup ) {
 
-                var aggregationPeriod = 'lifetime'
+                default: 
 
-                var postListing = response;
+                    /**
+                     *
+                     * if there are multiple actions for an insight, the data comes in an object
+                     *
+                    */
 
-                if (response && !response.error) {
+                    if ( typeof value == 'object') {
 
-                    var batchPosts = [];
+                        values = [metric.title, metric.name, "&nbsp", "&nbsp", "&nbsp", "&nbsp", "&nbsp"];
+                        table.push('<tr><td>', values.join('</td><td>'), '</td>');
+                        table.push('</tr>');
 
-                    if (response.paging && response.paging.next) {
-                        console.log("\n", emoji.get("book"), 'THERE ARE MORE PAGING ITEMS FOR POSTS >>>', response.paging.next )
-                    }
+                         // sum of individual action ONLY IF we are aggregating by day
 
-                    _.forEach( response.data, function( post, index ) {
+                        if ( aggregationPeriod == 'day' ) {
 
-                        var postObject = {
-                            access_token : fUser.account_token,
-                            period : 'lifetime',
-                            metric : 'post_impressions_unique,post_engaged_users,post_video_avg_time_watched,post_video_length,post_video_views,post_video_view_time,post_impressions_paid_unique,post_clicks,post_clicks_by_type_unique,post_activity,post_activity_by_action_type',
-                            show_description_from_api_doc : 'true',
-                            include_headers: 'false'
+                            var typeSum = {}
+                            var comparedTypeSum = {}
+
+                            _.forEach ( metric.values, function( day, index ) {
+
+                                var comparedDay = 0;
+                                if ( typeof comparedMetric.values[index] !== 'undefined' ) {
+                                    comparedDay = comparedMetric.values[index].value
+                                }
+                        
+                                //console.log('+++', 'end_time:', day.end_time, metric.name)
+
+                                var numActions = 0;
+                                var comparedNumActions = 0;
+
+                                 _.forEach( day.value, function( numActions, type ) {
+                                    
+                                    if ( typeof (typeSum[type]) == 'undefined' ) {
+                                        typeSum[type] = 0;
+                                        comparedTypeSum[type] = 0;
+                                    }
+
+                                    typeSum[type] += numActions
+                                    
+                                    //console.log(type, typeSum[type], comparedDay[type], typeof  comparedDay[type])
+
+                                    if ( typeof comparedDay[type] !== 'undefined' && typeof comparedDay[type] !== 'function' ) {
+                                        comparedTypeSum[type] += comparedDay[type]
+                                    }
+                        
+                                 })
+
+                            })
+
+                            //console.log("+++++ sum of types", typeSum)
+
+                        } else {
+                            var typeSum = 0
+                            var comparedTypeSum = 0
                         }
 
-                        var queryParams = querystring.stringify(postObject)
+                        /**
+                         *
+                         * if there are multiple actions for the insight, display each of those metrics, along with the sum
+                         *
+                        */
 
-                        batchPosts.push({
-                            method : 'get',
-                            relative_url : post.id + "/insights/" + '?' + queryParams
+                        _.forEach( value, function( typeValue, name ) {
+
+                            /**
+                             *
+                             * REAL DATA RIGHT HERE
+                             *
+                            */
+
+                            var comparedTypeValue = comparedValue[name] 
+
+                            values = [];
+                            values = ["&nbsp;", name, typeSum[name] + " (" + typeValue + ") ", date, comparedTypeSum[name] + " (" + comparedTypeValue + ") ", comparedDate, aggregationPeriod];
+                            table.push('<tr><td>', values.join('</td><td>'), '</td>');
+                            table.push('</tr>');
+
+            
                         })
 
-                    })
+                        /**
+                         *
+                         * sum together all of the actions to get the total for the main insight
+                         *
+                        */
 
-                    graph.batch( batchPosts, function( err, response ) {
+                        if ( aggregationPeriod == 'day' ) {
 
-                        var postInsights = response;
+                             var sum = 0;
+                             var comparedSum = 0;
+                             _.forEach( metric.values, function( day, index ) {
 
-                        var aggregationPeriod = 'day'
+                                var comparedDay = "";
+                                if ( typeof comparedMetric.values[index] != 'undefined' ) {
+                                    comparedDay = comparedMetric.values[index].value
+                                } 
 
-                        console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_posts', ' ', timeframe)
-                        cb(null, {
-                            postListing: postListing,
-                            postInsights: postInsights,
-                            aggregationPeriod : aggregationPeriod
-                        });
+                                _.forEach( day.value, function( numActions, type ) {
+                                 
+                                    sum += numActions
+                             
+                                    if ( typeof comparedDay[type] !== 'undefined' && typeof comparedDay[type] !== 'function' ) {
+                                        comparedSum += comparedDay[type]
+                                    }
 
-                    })
+                                })
 
+                             })
 
+                            values = ['&nbsp;', '&nbsp;', sum, 'total', comparedSum, 'total', 'period']
+                            table.push('<tr class="summary"><td>', values.join('</td><td>'), '</td>');
+                            table.push('</tr>');
+
+                        }
+
+                    } else {
+
+                        /**
+                         *
+                         * single value for the insight
+                         *
+                        */
+
+                        var sum = 0;
+                        var comparedSum = 0;
+
+                        switch ( metric.name ) {
+                            
+                            case "page_video_view_time":
+
+                                value = parseInt(value / 1000) + ' sec.'
+                                comparedValue = parseInt(comparedValue / 1000) + ' sec.'
+                 
+                            break
+
+                        }
+
+                        values = [metric.title, metric.name, value, date, comparedValue, comparedDate, aggregationPeriod];
+                        table.push('<tr><td>', values.join('</td><td>'), '</td>');
+                        table.push('</tr>');
+
+                        if ( aggregationPeriod == 'day' ) {
+
+                            sum = 0;
+                            comparedSum = 0;
+
+                        } else {
+
+                            sum = value;
+                            comparedSum = comparedValue;
+
+                        }
+
+                        // GET THE TOTAL OVER THE PERIOD IF the period == "day"
+                        if ( aggregationPeriod == 'day' ) {
+                        
+                             _.forEach( metric.values, function( day, index ) {
+                             
+                                var comparedDay = 0;
+                                if ( typeof comparedMetric.values[index] != 'undefined' ) {
+                                    comparedDay = comparedMetric.values[index]
+                                } 
+
+                                sum += day.value
+
+                                if ( typeof comparedDay.value != 'undefined' ) {
+                                    comparedSum += comparedDay.value
+                                }
+                                
+
+                             })
+
+                             switch ( metric.name ) {
+                            
+                                case "page_video_view_time":
+
+                                    sum = parseInt(sum / 1000 ) + ' sec.'
+                                    comparedSum = parseInt(comparedSum / 1000 ) + ' sec.'
+
+                                break
                     
+                            }
+                            
+                            /**
+                             *
+                             * REAL DATA RIGHT HERE
+                             *
+                            */
 
-                }
+                            values = ['&nbsp;', '&nbsp;', sum, 'total', comparedSum, 'total', 'period']
+                            table.push('<tr class="summary"><td>', values.join('</td><td>'), '</td>');
+                            table.push('</tr>');
 
-                
-            
+                         }
 
-            });
-        },
 
-        insights_7days: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
-                metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
-                period : 'week',
-                date_preset : facebookDatePreset,
-                since : since,
-                until : until,
-                show_description_from_api_doc : 'true'
-            }, function(err, response) {
-              
-                var aggregationPeriod = 'week'
+                    }
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_7days', ' ', timeframe)
-                
-                cb(null, response);
-            
-            });
-        },
-       
-        insights_28days: function(cb) {
-            graph.get(fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
-                metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
-                period : 'days_28',
-                date_preset : facebookDatePreset,
-                since : since,
-                until : until,
-                show_description_from_api_doc : 'true'
-            }, function(err, response) {
-              
-                var aggregationPeriod = '28_days'
+                break
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_28days', ' ', timeframe)
-                cb(null, response);
-            
-            });
-        },
-       
-    },
-    (err, data) => {
+            }
 
-        var resultsObject = {
-            results : data,
-            dateRange : range,
-            timeframe : timeframe,
-            timeWindow : sinceDisplay + ' - ' + untilDisplay
-        }
+            rows.push(table.join(''));
 
-        done(null, resultsObject);
-    });
-};
+         })
 
-exports.getAccountList = (fUser, done) => {
-    const token = fUser.token;
-    graph.setAccessToken(token);
+        var output = [];
     
-    graph.get(fUser.profile_id, {
-        fields: 'name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}'
-    }, (err, response) => {
-        var data = [];
-        
-        console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook summary response:', response)
-        
-        if ( typeof response.accounts !== 'undefined') {
+        //output.push("<h4>" + current.pageInfo.account_name + "</h4>")
+        var table = ['<table>'];
+        var headers = ['Descriptor', 'Metric Title', 'Value', 'Through', "Compared Value", "Through", 'Period']
+        table.push('<tr><th>', headers.join('</th><th>'), '</th>');
+        table.push('</tr>');
 
-            for (var i = 0; i < response.accounts.data.length; i ++) {
-                var account_name_assert = response.accounts.data[i].global_brand_page_name       
-                account_name_assert = account_name_assert.replace('&', 'and'); 
-                     
-                var datum = {
-                    'account_id': response.accounts.data[i].id,
-                    'account_name': account_name_assert,
-                    'account_token': response.accounts.data[i].access_token
-                };
-                data.push(datum)
-            }
 
-        }
+        output.push(table.join(''));
+        output.push(rows.join(''));
+        output.push('</table>')
+        return output.join('');
+    
 
-        done(data);
-    });
-
-}
-
-exports.getAccountListOrSelectView = function (user, done) {
-    Async.waterfall([
-        function (cb) {
-            user.getFacebook().then(function (fUser) {
-                if (fUser) {
-                    cb(null, fUser)
-                }
-                else cb({'error': 'User is not connected with Facebook'})
-            })
-        }, function (fUser, cb) {
-            if (fUser.account_id && fUser.account_name && fUser.account_token) {
-                cb(null, {
-                    chosen_account: {
-                        account_name: fUser.account_name,
-                        email: fUser.email
-                    }, 
-                    account_list: null
-                });
-            }
-            else {
-                facebookApi.getAccountList(fUser, function (data) {
-                    cb(null, {
-                        account_list: data, 
-                        user : fUser,
-                        chosen_account: null
-                    })
-                });
-            }
-        }
-    ], function (err, result) {
-        if (err) {
-            console.log(err.error);
-        }
-        done(err, result);
-    })
-}
-
-exports.deauthorize = (fUser, done) => {
-    const token = fUser.token;
-    const profileId = fUser.profile_id;
-    graph.setAccessToken(token);
-
-    graph.del(profileId + "/permissions", {
-        access_token : fUser.account_token
-    }, function (err, response) {
-         console.log("\n", emoji.get("rain_cloud"), '>>>>>> deauthorized app on facebook:', response)
-        done(response);
-    });
-
-}
-
-exports.checkToken = (req, res, next) => {
-    if (!req.user) {
-        return next();
-    }
-    req.user.getFacebook().then(function (fUser) {
-
-        if ( fUser ) {
-            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract(fUser.expiry_date, "s").format("X"))
-        }
-
-        if (fUser && moment().subtract(fUser.expiry_date, "s").format("X") > 86400) {
-
-            graph.extendAccessToken({
-                "access_token": fUser.token,
-                "client_id": auth.facebookAuth.clientID,
-                "client_secret": auth.facebookAuth.clientSecret
-            }, function (err, facebookRes) {
-
-                console.log("\n", emoji.get("moneybag"), 'extended facebook access token', facebookRes)
-
-                fUser.updateAttributes({
-                    token: facebookRes.token,
-                    expiry_date: moment().format('X')
-                }).then(function (result) {
-                    next();
-                });
-            });
-        } else return next();
-    });
 };
 
+exports.listPostsTable = (current, compared, done) => {
 
-exports.extendToken = (req, res, next) => {
-    //write this
+
+    var insightTotals = {};
+    var output = [];
+    var table = ['<table>'];
+    var rows = [];
+    
+    var headers = ['Date', 'Link', 'Message', 'Type']
+    headers.push('Total Reach', 'Engaged Users', 'Likes', 'Comments', 'Shares', "Clicks", "Link Clicks", "Eng. Rate", "Engagements", "Video Metrics")
+    
+    table.push('<tr><th>', headers.join('</th><th>'), '</th>');
+    table.push('</tr>');
+
+    _.forEach( [ current, compared ], function( timeframe, index ) {
+
+        var totalPosts = timeframe.postListing.data.length;
+        var postInsights = timeframe.postInsights
+        if ( index == 0 ) { var timeframeWindow = 'current' } else { var timeframeWindow = 'compared' }
+        insightTotals[timeframeWindow] = {};
+
+        rows.push('<tr><td colspan="', headers.length, '">', timeframe.window,  ' <strong>Total Posts: ', totalPosts, '</strong>', '</td></tr>');
+        
+
+        _.forEach( timeframe.postListing.data, function( post, index ) {
+
+            var insights = JSON.parse(postInsights[index].body).data;
+            var insightMetrics = {}
+                
+            // initialize these so we don't get undefineds //
+
+            _.forEach( [ 'post_impressions_unique', 'post_engaged_users', 'like', 'comment', 'share', 'post_clicks', 'link clicks', 'engagements', 'post_activity'], function( name, index ) {
+                insightMetrics[name] = 0;
+            })
+
+       
+            _.forEach( insights, function( metric, index ) {
+
+                    //console.log(metric)
+
+                    if ( typeof metric.values[0].value == 'object' ) {
+
+                        _.forEach( metric.values[0].value, function( typeValue, name ) {
+                            
+                            if ( typeof insightTotals[timeframeWindow][name] == 'undefined' ) {
+                                insightTotals[timeframeWindow][name] = 0;
+                            }
+                            if ( typeof typeValue == "undefined" ) {
+                                typeValue = 0
+                            } else {
+                                typeValue = typeValue
+                            }
+
+                            insightMetrics[name] = typeValue
+                            insightTotals[timeframeWindow][name] += typeValue
+                        })
+
+                    } else {
+
+                        if ( typeof insightTotals[timeframeWindow][metric.name] == 'undefined' ) {
+                            insightTotals[timeframeWindow][metric.name] = 0;
+                        } else {
+
+                        }
+
+                        
+                        if ( typeof metric.values[0].value === "undefined" ) {
+                            value = 0
+                        } else {
+                            value = metric.values[0].value
+                        }
+
+                        insightMetrics[metric.name] = value
+                        insightTotals[timeframeWindow][metric.name] += value
+                    }
+                
+            })
+
+            var postDate = moment(post.created_time).format("ddd MMM. DD, YYYY<br />hh:mm a")
+            var message = ( post.message ) ? post.message : post.link
+            
+            var engagementRate =  ( insightMetrics['post_engaged_users'] / insightMetrics['post_impressions_unique'] )
+            engagementRateRaw =  ( engagementRate * 100 )
+            engagementRate =  ( engagementRate * 100 ).toFixed(2);
+
+            var videoMetrics = "";
+            if ( post.type == 'video') {
+                videoMetrics = [ 'Mins. Viewed: ', parseInt(insightMetrics['post_video_view_time']/1000/60), '<br />', 'Views: ', insightMetrics['post_video_views'] ]
+            } else {
+                videoMetrics = [ "&nbsp;" ]
+            }
+
+            var link = '<a href="' + post.permalink_url + '" class="post-link" target="_blank">link</a>';
+
+
+            insightMetrics['engagements'] = parseInt(insightMetrics['post_activity']) + parseInt(insightMetrics['post_clicks'])
+
+            values = [ postDate, link, message, post.type, insightMetrics['post_impressions_unique'], insightMetrics['post_engaged_users'], insightMetrics['like'], insightMetrics['comment'], insightMetrics['share'], insightMetrics['post_clicks'], insightMetrics['link clicks'], engagementRate + "%", insightMetrics['engagements'], videoMetrics.join('') ]
+            rows.push('<tr><td>', values.join('</td><td>'), '</td>');
+            rows.push('</tr>');
+
+
+        })
+
+    })
+
+    output.push(table.join(''));
+    output.push(rows.join(''));
+    output.push('</table>')
+    return output;
+
 };

@@ -22,13 +22,17 @@
 							To Account: {{googleUser.account_name}} : {{googleUser.property_name}} - {{googleUser.view_name}}
 						</h2>
 
+						<h2>Metrics Table</h2>
+
+						{{{ metricsTable }}}
+
 						{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
 
-						{{#each metrics.results}}
+						{{#each metrics.results }}
 
 							<h4>{{@key}}</h4>
 
-							<p>{{toJSON this}}</p>
+							<p>{{toJSON this.data.reports}}</p>
 
 						{{/each}}
 				

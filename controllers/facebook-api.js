@@ -19,7 +19,7 @@ exports.getMetrics = (fUser, timeframe, done) => {
 
     var defaultNumDays = 7
     var range = dates.getDateRangeNumDays(defaultNumDays);
-    var defaultDates = dates.setDateWindow(range)
+    var dateWindow = dates.setDateWindow(range)
 
     var facebookDatePreset = 'today';
     
@@ -40,38 +40,29 @@ exports.getMetrics = (fUser, timeframe, done) => {
 
     if ( timeframe == "current") {
 
-        /*
-        var since = moment(defaultDates.currentFromDate).format( "YYYY-MM-DD 00:00" );
-        var until = moment(defaultDates.currentToDate).add(1, 'day').format( "YYYY-MM-DD 23:59" );
-        */
-
-
         // MAKE INLINE WITH FB SUMMARY
-        var since = moment(defaultDates.currentFromDate).subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
-        var until = moment(defaultDates.currentToDate).format( "YYYY-MM-DD 23:59" );
+        var since = moment(dateWindow.currentFromDate).subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
+        var until = moment(dateWindow.currentToDate).format( "YYYY-MM-DD 23:59" );
 
-        var sinceForPosts = moment(defaultDates.currentFromDate).format( "YYYY-MM-DD 00:00" );
-        var untilForPosts = moment(defaultDates.currentToDate).format( "YYYY-MM-DD 23:59" );
+        var sinceForPosts = moment(dateWindow.currentFromDate).format( "YYYY-MM-DD 00:00" );
+        var untilForPosts = moment(dateWindow.currentToDate).format( "YYYY-MM-DD 23:59" );
 
-        var sinceDisplay = defaultDates.currentFromDate;
-        var untilDisplay = defaultDates.currentToDate;
+        var sinceDisplay = dateWindow.currentFromDate;
+        var untilDisplay = dateWindow.currentToDate;
 
 
     } else {
 
-        /*var since = moment( defaultDates.comparedFromDate).format( "YYYY-MM-DD 00:00" );
-        var until = moment( defaultDates.comparedToDate ).add(1, 'day').format( "YYYY-MM-DD 23:59" );
-        */
 
         // MAKE INLINE WITH FB SUMMARY
-        var since = moment( defaultDates.comparedFromDate).subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
-        var until = moment( defaultDates.comparedToDate ).format( "YYYY-MM-DD 23:59" );
+        var since = moment( dateWindow.comparedFromDate).subtract(1, 'day').format( "YYYY-MM-DD 00:00" );
+        var until = moment( dateWindow.comparedToDate ).format( "YYYY-MM-DD 23:59" );
 
-        var sinceForPosts = moment(defaultDates.comparedFromDate).format( "YYYY-MM-DD 00:00" );
-        var untilForPosts = moment(defaultDates.comparedToDate).format( "YYYY-MM-DD 23:59" );
+        var sinceForPosts = moment(dateWindow.comparedFromDate).format( "YYYY-MM-DD 00:00" );
+        var untilForPosts = moment(dateWindow.comparedToDate).format( "YYYY-MM-DD 23:59" );
 
-        var sinceDisplay = defaultDates.comparedFromDate;
-        var untilDisplay = defaultDates.comparedToDate;
+        var sinceDisplay = dateWindow.comparedFromDate;
+        var untilDisplay = dateWindow.comparedToDate;
 
     }
 
@@ -290,7 +281,7 @@ exports.getMetrics = (fUser, timeframe, done) => {
                  }
 
                 cb(null, responseObject);
-                
+
             });
         },
        
@@ -301,7 +292,8 @@ exports.getMetrics = (fUser, timeframe, done) => {
             results : data,
             dateRange : range,
             timeframe : timeframe,
-            timeWindow : sinceDisplay + ' - ' + untilDisplay
+            timeWindow : sinceDisplay + ' - ' + untilDisplay,
+            dateWindow : dateWindow
         }
 
         done(null, resultsObject);

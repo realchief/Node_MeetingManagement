@@ -46,12 +46,12 @@ exports.getMetrics = (gUser, timeframe, done) => {
 
     var defaultNumDays = 7
     var range = dates.getDateRangeNumDays(defaultNumDays);
-    var defaultDates = dates.setDateWindow(range)
+    var dateWindow = dates.setDateWindow(range)
 
-    var currentSince = moment( defaultDates.currentFromDate ).format( "YYYY-MM-DD" );
-    var currentUntil = moment( defaultDates.currentToDate ).format( "YYYY-MM-DD" );
-    var comparedSince = moment( defaultDates.comparedFromDate ).format( "YYYY-MM-DD" );
-    var comparedUntil = moment( defaultDates.comparedToDate ).format( "YYYY-MM-DD" );
+    var currentSince = moment( dateWindow.currentFromDate ).format( "YYYY-MM-DD" );
+    var currentUntil = moment( dateWindow.currentToDate ).format( "YYYY-MM-DD" );
+    var comparedSince = moment( dateWindow.comparedFromDate ).format( "YYYY-MM-DD" );
+    var comparedUntil = moment( dateWindow.comparedToDate ).format( "YYYY-MM-DD" );
 
     var dateRanges = [
     {
@@ -93,8 +93,8 @@ exports.getMetrics = (gUser, timeframe, done) => {
 
                 }
 
-               // cb(null, gaColumns);
-                cb(null, null);
+                cb(null, gaColumns);
+                //cb(null, null);
             });
         },
 
@@ -163,10 +163,9 @@ exports.getMetrics = (gUser, timeframe, done) => {
 
                     var goalExpressions = [];
 
-                     console.log("\n", emoji.get("medal"), '>>>>>> google goals list:', goalsObject.goals )
-      
-
-                    _.forEach( goalsObject.metricsList, function( goal, index) {
+                    // console.log("\n", emoji.get("medal"), '>>>>>> google goals list:', goalsObject.goals )
+     
+                    _.forEach( goalsObject.metricsList, function( goal, index ) {
                         goalExpressions.push( { 
                             expression: goal.metricName,
                             //alias : goal.name
@@ -230,7 +229,9 @@ exports.getMetrics = (gUser, timeframe, done) => {
                         }
                     }, function ( err, response ) {
 
-                        cb ( null, response.data.reports )
+                        response.goals = goalsObject.goals
+                        response.metricsList = goalsObject.metricsList
+                        cb ( null, response )
 
                     })
 
@@ -304,7 +305,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
                     console.log('Google API error:', err);
                 }
 
-                cb(null, response.data.reports);
+                cb(null, response);
                 //console.log('Google API Metrics response:', response.data.reports)
 
             })
@@ -345,7 +346,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
                     console.log('Google API error:', err);
                 }
 
-                cb(null, response.data.reports);
+                cb(null, response);
                 //console.log('Google API Metrics response:', response.data.reports)
 
             })
@@ -466,7 +467,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
                         console.log('Google API error:', err);
                     }
 
-                    cb(null, response.data.reports);
+                    cb(null, response);
                 //console.log('Google API Metrics response:', response.data.reports)
 
                 })
@@ -504,7 +505,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
         
              }, function( err, response ){
 
-                cb(null, response.data.reports);
+                cb(null, response);
              
              })
          
@@ -515,6 +516,7 @@ exports.getMetrics = (gUser, timeframe, done) => {
             results : results,
             dateRange : range,
             timeframe : timeframe,
+            dateWindow : dateWindow
         }
 
         done(err, resultsObject);

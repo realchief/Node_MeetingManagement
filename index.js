@@ -22,7 +22,7 @@ var Async = require('async');
 var moment = require('moment');
 
 let facebookApi = require('./controllers/facebook-api');
-let googleApi = require('./controllers/google-api');
+let googleApi = require('./controllers/google-analytics-api');
 
 var routes = require('./routes/index');
 var authRoutes = require('./routes/auth.js');

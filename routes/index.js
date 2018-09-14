@@ -7,7 +7,7 @@ let Async = require('async');
 var userInfo = require('../controllers/users')
 
 let facebookApi = require('../controllers/facebook-api');
-let googleApi = require('../controllers/google-api');
+let googleApi = require('../controllers/google-analytics-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')

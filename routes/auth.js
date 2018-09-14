@@ -4,7 +4,7 @@ var express = require('express'),
     Async = require('async');
 
     facebookApi = require('../controllers/facebook-api');
-    googleApi = require('../controllers/google-api');
+    googleApi = require('../controllers/google-analytics-api');
 
 
 

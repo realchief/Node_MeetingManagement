@@ -13,7 +13,7 @@ var schedule = require('node-schedule');
 var dates = require('../controllers/dates');
 
 let facebookApi = require('../controllers/facebook-api');
-let googleApi = require('../controllers/google-api');
+let googleApi = require('../controllers/google-analytics-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')

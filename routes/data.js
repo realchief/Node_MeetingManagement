@@ -5,7 +5,7 @@ let Model = require('../models');
 let Async = require('async');
 
 let facebookApi = require('../controllers/facebook-api');
-let googleApi = require('../controllers/google-api');
+let googleApi = require('../controllers/google-analytics-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')
@@ -100,6 +100,69 @@ router.get('/data/facebook/:company',  function (req, res) {
         })
 
     })
+    
+});
+
+
+router.get('/data/combined/:company',  function (req, res) {
+    
+    var userId = req.params.company ? req.params.company : req.user.id
+
+    if ( req.params.company == "loggedin") {
+
+       if ( req.user ) {
+           userId = req.user.id
+        } else {
+            req.session.redirectTo = "/data/combined/loggedin"
+            res.redirect('/signin');
+            return
+       }
+
+    }
+
+    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+
+        var accountResults = results;
+
+        Async.parallel({
+
+            google_analytics: ( cb ) => {
+
+                googleAnalyticsProcessor.process(accountResults.googleUser, function( err, results ) {
+
+                    cb ( null, results )
+
+                })
+
+            },
+
+            facebook: ( cb ) => {
+
+                facebookProcessor.process(accountResults.facebookUser, function( err, results ) {
+                   
+                    cb ( null, results )
+
+                })
+
+
+            },
+
+
+        }, function( err, results ) {
+
+            console.log( emoji.get("moneybag"), 'Google Analytics>>>', results.google_analytics.dataSource.metric_assets )
+            console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
+
+            res.send('In console')
+
+        })
+
+        
+
+    })
+
+
+
     
 });
 

@@ -5,7 +5,7 @@ let Model = require('../models');
 let Async = require('async');
 const moment = require("moment");
 
-let googleApi = require('../controllers/google-api');
+let googleApi = require('../controllers/google-analytics-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')

@@ -96,14 +96,43 @@
 						{{/each}}
 
 						<h2>Data Source</h2>
-						
+
 						{{ toJSON dataSource }}
 
-
-						
 					{{/if}}
-				
+			
+				{{!--
+					{{#if platform}}
 
+					<h2>Platform</h2>
+						
+						{{ toJSON platform }}
+
+
+					{{/if}}	
+				--}}
+
+					{{#if insights}}
+
+					<div class="row">
+
+					<h2>Insights</h2>
+						
+				
+						<ul class="lines">
+						{{#each insights.data.all_phrases}}
+
+						<li>
+						{{{this}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+					{{/if}}
+
+					</div>
+					
 					
 
 				</div>

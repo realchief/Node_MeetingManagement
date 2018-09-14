@@ -25,7 +25,7 @@ module.exports = {
 			},
 			platform_insights : {
 				statuses : {},
-				metrics : {},
+				metrics : [],
 				buckets: {}
 			},
 			usedPhrases : {

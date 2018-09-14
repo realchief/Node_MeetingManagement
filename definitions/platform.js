@@ -6,6 +6,9 @@
 
 var _ = require('lodash');
 
+var assetLinks = require('../definitions/asset-links');
+var assetLinksList = assetLinks.get();
+
 module.exports = {
 
 	get : function() {
@@ -206,6 +209,12 @@ module.exports = {
 			objectTemplate.all.meta.order.push(metricName)
 		})
 
+
+		_.forEach ( assetLinksList, function ( assetLinks, index ){
+			if ( typeof objectTemplate.all.metrics[assetLinks.metric] !== undefined ) {
+				objectTemplate.all.metrics[assetLinks.metric].asset_links = assetLinks.asset_links
+			}
+		})
 
 		return objectTemplate
 

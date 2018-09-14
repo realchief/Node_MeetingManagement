@@ -12,9 +12,13 @@ var emoji = require('node-emoji')
 
 var userInfo = require('../controllers/users')
 
+var fields = require('../controllers/fields')
+var insights = require('../controllers/insights')
+
 var facebookProcessor = require('../controllers/facebook-process')
 var googleAnalyticsProcessor = require('../controllers/google-analytics-process')
 
+var _ = require('lodash');
 
 router.get('/data/google/:company',  function (req, res) {
     
@@ -153,7 +157,26 @@ router.get('/data/combined/:company',  function (req, res) {
             console.log( emoji.get("moneybag"), 'Google Analytics>>>', results.google_analytics.dataSource.metric_assets )
             console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
 
-            res.send('In console')
+
+            var dataSources = {}
+            _.forEach ( results, function( dataSource, index ) {
+                dataSources[index] = dataSource.dataSource;
+            })
+
+            // now that we have the data sources set, move to platform
+            var platform = fields.setPlatform( dataSources )
+
+            // now that we have platform, get insights.
+            var allInsights = insights.getInsights( platform, dataSources )
+
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'data.handlebars',
+                accountResults: accountResults,
+                user: accountResults.user,
+                platform : platform,
+                insights : allInsights
+            });
 
         })
 

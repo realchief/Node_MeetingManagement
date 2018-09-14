@@ -28,6 +28,8 @@ module.exports = {
 
 		objectTemplate.google_analytics.metric_assets = {}
 
+
+
 		/**
 		 *
 		 * Google Analytics - Mappings

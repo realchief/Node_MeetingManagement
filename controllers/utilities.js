@@ -1,3 +1,6 @@
+var _ = require('lodash');
+const math = require('mathjs')
+
 exports.secondsToHMS = function(d) {
 
     d = Number(d);
@@ -60,11 +63,13 @@ exports.getDelta = function( dataSource, sourceField, categoryMetric ) {
 
 		// if ( FT.data.data_sources[dataSource].meta.fields.indexOf(sourceField) >= 0 ) {
 
-		if ( typeof FT.data.data_sources[dataSource].fields[sourceField] !== 'undefined' ||
-			 typeof FT.data.data_sources[dataSource].equations[sourceField] !== 'undefined' ) {
+		var thisModule = this
+
+		if ( typeof dataSource.fields[sourceField] !== 'undefined' ||
+			 typeof dataSource.equations[sourceField] !== 'undefined' ) {
 		
 			var difference = "";
-			var data = FT.data.data_sources[dataSource].fields;
+			var data = dataSource.fields;
 
 			/* if non-calculated value */
 
@@ -111,9 +116,9 @@ exports.getDelta = function( dataSource, sourceField, categoryMetric ) {
 
 				/* if calculated value */
 
-				var equation =  FT.data.data_sources[dataSource].equations[sourceField]
-				var current = FT.utilities.compute( dataSource, FT.data.data_sources[dataSource].fields, 'current', equation ).answer
-				var compared = FT.utilities.compute( dataSource, FT.data.data_sources[dataSource].fields, 'compared', equation ).answer
+				var equation =  dataSource.equations[sourceField]
+				var current = thisModule.compute( dataSource, dataSource.fields, 'current', equation ).answer
+				var compared = thisModule.compute( dataSource, dataSource.fields, 'compared', equation ).answer
 				var delta = current - compared;
 				var percentDelta = (delta / compared) * 100;
 				var percentDeltaRaw = percentDelta;
@@ -148,17 +153,17 @@ exports.getMapping = function( dataSource, category, categoryMetric ) {
 
 		var haveField = false
 
-		if ( typeof FT.data.data_sources[dataSource].meta.mappings[category][categoryMetric] !== 'undefined' ) {
+		if ( typeof dataSource.meta.mappings[category][categoryMetric] !== 'undefined' ) {
 
-			var mappedField = FT.data.data_sources[dataSource].meta.mappings[category][categoryMetric];
+			var mappedField = dataSource.meta.mappings[category][categoryMetric];
 			
-			$.each( mappedField.split(','), function(index, field) {
+			_.forEach( mappedField.split(','), function( field, index ) {
 
-				if ( typeof FT.data.data_sources[dataSource].fields[field] !== 'undefined' || typeof FT.data.data_sources[dataSource].equations[field] !== 'undefined' ) {
+				if ( typeof dataSource.fields[field] !== 'undefined' || typeof dataSource.equations[field] !== 'undefined' ) {
 					haveField = true;
-					//console.log('>>> split', category + "." + categoryMetric, 'is mapped to:', field, 'in:', dataSource)
+					//console.log('>>> split', category + "." + categoryMetric, 'is mapped to:', field, 'in:', dataSource.meta.name)
 				} else {
-					//console.log('*** MAPPING CHECK ERROR', dataSource + "." + field, 'is mapped to:', category + "." + categoryMetric, 'but there is no field in', dataSource)
+					//console.log('*** MAPPING CHECK ERROR', dataSource + "." + field, 'is mapped to:', category + "." + categoryMetric, 'but there is no field in', dataSource.meta.name
 				}
 
 			})
@@ -177,7 +182,7 @@ exports.getMapping = function( dataSource, category, categoryMetric ) {
 
 		} else {
 
-			//console.log('>>', category + "." + categoryMetric, 'is NOT MAPPED AT ALL in:', dataSource)
+			//console.log('>>', category + "." + categoryMetric, 'is NOT MAPPED AT ALL in:', dataSource.meta.name)
 			return false
 		}
 
@@ -236,8 +241,8 @@ exports.compute = function( parent, fieldsObject, timeframe, equation, mapping )
 
 						_.forEach ( fieldsObject[value].dataSourcesUsed, function( dataSource, index ) {
 
-							if ( dataSourcesUsed.indexOf(dataSource) < 0 ) {
-								dataSourcesUsed.push(dataSource)
+							if ( dataSourcesUsed.indexOf(index) < 0 ) {
+								dataSourcesUsed.push(index)
 							}
 
 						})
@@ -296,11 +301,14 @@ exports.isVowel = function(x) {
 	  return result;
 	},
 
-exports.getBucket = function(metricName) {
+exports.getBucket = function( metricName ) {
 
 		var foundBucket = "";
 
-		_.forEach(FT.data.buckets, function( bucket, bucketName ) {
+		var bucketDefinition = require('../definitions/buckets');
+ 		 var bucketList = bucketDefinition.get();
+
+		_.forEach(bucketList, function( bucket, bucketName ) {
 
 			var mappings = bucket.meta.mappings.all;
 			if ( mappings.indexOf(metricName) >= 0 ) {
@@ -394,3 +402,57 @@ exports.getZPercent = function(z) {
 
 	  return sum;
 }
+
+exports.getInlineStyle = function(param, value) {
+
+		var style = "";
+
+		switch ( param ) {
+
+			case 'status' :
+
+				switch ( value ) {
+
+					case 'positive' :
+						style = 'background: #80C659;'
+					break
+
+					case 'negative' :
+						style = 'background: #E87060;'
+					break
+
+					default :
+						style = 'background: #eda97c;'
+					break
+
+				}
+
+				
+			break
+
+			case 'status-color' :
+
+				switch ( value ) {
+
+					case 'positive' :
+						style = 'color: #80C659;'
+					break
+
+					case 'negative' :
+						style = 'color: #E87060;'
+					break
+
+					default :
+						style = 'color: #ddd;'
+					break
+
+				}
+
+				
+			break
+
+		}
+
+		return style;
+
+	}

@@ -476,6 +476,8 @@ router.get('/testphrase/', function (req, res) {
   console.log( emoji.get("sparkles"), 'insights', insightsList )
 
 
+  console.log( emoji.get("sparkles"), 'Platform pageview asset links', platformList.all.metrics.pageviews )
+
   res.render('fingertips', {
         layout: 'phrases-test.handlebars',
         allPoints : allPoints,

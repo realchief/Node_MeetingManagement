@@ -414,7 +414,7 @@ module.exports = {
 			 {
 				type: 'insight',
 				phrase: "{{primary_dimension}} is performing under benchmark for average time on page with {{value}}",
-				tags: { level: "platform", source: "google_analytics", dimension: "page", sentiment: "negative", type: "asset", category: "", metric: "website_consumption", field: "sessions", sortType: "total" }
+				tags: { level: "asset", source: "google_analytics", dimension: "page", sentiment: "negative", type: "asset", category: "", metric: "website_consumption", field: "sessions", sortType: "total" }
 			},
 
 

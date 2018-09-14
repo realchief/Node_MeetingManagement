@@ -31,7 +31,7 @@ var users = {
 
           facebookUser : function( cb ) {
 
-            user.getFacebook().then(function ( fUser) {
+            user.getFacebook().then(function ( fUser ) {
               if ( fUser) {
                   console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
               }

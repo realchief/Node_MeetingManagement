@@ -308,6 +308,9 @@ var insights = {
 	
 		var factorList = []
 		var phraseList = []
+		var assetPhrases = []
+		var platformPhrases = []
+
 		var thisModule = this
 	
 		thisModule.sort(insightsList.data.platform_insights.metrics, 'weightedPercentDelta' )
@@ -317,6 +320,7 @@ var insights = {
 			//console.log(metric.name, utilities.getBucket(metric.name))
 			var parentBucket = bucketList[utilities.getBucket(metric.name)].meta.shortLabel;
 
+			
 			//console.log("REORDERED PHRASE>>>", parentBucket, metric.phrase)
 			//factorList.push(metric.phrase)
 
@@ -328,6 +332,8 @@ var insights = {
 				var bucketTag = '<span class="bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
 				var completePhrase = metric.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag;
 				phraseList.push(completePhrase)
+				platformPhrases.push(completePhrase)		
+
 				// write newly used combined phrase back to the metric
 				metric.completePhrase = completePhrase
 
@@ -346,14 +352,19 @@ var insights = {
 					if ( typeof asset.pointsPhrases !== 'undefined') {
 						var phraseToUse = thisModule.getUniquePhrase(asset.pointsPhrases)
 						var completePhrase = '<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>'
-						phraseList.push(completePhrase)			
+						phraseList.push(completePhrase)	
+						assetPhrases.push(completePhrase)			
 					}
+
 					asset.completePhrase = completePhrase
 				})
 		})
 
 
 		/* FOR EMAIL */
+
+		insightsList.data.asset_phrases = assetPhrases 
+		insightsList.data.platform_phrases = platformPhrases 
 
 		insightsList.data.all_phrases = phraseList
 		insightsList.data.action_items = phraseList.slice(0,3)

@@ -162,8 +162,6 @@ router.get('/data/combined/:company',  function (req, res) {
                 dataSources[index] = dataSource.dataSource;
             })
 
-            
-
             // now that we have the data sources set, move to platform
             var platformData = platform.setPlatform( dataSources )
 

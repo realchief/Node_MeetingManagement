@@ -22,7 +22,7 @@ exports.process = ( fUser, cb ) => {
 
     facebookApi.getAllMetrics( fUser, function( err, results ) {
       
-        var insightGroups = [ 'page_info', 'insights_aggregation', 'insights_daily', 'insights_lifetime', 'insights_7days', 'insights_28days' ]
+        var insightGroups = [ 'page_info', 'insights_aggregation', 'insights_daily', 'insights_lifetime', 'insights_7days', /*'insights_28days'*/ ]
 
         var postsTable = thisModule.listPostsTable(results.metrics.current.responses.insights_posts, results.metrics.compared.responses.insights_posts, null)
 
@@ -39,6 +39,8 @@ exports.process = ( fUser, cb ) => {
 
         results.metricsTable = metricsOutputTable.join('')
         results.dataSource = facebookData
+
+        console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook process done')
 
         cb ( null, results )
     
@@ -352,7 +354,7 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
         output.push('</table>')
         // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
-        console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook data source', facebookData)
+        //console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook data source', facebookData)
         return output.join('');
     
 
@@ -539,6 +541,8 @@ exports.listPostsTable = (current, compared, done) => {
     output.push(rows.join(''));
     output.push('</table>')
     // END THIS IS TO SEE THE OUTPUT IN A TABLE//
+
+
 
     return output;
 

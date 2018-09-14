@@ -114,13 +114,37 @@
 
 					{{#if insights}}
 
-					<div class="row">
+					<div class="row insights-listing">
 
 					<h2>Insights</h2>
 						
 				
 						<ul class="lines">
 						{{#each insights.data.all_phrases}}
+
+						<li>
+						{{{this}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						<ul class="lines">
+						{{#each insights.data.talking_points}}
+
+						<li>
+						{{{this}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						<ul class="lines">
+						{{#each insights.data.action_items}}
 
 						<li>
 						{{{this}}}

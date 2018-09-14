@@ -602,7 +602,31 @@ router.get('/phrasetestdb/', function (req, res) {
 })
 
 
+router.get('/tokens/facebook/:company',  function (req, res) {
+    
+    var userId = req.params.company ? req.params.company : req.user.id
 
+    if ( req.params.company == "loggedin") {
+
+       if ( req.user ) {
+           userId = req.user.id
+        } else {
+            req.session.redirectTo = "/data/combined/loggedin"
+            res.redirect('/signin');
+            return
+       }
+
+    }
+
+    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+
+      facebookApi.extendToken(results.facebookUser, res, function( result ) {
+        res.send(result)
+      })
+
+    })
+
+})
 
 /* 
  * MARIN'S TEST STUFF 

@@ -65,6 +65,8 @@ exports.process = ( gUser, cb ) => {
         results.metricsTable = metricsOutputTable.join('')
         results.dataSource = googleAnalyticsData
 
+        console.log("\n", emoji.get("rain_cloud"), '>>>>>> google data source process done')
+
         cb ( null, results )
     
     })
@@ -614,7 +616,8 @@ exports.metricsTable = ( report, index, reportName, insightGroup ) => {
         }
 
 
-        console.log("\n", emoji.get("rain_cloud"), '>>>>>> google data source', googleAnalyticsData)
+       // console.log("\n", emoji.get("rain_cloud"), '>>>>>> google data source', googleAnalyticsData)
+       
        
        return output.join('');
 

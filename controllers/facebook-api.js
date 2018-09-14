@@ -10,8 +10,6 @@ var colors = require('colors');
 var emoji = require('node-emoji');
 var _ = require('lodash');
 
-
-
 exports.getMetrics = ( fUser, timeframe, done) => {
     
     const token = fUser.token;

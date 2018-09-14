@@ -47,7 +47,8 @@ router.get('/data/google/:company',  function (req, res) {
                 facebookUser: null,
                 metrics : results.metrics.both,
                 dateRange : results.metrics.both.dateRange,
-                metricsTable : results.metricsTable
+                metricsTable : results.metricsTable,
+                dataSource : results.dataSource
             });
 
         })
@@ -92,7 +93,8 @@ router.get('/data/facebook/:company',  function (req, res) {
                 metrics : results.metrics,
                 dateRange : results.metrics.current.dateRange,
                 postsTable : results.postsTable,
-                metricsTable : results.metricsTable
+                metricsTable : results.metricsTable,
+                dataSource : results.dataSource
             });
 
         })

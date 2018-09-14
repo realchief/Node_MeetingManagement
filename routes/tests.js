@@ -459,15 +459,15 @@ router.get('/testphrase/', function (req, res) {
 
   /* Test google source */
 
-  var googleDefinition = require('../definitions/source-google-analytics');
-  var googleList = googleDefinition.get();
-  console.log( emoji.get("sparkles"), 'Google', googleList )
+  var googleAnalyticsDefinition = require('../definitions/source-google-analytics');
+  var googleAnalyticsData = googleAnalyticsDefinition.get();
+  console.log( emoji.get("sparkles"), 'Google', googleAnalyticsData )
 
   /* Test facebook source */
 
   var facebookDefinition = require('../definitions/source-facebook');
-  var facebookList = facebookDefinition.get();
-  console.log( emoji.get("sparkles"), 'Facebook', facebookList )
+  var facebookData = facebookDefinition.get();
+  console.log( emoji.get("sparkles"), 'Facebook', facebookData )
 
   /* Test facebook source */
 

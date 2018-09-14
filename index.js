@@ -66,7 +66,7 @@ app.engine('handlebars', exphbs({
     helpers : {
       moment : require('helper-moment'),
       toJSON : function(object) {
-       return JSON.stringify(object);
+       return JSON.stringify(object, null, 2);
       }
     }
 }));

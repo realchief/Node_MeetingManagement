@@ -4,12 +4,16 @@ let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
 const moment = require("moment");
+var fields = require("../controllers/fields");
 
 let facebookApi = require('../controllers/facebook-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')
 var _ = require('lodash');
+
+var facebookDefinition = require('../definitions/source-facebook');
+var facebookData = facebookDefinition.get().facebook;
 
 
 exports.process = ( fUser, cb ) => {
@@ -34,7 +38,8 @@ exports.process = ( fUser, cb ) => {
         })
 
         results.metricsTable = metricsOutputTable.join('')
-       
+        results.dataSource = facebookData
+
         cb ( null, results )
     
 
@@ -47,8 +52,10 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
 
     //console.log('IG>>>', insightGroup)
 
+        // THIS IS TO SEE THE OUTPUT IN A TABLE//
         var rows = [];
         var table = [];
+        // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
         switch ( insightGroup ) {
 
@@ -56,10 +63,13 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
                 
                 var results = current[insightGroup].response
                 //console.log(results)
+                
+                // THIS IS TO SEE THE OUTPUT IN A TABLE//
                 var values = [results.name + ' Fan Count', "fan_count", results.engagement.count, "&nbsp;", "&nbsp;",  "&nbsp;", current[insightGroup].aggregationPeriod];
                 table.push('<tr><td>', values.join('</td><td>'), '</td>');
                 table.push('</tr>');
                 rows.push(table.join(''));
+                // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
             break
 
@@ -98,9 +108,11 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
 
                     if ( typeof value == 'object') {
 
+                        // THIS IS TO SEE THE OUTPUT IN A TABLE//
                         values = [metric.title, metric.name, "&nbsp", "&nbsp", "&nbsp", "&nbsp", "&nbsp"];
                         table.push('<tr><td>', values.join('</td><td>'), '</td>');
                         table.push('</tr>');
+                        // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
                          // sum of individual action ONLY IF we are aggregating by day
 
@@ -155,18 +167,24 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
 
                         _.forEach( value, function( typeValue, name ) {
 
+                            var comparedTypeValue = comparedValue[name] 
+
+                            // THIS IS TO SEE THE OUTPUT IN A TABLE//
+                            values = [];
+                            values = ["&nbsp;", name, typeSum[name] + " (" + typeValue + ") ", date, comparedTypeSum[name] + " (" + comparedTypeValue + ") ", comparedDate, aggregationPeriod];
+                            table.push('<tr><td>', values.join('</td><td>'), '</td>');
+                            table.push('</tr>');
+                            // THIS IS TO SEE THE OUTPUT IN A TABLE//
+
                             /**
                              *
                              * REAL DATA RIGHT HERE
                              *
                             */
 
-                            var comparedTypeValue = comparedValue[name] 
-
-                            values = [];
-                            values = ["&nbsp;", name, typeSum[name] + " (" + typeValue + ") ", date, comparedTypeSum[name] + " (" + comparedTypeValue + ") ", comparedDate, aggregationPeriod];
-                            table.push('<tr><td>', values.join('</td><td>'), '</td>');
-                            table.push('</tr>');
+                            var noSpaceName = name.replace(' ', '_');
+                            fields.setFieldValue(facebookData, metric.name+'__'+noSpaceName, 'current', typeSum[name])
+                            fields.setFieldValue(facebookData, metric.name+'__'+noSpaceName, 'compared', comparedTypeSum[name])
 
             
                         })
@@ -200,9 +218,20 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
 
                              })
 
+                             // THIS IS TO SEE THE OUTPUT IN A TABLE//
                             values = ['&nbsp;', '&nbsp;', sum, 'total', comparedSum, 'total', 'period']
                             table.push('<tr class="summary"><td>', values.join('</td><td>'), '</td>');
                             table.push('</tr>');
+                            // END THIS IS TO SEE THE OUTPUT IN A TABLE//
+
+                            /**
+                             *
+                             * REAL DATA RIGHT HERE
+                             *
+                            */
+
+                            fields.setFieldValue(facebookData, metric.name, 'current', sum)
+                            fields.setFieldValue(facebookData, metric.name, 'compared', comparedSum)
 
                         }
 
@@ -228,9 +257,11 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
 
                         }
 
+                        // THIS IS TO SEE THE OUTPUT IN A TABLE//
                         values = [metric.title, metric.name, value, date, comparedValue, comparedDate, aggregationPeriod];
                         table.push('<tr><td>', values.join('</td><td>'), '</td>');
                         table.push('</tr>');
+                        // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
                         if ( aggregationPeriod == 'day' ) {
 
@@ -280,11 +311,22 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
                              *
                             */
 
+                            // THIS IS TO SEE THE OUTPUT IN A TABLE//
                             values = ['&nbsp;', '&nbsp;', sum, 'total', comparedSum, 'total', 'period']
                             table.push('<tr class="summary"><td>', values.join('</td><td>'), '</td>');
                             table.push('</tr>');
+                            // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
                          }
+
+                         /**
+                          *
+                          * REAL DATA RIGHT HERE
+                          *
+                         */
+
+                         fields.setFieldValue(facebookData, metric.name, 'current', sum)
+                         fields.setFieldValue(facebookData, metric.name, 'compared', comparedSum)
 
 
                     }
@@ -293,22 +335,24 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
 
             }
 
+            // THIS IS TO SEE THE OUTPUT IN A TABLE//
             rows.push(table.join(''));
+            // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
          })
 
+        // THIS IS TO SEE THE OUTPUT IN A TABLE//
         var output = [];
-    
-        //output.push("<h4>" + current.pageInfo.account_name + "</h4>")
         var table = ['<table>'];
         var headers = ['Descriptor', 'Metric Title', 'Value', 'Through', "Compared Value", "Through", 'Period']
         table.push('<tr><th>', headers.join('</th><th>'), '</th>');
         table.push('</tr>');
-
-
         output.push(table.join(''));
         output.push(rows.join(''));
         output.push('</table>')
+        // END THIS IS TO SEE THE OUTPUT IN A TABLE//
+
+        console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook data source', facebookData)
         return output.join('');
     
 
@@ -318,15 +362,22 @@ exports.listPostsTable = (current, compared, done) => {
 
 
     var insightTotals = {};
+
+    facebookData.metric_assets.posts = {};
+    
+     // THIS IS TO SEE THE OUTPUT IN A TABLE//
     var output = [];
     var table = ['<table>'];
     var rows = [];
+     // END THIS IS TO SEE THE OUTPUT IN A TABLE//
     
+     // THIS IS TO SEE THE OUTPUT IN A TABLE//
     var headers = ['Date', 'Link', 'Message', 'Type']
     headers.push('Total Reach', 'Engaged Users', 'Likes', 'Comments', 'Shares', "Clicks", "Link Clicks", "Eng. Rate", "Engagements", "Video Metrics")
     
     table.push('<tr><th>', headers.join('</th><th>'), '</th>');
     table.push('</tr>');
+     // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
     _.forEach( [ current, compared ], function( timeframe, index ) {
 
@@ -335,8 +386,20 @@ exports.listPostsTable = (current, compared, done) => {
         if ( index == 0 ) { var timeframeWindow = 'current' } else { var timeframeWindow = 'compared' }
         insightTotals[timeframeWindow] = {};
 
+         // THIS IS TO SEE THE OUTPUT IN A TABLE//
         rows.push('<tr><td colspan="', headers.length, '">', timeframe.window,  ' <strong>Total Posts: ', totalPosts, '</strong>', '</td></tr>');
-        
+         // END THIS IS TO SEE THE OUTPUT IN A TABLE//
+
+         /**
+         *
+         * TOTAL POSTS RIGHT HERE
+         *
+        */
+
+         fields.setFieldValue(facebookData, 'total_posts', timeframeWindow, totalPosts)
+
+         facebookData.metric_assets.posts[timeframeWindow] = {};
+         facebookData.metric_assets.posts[timeframeWindow].list = [];
 
         _.forEach( timeframe.postListing.data, function( post, index ) {
 
@@ -349,6 +412,8 @@ exports.listPostsTable = (current, compared, done) => {
                 insightMetrics[name] = 0;
             })
 
+            //console.log( "INSIGHTS FOR>>> ", post.id, insights)
+            //console.log("POST DETAILS >>> ", post)
        
             _.forEach( insights, function( metric, index ) {
 
@@ -369,6 +434,8 @@ exports.listPostsTable = (current, compared, done) => {
 
                             insightMetrics[name] = typeValue
                             insightTotals[timeframeWindow][name] += typeValue
+
+                            // console.log('insight metric object', metric.name, name, typeValue)
                         })
 
                     } else {
@@ -388,9 +455,13 @@ exports.listPostsTable = (current, compared, done) => {
 
                         insightMetrics[metric.name] = value
                         insightTotals[timeframeWindow][metric.name] += value
+
+                        // console.log('insight metric', metric.name, insightMetrics[metric.name])
                     }
                 
             })
+
+            //console.log('insight metrics', insightMetrics)
 
             var postDate = moment(post.created_time).format("ddd MMM. DD, YYYY<br />hh:mm a")
             var message = ( post.message ) ? post.message : post.link
@@ -411,18 +482,64 @@ exports.listPostsTable = (current, compared, done) => {
 
             insightMetrics['engagements'] = parseInt(insightMetrics['post_activity']) + parseInt(insightMetrics['post_clicks'])
 
+            // THIS IS TO SEE THE OUTPUT IN A TABLE//
             values = [ postDate, link, message, post.type, insightMetrics['post_impressions_unique'], insightMetrics['post_engaged_users'], insightMetrics['like'], insightMetrics['comment'], insightMetrics['share'], insightMetrics['post_clicks'], insightMetrics['link clicks'], engagementRate + "%", insightMetrics['engagements'], videoMetrics.join('') ]
             rows.push('<tr><td>', values.join('</td><td>'), '</td>');
             rows.push('</tr>');
+            // END THIS IS TO SEE THE OUTPUT IN A TABLE//
+
+            /**
+             *
+             * REAL DATA RIGHT HERE
+             *
+            */
+
+            facebookData.metric_assets.posts[timeframeWindow].total = totalPosts
+            facebookData.metric_assets.posts[timeframeWindow].list.push( {
+                postDate : post.created_time,
+                link : post.permalink_url,
+                message : message,
+                postType : post.type,
+                reach : insightMetrics['post_impressions_unique'],
+                engaged_users : insightMetrics['post_engaged_users'],
+                likes : insightMetrics['like'],
+                comments : insightMetrics['comment'],
+                shares : insightMetrics['share'],
+                activities : insightMetrics['post_activity'],
+                clicks : insightMetrics['post_clicks'],
+                link_clicks : insightMetrics['link clicks'],
+                engagement_rate : engagementRateRaw,
+                engagements : insightMetrics['engagements'],
+                video_metrics : videoMetrics.join('')
+            })
 
 
         })
 
     })
 
+    /**
+     *
+     * REAL DATA RIGHT HERE
+     *
+    */
+    
+    _.forEach( [ 'current', 'compared' ], function( timeframeWindow, index ) {
+        //console.log('ROLLED UP TOTALS>>>', timeframeWindow, insightTotals[timeframeWindow])
+        _.forEach( insightTotals[timeframeWindow], function( metric, index ) {
+           //console.log('>> Rolled up totals from posts', 'total_post_', index, timeframeWindow, metric)
+             fields.setFieldValue(facebookData, 'total_post_' + index, timeframeWindow, metric)
+
+       })
+
+    })
+
+    // THIS IS TO SEE THE OUTPUT IN A TABLE//
     output.push(table.join(''));
     output.push(rows.join(''));
     output.push('</table>')
+    // END THIS IS TO SEE THE OUTPUT IN A TABLE//
+
     return output;
 
 };

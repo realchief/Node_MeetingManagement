@@ -12,7 +12,6 @@ var colors = require('colors');
 var emoji = require('node-emoji');
 var _ = require('lodash');
 
-
 let oauth2Client = new OAuth2(
     auth.googleAuth.clientID,
     auth.googleAuth.clientSecret,
@@ -147,7 +146,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                                     })
 
                             })
-                        
+
                             cb(null, { 
                                 goals : goals, 
                                 metricsList : metrics 

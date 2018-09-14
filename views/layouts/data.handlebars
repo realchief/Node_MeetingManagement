@@ -117,8 +117,13 @@
 					<div class="row insights-listing">
 
 					<h2>Insights</h2>
-						
-				
+
+						<h3>
+						{{#each insights.data.bucket_insights.buckets}}
+							{{this.scorePhrase}} 
+						{{/each}}
+						</h3>
+
 						<ul class="lines">
 						{{#each insights.data.all_phrases}}
 

@@ -269,6 +269,16 @@ router.get('/testsocial/:company', function (req, res) {
 })
 
 
+router.get('/chart/:chart', function (req, res) {
+
+  var chartNumbers = req.params.chart
+
+  var chartArray = req.params.chart.split(',')
+
+  res.send(chartArray)
+
+})
+
 
 router.get('/testsched', function (req, res) {
 

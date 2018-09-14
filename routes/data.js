@@ -13,7 +13,7 @@ var emoji = require('node-emoji')
 var userInfo = require('../controllers/users')
 
 var facebookProcessor = require('../controllers/facebook-process')
-var googleProcessor = require('../controllers/google-process')
+var googleAnalyticsProcessor = require('../controllers/google-analytics-process')
 
 
 router.get('/data/google/:company',  function (req, res) {
@@ -36,7 +36,7 @@ router.get('/data/google/:company',  function (req, res) {
 
         var accountResults = results;
 
-        googleProcessor.process(accountResults.googleUser, function( err, results ) {
+        googleAnalyticsProcessor.process(accountResults.googleUser, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',

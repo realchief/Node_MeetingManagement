@@ -15,8 +15,8 @@ var userInfo = require('../controllers/users')
 var platform = require('../controllers/platform')
 var insights = require('../controllers/insights')
 
-var facebookProcessor = require('../controllers/facebook-process')
-var googleAnalyticsProcessor = require('../controllers/google-analytics-process')
+var facebookMetrics = require('../controllers/facebook-metrics')
+var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
 
 var _ = require('lodash');
 
@@ -40,7 +40,7 @@ router.get('/data/google/:company',  function (req, res) {
 
         var accountResults = results;
 
-        googleAnalyticsProcessor.process(accountResults.googleUser, function( err, results ) {
+        googleAnalyticsMetrics.process(accountResults.googleUser, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',
@@ -85,7 +85,7 @@ router.get('/data/facebook/:company',  function (req, res) {
 
         var accountResults = results;
 
-        facebookProcessor.process(accountResults.facebookUser, function( err, results ) {
+        facebookMetrics.process(accountResults.facebookUser, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',
@@ -132,7 +132,7 @@ router.get('/data/combined/:company',  function (req, res) {
 
             google_analytics: ( cb ) => {
 
-                googleAnalyticsProcessor.process(accountResults.googleUser, function( err, results ) {
+                googleAnalyticsMetrics.process(accountResults.googleUser, function( err, results ) {
 
                     cb ( null, results )
 
@@ -142,7 +142,7 @@ router.get('/data/combined/:company',  function (req, res) {
 
             facebook: ( cb ) => {
 
-                facebookProcessor.process(accountResults.facebookUser, function( err, results ) {
+                facebookMetrics.process(accountResults.facebookUser, function( err, results ) {
                    
                     cb ( null, results )
 

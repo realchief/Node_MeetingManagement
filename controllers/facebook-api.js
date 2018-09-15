@@ -77,18 +77,18 @@ exports.getMetrics = ( fUser, timeframe, done) => {
                 fields : 'fan_count,engagement,global_brand_page_name,name,name_with_location_descriptor,posts'
             }, function(err, response) {
             
-                if ( err ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> general page_info ERROR', ' ', err)
+                if ( err || response.error ) {
+
+                    var errorMessage = err || response.error
+
+                    console.log("\n", emoji.get("sparkles"), '>>>>>> general page_info ERROR', ' ', timeframe, ' ', errorMessage)
                 }
 
                 var aggregationPeriod = 'lifetime'
                 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook page_info', ' ', timeframe)
 
-                 if ( response.error ) {
-                     console.log("\n", emoji.get("sparkles"), '>>>>>> facebook page_info ERROR', ' ', response.error)
-                 }
-        
+                
                  var responseObject = {
                     aggregationPeriod : aggregationPeriod,
                     response : response
@@ -109,17 +109,17 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
 
-                if ( err ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_aggregation ERROR', ' ', err)
+                 if ( err || response.error ) {
+
+                    var errorMessage = err || response.error
+                    
+                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_aggregation ERROR', ' ', timeframe, ' ', errorMessage)
                 }
 
                 var aggregationPeriod = 'day'
               
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_aggregation', ' ', timeframe)
 
-                if ( response.error ) {
-                     console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_aggregation ERROR', ' ', response.error)
-                 }
                
                var responseObject = {
                     aggregationPeriod : aggregationPeriod,
@@ -142,18 +142,18 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
               
-                if ( err ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_daily ERROR', ' ', err)
+                 if ( err || response.error ) {
+
+                    var errorMessage = err || response.error
+                    
+                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_daily ERROR', ' ', timeframe, ' ', errorMessage)
                 }
 
                 var aggregationPeriod = 'day'
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_daily', ' ', timeframe)
                 
-                if ( response.error ) {
-                     console.log("\n", emoji.get("sparkles"), '>>>>>> facebook page_info ERROR', ' ', response.error)
-                 }
-
+            
                 var responseObject = {
                     aggregationPeriod : aggregationPeriod,
                     response : response
@@ -174,18 +174,17 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 			    show_description_from_api_doc : 'true'
             }, function(err, response) {
               
-                if ( err ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_lifetime ERROR', ' ', err)
+                if ( err || response.error ) {
+
+                    var errorMessage = err || response.error
+                    
+                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_lifetime ERROR', ' ', timeframe, ' ', errorMessage)
                 }
 
                 var aggregationPeriod = 'lifetime'
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_lifetime', ' ', timeframe)
                 
-                if ( response.error ) {
-                     console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_lifetime ERROR', ' ', response.error)
-                 }
-
                 var responseObject = {
                     aggregationPeriod : aggregationPeriod,
                     response : response
@@ -209,16 +208,11 @@ exports.getMetrics = ( fUser, timeframe, done) => {
             
             }, function(err, response) {
 
-                if ( err ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_posts ERROR', ' ', err)
-                }
+                 if ( err || response.error ) {
 
-                var aggregationPeriod = 'lifetime'
-
-                var postListing = response;
-
-                if ( response.error ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> facebook posts pre ERROR', err, response, ' ', timeframe)
+                    var errorMessage = err || response.error
+                    
+                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_posts ERROR', ' ', timeframe, ' ', errorMessage)
 
                     postListing.data = [];
                     var postInsights =  {}
@@ -229,9 +223,13 @@ exports.getMetrics = ( fUser, timeframe, done) => {
                             postInsights: postInsights,
                             aggregationPeriod : aggregationPeriod
                         });
+
                 }
 
-                
+                var aggregationPeriod = 'lifetime'
+
+                var postListing = response;
+
                 if (response && !response.error) {
 
                     var batchPosts = [];
@@ -261,8 +259,11 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                     graph.batch( batchPosts, function( err, response ) {
 
-                        if ( err ) {
-                            console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_posts_batch ERROR', ' ', err)
+                        if ( err || response.error ) {
+
+                            var errorMessage = err || response.error 
+
+                            console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_posts_batch ERROR', ' ', timeframe, ' ', errorMessage)
                         }
 
                         var postInsights = response;
@@ -271,10 +272,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                         console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_posts_batch', ' ', timeframe)
 
-                        if ( response.error ) {
-                            console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_posts_batch ERROR', ' ', response.error)
-                        }
-
+                      
                         cb(null, {
                             postListing: postListing,
                             postInsights: postInsights,
@@ -305,18 +303,18 @@ exports.getMetrics = ( fUser, timeframe, done) => {
                 show_description_from_api_doc : 'true'
             }, function(err, response) {
               
-                if ( err ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_7days ERROR', ' ', err)
+                if ( err || response.error ) {
+
+                    var errorMessage = err || response.error
+
+                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_7days ERROR', ' ', timeframe, ' ', errorMessage)
                 }
 
                 var aggregationPeriod = 'week'
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_7days', ' ', timeframe)
                 
-                if ( response.error ) {
-                     console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_7days ERROR', ' ', response.error)
-                 }
-
+             
                 var responseObject = {
                     aggregationPeriod : aggregationPeriod,
                     response : response
@@ -338,18 +336,18 @@ exports.getMetrics = ( fUser, timeframe, done) => {
                 show_description_from_api_doc : 'true'
             }, function(err, response) {
 
-                if ( err ) {
-                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_28days ERROR', ' ', err)
+               if ( err || response.error ) {
+
+                    var errorMessage = err || response.error
+
+                    console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_28days ERROR', ' ', timeframe, ' ', errorMessage)
                 }
               
                 var aggregationPeriod = '28_days'
 
                 console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_28days', ' ', timeframe)
                 
-                if ( response.error ) {
-                     console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_28days ERROR', ' ', response.error)
-                 }
-
+            
                 var responseObject = {
                     aggregationPeriod : aggregationPeriod,
                     response : response
@@ -431,7 +429,7 @@ exports.getAllMetrics = ( fUser, done ) => {
 
 }
 
-exports.getAccountList = ( fUser, done) => {
+exports.getAccountList = ( fUser, done ) => {
     const token = fUser.token;
     graph.setAccessToken(token);
     
@@ -458,7 +456,7 @@ exports.getAccountList = ( fUser, done) => {
 
         }
 
-        done(data);
+        done( null, data );
     });
 
 }
@@ -483,7 +481,7 @@ exports.getAccountListOrSelectView = function (user, done) {
                 });
             }
             else {
-                facebookApi.getAccountList( fUser, function (data) {
+                facebookApi.getAccountList( fUser, function (err, data) {
                     cb(null, {
                         account_list: data, 
                         user : fUser,

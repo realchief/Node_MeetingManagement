@@ -74,9 +74,11 @@ exports.getMetrics = (gUser, timeframe, cb) => {
             
             }, function (err, response) {
 
-            
-                if (err) {
-                    console.log('Google API error:', err);
+                if ( err || response.error ) {
+
+                    var errorMessage = err || response.error
+
+                    console.log("\n", emoji.get("sparkles"), 'Google API gaColumns error:', errorMessage);
                     return;
                 }
 
@@ -112,8 +114,10 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                        
                         function (err, response) {
 
-                            if (err) {
-                                console.log('Google API error:', err);
+                            if ( err || response.error ) {
+
+                                var errorMessage = err || response.error
+                                console.log("\n", emoji.get("sparkles"), 'Google API goals error:', errorMessage);
                                 cb(err);
                             }
 
@@ -272,40 +276,43 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                 ],
                  "orderBys" : [],
                
-              pageSize : 1
-              },
+                  pageSize : 1
+                  },
 
 
-              {
-                "viewId" : gUser.view_id,
-                "dateRanges" : dateRanges,
-                "dimensions" : [
-                    { "name" : "ga:hostname" },
-                ],
-                "metrics" : [
-                    { expression: 'ga:sessions' },
-               
-                ],
-                 "orderBys" : [
-                 {
-                      fieldName : "ga:sessions",
-                      sortOrder : 'DESCENDING',
-                    },
-                ],
-               
-              pageSize : 1
-              },
+                  {
+                    "viewId" : gUser.view_id,
+                    "dateRanges" : dateRanges,
+                    "dimensions" : [
+                        { "name" : "ga:hostname" },
+                    ],
+                    "metrics" : [
+                        { expression: 'ga:sessions' },
+                   
+                    ],
+                     "orderBys" : [
+                     {
+                          fieldName : "ga:sessions",
+                          sortOrder : 'DESCENDING',
+                        },
+                    ],
+                   
+                  pageSize : 1
+                  },
 
 
-                    ]
+                ]
                 }}, function ( err, response ) {
               
-                if (err) {
-                    console.log('Google API error:', err);
-                }
+                    if ( err || response.error ) {
 
-                cb(null, response);
-                //console.log('Google API Metrics response:', response.data.reports)
+                        var errorMessage = err || response.error
+
+                        console.log("\n", emoji.get("sparkles"), 'Google API metrics error:', errorMessage);
+                    }
+
+                    cb(null, response);
+                    //console.log('Google API Metrics response:', response.data.reports)
 
             })
         },
@@ -341,12 +348,14 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                      }]
                 }}, function ( err, response ) {
               
-                if (err) {
-                    console.log('Google API error:', err);
-                }
+                    if ( err || response.error ) {
 
-                cb(null, response);
-                //console.log('Google API Metrics response:', response.data.reports)
+                        var errorMessage = err || response.error
+                        console.log("\n", emoji.get("sparkles"), 'Google API events error:', errorMessage);
+                    }
+
+                    cb(null, response);
+                    //console.log('Google API Metrics response:', response.data.reports)
 
             })
         },
@@ -462,8 +471,11 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                     ]
                 }}, function ( err, response ) {
               
-                    if (err) {
-                        console.log('Google API error:', err);
+                    if ( err || response.error ) {
+
+                        var errorMessage = err || response.error
+                        console.log("\n", emoji.get("sparkles"), 'Google API lists error:', errorMessage);
+                    
                     }
 
                     cb(null, response);
@@ -504,7 +516,14 @@ exports.getMetrics = (gUser, timeframe, cb) => {
         
              }, function( err, response ){
 
-                cb(null, response);
+                 if ( err || response.error ) {
+
+                        var errorMessage = err || response.error
+                        console.log("\n", emoji.get("sparkles"), 'Google API matchups error:', errorMessage);
+                    
+                    }
+
+                    cb(null, response);
              
              })
          
@@ -586,7 +605,7 @@ exports.getAccountList = (gUser, cb) => {
             google.analytics('v3').management.accountSummaries.list(function (err, response) {
 
                 if (err) {
-                    console.log('Google API error:', err);
+                    console.log("\n", emoji.get("sparkles"), 'Google API error:', err);
                     return;
                 }
 
@@ -627,9 +646,7 @@ exports.getAccountList = (gUser, cb) => {
             });
         }
     }, function (err, data) {
-        console.log('Google Users ',
-            data.users
-        );
+        //console.log('Google Users ', data.users );
         cb(null, data)
     });
 };

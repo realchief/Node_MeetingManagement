@@ -26,7 +26,7 @@ exports.process = ( fUser, cb ) => {
 
         var postsTable = thisModule.listPostsTable(results.metrics.current.responses.insights_posts, results.metrics.compared.responses.insights_posts, null)
 
-       results.postsTable = postsTable.join('')
+        results.postsTable = postsTable.join('')
 
         var metricsOutputTable = []
 

@@ -628,6 +628,15 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 
 })
 
+
+router.get('/insightsobj', function (req, res) {
+
+  var insights = require('../controllers/insights')
+
+  console.log('\n', emoji.get("information_source"), "insights listing", insights.makeInsightsList() )
+
+})
+
 /* 
  * / end MARIN'S TEST STUFF 
  */

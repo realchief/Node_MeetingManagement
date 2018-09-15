@@ -1,8 +1,8 @@
 var insightsDefinition = require('../definitions/insights');
-var insightsList = insightsDefinition.get();
+//var insightsList = insightsDefinition.get();
 
 var bucketDefinition = require('../definitions/buckets');
-var bucketList = bucketDefinition.get();
+//var bucketList = bucketDefinition.get();
 
 var utilities = require('../controllers/utilities')
 var _ = require('lodash');
@@ -34,11 +34,31 @@ _.forEach(insightsPhrasesList, function(phrase,index) {
 })
 
 var insights = {
+
+	insightsList : {},
+
+	bucketList : {},
+
+	makeInsightsList : function() {
+
+		this.insightsList = insightsDefinition.get()
+		return this.insightsList
+
+	},
+
+	makeBucketList : function() {
+
+		this.bucketList = bucketDefinition.get()
+		return this.bucketList
+
+	},
 	
 	getInsights : function( platform, allDataSources ) {
 
 		var thisModule = this
 
+		var insightsList = thisModule.makeInsightsList();
+		var bucketList = thisModule.makeBucketList();
 		var insightsData = insightsList.data
 
 		/**
@@ -195,9 +215,9 @@ var insights = {
 				 * 
 				*/
 			
-				positives = thisModule.filter(insightsList.data.platform_insights.buckets[bucketName], 'status', 'positive')
-				negatives = thisModule.filter(insightsList.data.platform_insights.buckets[bucketName], 'status', 'negative')
-				neutrals = thisModule.filter(insightsList.data.platform_insights.buckets[bucketName], 'status', 'neutral')
+				positives = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'positive')
+				negatives = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'negative')
+				neutrals = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'neutral')
 				var totalMappingsCount = positives.length + negatives.length + neutrals.length
 				var bucketPerformance = positives.length / totalMappingsCount
 				bucketPerformancePercentage = bucketPerformance * 100;
@@ -252,6 +272,9 @@ var insights = {
 		 * 
 		*/
 
+		var insightsList = this.insightsList
+		var bucketList = this.bucketList
+
 		_.forEach(insightsList.data.bucket_insights.buckets, function( bucket, index ) {
 
 			var bucketLabel = bucketList[bucket.name].meta.label
@@ -266,6 +289,8 @@ var insights = {
 
 
 	getUniquePhrase : function( phraseSet ) {
+
+		var insightsList = this.insightsList
 
 		utilities.shuffle(phraseSet)
 
@@ -305,6 +330,9 @@ var insights = {
 	},
 
 	arrangePlatformInsights : function() {
+	
+		var insightsList = this.insightsList
+		var bucketList = this.bucketList
 	
 		var factorList = []
 		var phraseList = []
@@ -447,6 +475,8 @@ var insights = {
 
 	getAssetInsights : function( allDataSources, dataSources, assetLinks, status, metricName, bucketName ) {
 
+		var insightsList = this.insightsList
+
 		// NEED TO GET RID OF THIS!!!
 		var status = "positive";
 		var thisModule = this
@@ -582,6 +612,8 @@ var insights = {
 	assetPhraser : function( asset ) {
 
 		var thisModule = this
+
+		var insightsList = this.insightsList
 
 		if ( asset.meta.value ) {
 
@@ -776,6 +808,7 @@ var insights = {
 
 	platformPhraser : function( metric ) {
 
+		var insightsList = this.insightsList
 		var insightsData = insightsList.data
 		
 		//console.log('Phrase METRIC>>>', metric)

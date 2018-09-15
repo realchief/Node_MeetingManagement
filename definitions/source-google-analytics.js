@@ -367,7 +367,7 @@ module.exports = {
 			end_date: "Not Set: 11-30-2017",
 		}
 
-
+		console.log("\n", emoji.get("sparkles"), 'Made Google Analytics Template.');
 
 		return objectTemplate
 

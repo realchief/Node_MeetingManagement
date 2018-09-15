@@ -157,16 +157,16 @@ router.get('/data/combined/:company',  function (req, res) {
             //console.log( emoji.get("moneybag"), 'Google Analytics>>>', results.google_analytics.dataSource.metric_assets )
             //console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
 
-            var dataSources = {}
+            var dataSourcesMetrics = {}
             _.forEach ( results, function( dataSource, index ) {
-                dataSources[index] = dataSource.dataSource;
+                dataSourcesMetrics[index] = dataSource.dataSource;
             })
 
             // now that we have the data sources set, move to platform
-            var platformData = platform.setPlatform( dataSources )
+            var platformData = platform.setPlatform( dataSourcesMetrics )
 
             // now that we have platform, get insights.
-            var allInsights = insights.getInsights( platformData, dataSources )
+            var allInsights = insights.getInsights( platformData, dataSourcesMetrics )
 
             res.render('fingertips', {
                 version: 'fingertips',

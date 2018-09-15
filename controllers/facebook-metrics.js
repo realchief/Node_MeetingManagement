@@ -13,12 +13,22 @@ var emoji = require('node-emoji')
 var _ = require('lodash');
 
 var facebookDefinition = require('../definitions/source-facebook');
-var facebookData = facebookDefinition.get().facebook;
+//var facebookData = facebookDefinition.get().facebook;
 
+exports.facebookData = {}
+
+exports.makefacebookData = function() {
+
+    this.facebookData = facebookDefinition.get().facebook;
+    return this.facebookData
+
+},
 
 exports.process = ( fUser, cb ) => {
 
     var thisModule = this
+
+    var facebookData = this.makefacebookData();
 
     facebookApi.getAllMetrics( fUser, function( err, results ) {
       
@@ -53,6 +63,8 @@ exports.process = ( fUser, cb ) => {
 exports.metricsTable = ( current, compared, insightGroup ) => {
 
     //console.log('IG>>>', insightGroup)
+
+    var facebookData = this.facebookData;
 
         // THIS IS TO SEE THE OUTPUT IN A TABLE//
         var rows = [];
@@ -362,6 +374,8 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
 
 exports.listPostsTable = (current, compared, done) => {
 
+
+    facebookData = this.facebookData
 
     var insightTotals = {};
 

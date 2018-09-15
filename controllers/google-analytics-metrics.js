@@ -14,11 +14,23 @@ var utilities = require('../controllers/utilities')
 var fields = require("../controllers/fields");
 
 var googleAnalyticsDefinition = require('../definitions/source-google-analytics');
-var googleAnalyticsData = googleAnalyticsDefinition.get().google_analytics;
+//var googleAnalyticsData = googleAnalyticsDefinition.get().google_analytics;
+
+exports.googleAnalyticsData = {}
+
+exports.makeGoogleAnalyticsData = function() {
+
+    this.googleAnalyticsData = googleAnalyticsDefinition.get().google_analytics;
+    return this.googleAnalyticsData
+
+
+},
+
 
 exports.process = ( gUser, cb ) => {
 
     var thisModule = this
+    var googleAnalyticsData = this.makeGoogleAnalyticsData();
 
     googleApi.getAllMetrics(gUser, function( err, results ) {
 
@@ -76,7 +88,8 @@ exports.process = ( gUser, cb ) => {
 
 exports.metricsTable = ( report, index, reportName, insightGroup ) => {
 
-    
+    var googleAnalyticsData = this.googleAnalyticsData;
+
     var dimensionsCount = 0;
     var aggregatedByDate = false;
     var valueTypes = [];

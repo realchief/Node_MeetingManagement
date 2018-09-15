@@ -6,6 +6,9 @@
 
 var _ = require('lodash');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
 var assetLinks = require('../definitions/asset-links');
 var assetLinksList = assetLinks.get();
 
@@ -215,6 +218,9 @@ module.exports = {
 				objectTemplate.all.metrics[assetLinks.metric].asset_links = assetLinks.asset_links
 			}
 		})
+
+
+		console.log("\n", emoji.get("sparkles"), 'Made platform template.');
 
 		return objectTemplate
 

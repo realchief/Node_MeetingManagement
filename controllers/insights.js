@@ -2,7 +2,7 @@ var insightsDefinition = require('../definitions/insights');
 var insightsList = insightsDefinition.get();
 
 var bucketDefinition = require('../definitions/buckets');
-  var bucketList = bucketDefinition.get();
+var bucketList = bucketDefinition.get();
 
 var utilities = require('../controllers/utilities')
 var _ = require('lodash');

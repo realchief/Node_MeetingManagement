@@ -86,7 +86,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                 var aggregationPeriod = 'lifetime'
                 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook page_info', ' ', timeframe)
+                //console.log("\n", emoji.get("sparkles"), '>>>>>> facebook page_info', ' ', timeframe)
 
                 
                  var responseObject = {
@@ -118,7 +118,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                 var aggregationPeriod = 'day'
               
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_aggregation', ' ', timeframe)
+                //console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_aggregation', ' ', timeframe)
 
                
                var responseObject = {
@@ -151,7 +151,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                 var aggregationPeriod = 'day'
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_daily', ' ', timeframe)
+                //console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_daily', ' ', timeframe)
                 
             
                 var responseObject = {
@@ -183,7 +183,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                 var aggregationPeriod = 'lifetime'
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_lifetime', ' ', timeframe)
+               //console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_lifetime', ' ', timeframe)
                 
                 var responseObject = {
                     aggregationPeriod : aggregationPeriod,
@@ -270,7 +270,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                         var aggregationPeriod = 'day'
 
-                        console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_posts_batch', ' ', timeframe)
+                        //console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_posts_batch', ' ', timeframe)
 
                       
                         cb(null, {
@@ -312,7 +312,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 
                 var aggregationPeriod = 'week'
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_7days', ' ', timeframe)
+                //console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_7days', ' ', timeframe)
                 
              
                 var responseObject = {
@@ -345,7 +345,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
               
                 var aggregationPeriod = '28_days'
 
-                console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_28days', ' ', timeframe)
+               // console.log("\n", emoji.get("sparkles"), '>>>>>> facebook insights_28days', ' ', timeframe)
                 
             
                 var responseObject = {

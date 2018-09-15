@@ -4,6 +4,9 @@
  * 
 */
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
 module.exports = {
 
 	get : function() {
@@ -250,6 +253,8 @@ module.exports = {
 
 			
 		]
+
+		console.log("\n", emoji.get("sparkles"), 'Made asset links Template.');
 
 		return objectTemplate
 

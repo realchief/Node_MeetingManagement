@@ -1,6 +1,10 @@
 var _ = require('lodash');
 const math = require('mathjs')
 
+var bucketDefinition = require('../definitions/buckets');
+var bucketList = bucketDefinition.get();
+
+
 exports.secondsToHMS = function(d) {
 
     d = Number(d);
@@ -304,10 +308,7 @@ exports.isVowel = function(x) {
 exports.getBucket = function( metricName ) {
 
 		var foundBucket = "";
-
-		var bucketDefinition = require('../definitions/buckets');
- 		 var bucketList = bucketDefinition.get();
-
+		
 		_.forEach(bucketList, function( bucket, bucketName ) {
 
 			var mappings = bucket.meta.mappings.all;

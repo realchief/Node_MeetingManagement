@@ -6,6 +6,9 @@
 
 var _ = require('lodash');
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
 module.exports = {
 
 	get : function() {

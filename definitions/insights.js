@@ -4,6 +4,9 @@
  * 
 */
 
+var colors = require('colors');
+var emoji = require('node-emoji')
+
 var _ = require('lodash');
 
 module.exports = {
@@ -35,6 +38,7 @@ module.exports = {
 
 		}
 
+		console.log("\n", emoji.get("sparkles"), 'Made insights Template.');
 
 		return objectTemplate
 

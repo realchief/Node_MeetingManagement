@@ -12,9 +12,6 @@ var emoji = require('node-emoji')
 
 var userInfo = require('../controllers/users')
 
-var platform = require('../controllers/platform')
-var insights = require('../controllers/insights')
-
 var facebookMetrics = require('../controllers/facebook-metrics')
 var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
 
@@ -36,7 +33,7 @@ router.get('/data/google/:company',  function (req, res) {
 
     }
 
-    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+    userInfo.getConnectedDataSourcesFromId(userId, function( err, results ) {
 
         var accountResults = results;
 
@@ -81,7 +78,7 @@ router.get('/data/facebook/:company',  function (req, res) {
 
     }
 
-    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+    userInfo.getConnectedDataSourcesFromId(userId, function( err, results ) {
 
         var accountResults = results;
 
@@ -124,74 +121,29 @@ router.get('/data/combined/:company',  function (req, res) {
 
     }
 
-    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+    userInfo.getConnectedDataSourcesFromId( userId, function( err, credentials ) {
 
-        var accountResults = results;
+        userInfo.getMetricsFromDataSources( credentials, function( err, metrics ) {
 
-        // getMetricsFromId
+            userInfo.getInsightsFromMetrics( metrics, function( err, results ) {
 
-        Async.parallel({
+                console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', results.dataSourcesList.join(','), 'for user:', credentials.user.username, 'company id:', credentials.user.company_id )
 
-            google_analytics: ( cb ) => {
+                res.render('fingertips', {
+                    version: 'fingertips',
+                    layout: 'data.handlebars',
+                    accountResults: credentials,
+                    user: credentials.user,
+                    platform : results.platforms,
+                    insights : results.insights
+                });
 
-                googleAnalyticsMetrics.process(accountResults.googleUser, function( err, results ) {
-
-                    cb ( null, results )
-
-                })
-
-            },
-
-            facebook: ( cb ) => {
-
-                facebookMetrics.process(accountResults.facebookUser, function( err, results ) {
-                   
-                    cb ( null, results )
-
-                })
-
-
-            },
-
-
-        }, function( err, results ) {
-
-            //console.log( emoji.get("moneybag"), 'Google Analytics>>>', results.google_analytics.dataSource.metric_assets )
-            //console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
-
-            var dataSourcesMetrics = {}
-            var dataSourcesList = []
-            _.forEach ( results, function( dataSource, index ) {
-                dataSourcesMetrics[index] = dataSource.dataSource;
-                dataSourcesList.push(index)
             })
-
-            // now that we have the data sources set, move to platform
-            var platformData = platform.setPlatform( dataSourcesMetrics )
-
-            // now that we have platform, get insights.
-            var allInsights = insights.getInsights( platformData, dataSourcesMetrics )
-
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'data.handlebars',
-                accountResults: accountResults,
-                user: accountResults.user,
-                platform : platformData,
-                insights : allInsights
-            });
-
-             console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', dataSourcesList.join(','), 'for user:', accountResults.user.username, 'company id:', accountResults.user.company_id )
 
         })
 
-        
-
     })
 
-
-
-    
 });
 
 

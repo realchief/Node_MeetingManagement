@@ -10,10 +10,10 @@ var _ = require('lodash');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
-
 /* get all phrases into an array */
 
 var phraseMaker = require('../controllers/phrases');
+
 var talkingPointsPhrases = require('../definitions/phrases-talking-points');
 var insightsPhrases = require('../definitions/phrases-insights');
  

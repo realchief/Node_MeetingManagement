@@ -4,9 +4,11 @@ let Async = require('async');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+var _ = require('lodash');
+
 var users = {
 
-  getConnectedAccountsFromId : function( userId, cb ) {
+  getConnectedDataSourcesFromId : function( userId, cb ) {
 
       let company = userId
       
@@ -64,6 +66,78 @@ var users = {
         })
 
     })
+
+  },
+
+
+  getMetricsFromDataSources: function( credentials, cb ) {
+
+
+    var facebookMetrics = require('../controllers/facebook-metrics')
+    var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
+
+     Async.parallel({
+
+            google_analytics: ( cb ) => {
+
+                googleAnalyticsMetrics.process(credentials.googleUser, function( err, results ) {
+
+                    cb ( null, results )
+
+                })
+
+            },
+
+            facebook: ( cb ) => {
+
+                facebookMetrics.process(credentials.facebookUser, function( err, results ) {
+                   
+                    cb ( null, results )
+
+                })
+
+
+            }
+
+
+        }, function( err, results ) {
+
+          // console.log( emoji.get("moneybag"), 'Google Analytics>>>', results.google_analytics.dataSource.metric_assets )
+          // console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
+           
+           cb ( err, results )
+
+        })
+
+  },
+
+  getInsightsFromMetrics: function( metrics, cb ) {
+
+   
+    var platform = require('../controllers/platform')
+    var insights = require('../controllers/insights')
+
+    var dataSourcesMetrics = {}
+    var dataSourcesList = []
+    _.forEach ( metrics, function( dataSource, index ) {
+        dataSourcesMetrics[index] = dataSource.dataSource;
+        dataSourcesList.push(index)
+    })
+
+    // now that we have the data sources set, move each to platform
+    var platformData = platform.setPlatform( dataSourcesMetrics )
+
+    // now that we have platform, get insights.
+    var allInsights = insights.getInsights( platformData, dataSourcesMetrics )
+
+    
+    var results = {
+       platforms : platformData,
+       insights: allInsights,
+       dataSourcesList: dataSourcesList
+    }
+
+    cb ( null, results )
 
   },
 

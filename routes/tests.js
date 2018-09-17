@@ -33,7 +33,7 @@ router.get('/testsocial/:company', function (req, res) {
 
   var company = req.params.company
 
-  userInfo.getConnectedAccountsFromId(company, function( err, results ) {
+  userInfo.getConnectedDataSourcesFromId(company, function( err, results ) {
 
             Async.parallel({
 
@@ -618,7 +618,7 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 
     }
 
-    userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+    userInfo.getConnectedDataSourcesFromId(userId, function( err, results ) {
 
       facebookApi.extendToken(results.facebookUser, res, function( result ) {
         res.send(result)

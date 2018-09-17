@@ -149,7 +149,7 @@ router.get('/getuser/:company', function (req, res) {
 
   }
 
-  userInfo.getConnectedAccountsFromId(userId, function( err, results ) {
+  userInfo.getConnectedDataSourcesFromId(userId, function( err, results ) {
 
     res.render('fingertips', {
         version: 'fingertips',

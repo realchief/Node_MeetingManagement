@@ -2,8 +2,6 @@ var _ = require('lodash');
 const math = require('mathjs')
 
 var bucketDefinition = require('../definitions/buckets');
-var bucketList = bucketDefinition.get();
-
 
 exports.secondsToHMS = function(d) {
 
@@ -308,6 +306,13 @@ exports.isVowel = function(x) {
 exports.getBucket = function( metricName ) {
 
 		var foundBucket = "";
+		
+		if ( this.bucketList ) {
+			var bucketList = this.bucketList
+		} else {
+			this.bucketList = bucketDefinition.get();
+			var bucketList = this.bucketList
+		}
 		
 		_.forEach(bucketList, function( bucket, bucketName ) {
 

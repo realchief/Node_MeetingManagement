@@ -128,6 +128,8 @@ router.get('/data/combined/:company',  function (req, res) {
 
         var accountResults = results;
 
+        // getMetricsFromId
+
         Async.parallel({
 
             google_analytics: ( cb ) => {
@@ -158,8 +160,10 @@ router.get('/data/combined/:company',  function (req, res) {
             //console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
 
             var dataSourcesMetrics = {}
+            var dataSourcesList = []
             _.forEach ( results, function( dataSource, index ) {
                 dataSourcesMetrics[index] = dataSource.dataSource;
+                dataSourcesList.push(index)
             })
 
             // now that we have the data sources set, move to platform
@@ -176,6 +180,8 @@ router.get('/data/combined/:company',  function (req, res) {
                 platform : platformData,
                 insights : allInsights
             });
+
+             console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', dataSourcesList.join(','), 'for user:', accountResults.user.username, 'company id:', accountResults.user.company_id )
 
         })
 

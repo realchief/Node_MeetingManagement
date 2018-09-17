@@ -50,7 +50,7 @@ exports.process = ( fUser, cb ) => {
         results.metricsTable = metricsOutputTable.join('')
         results.dataSource = facebookData
 
-        console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook process done')
+        console.log("\n", emoji.get("beers"), '>>>>>> facebook process done. Retrieved API metrics, and put metrics into data source definition')
 
         cb ( null, results )
     
@@ -366,7 +366,7 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
         output.push('</table>')
         // END THIS IS TO SEE THE OUTPUT IN A TABLE//
 
-        //console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook data source', facebookData)
+        //console.log("\n", emoji.get("beer"), '>>>>>> facebook data source', facebookData)
         return output.join('');
     
 

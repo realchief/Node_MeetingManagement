@@ -704,7 +704,7 @@ exports.checkToken = (req, res, next) => {
     req.user.getGoogle().then(function (gUser) {
 
         if ( gUser ) {
-            console.log("\n", emoji.get("rain_cloud"), '>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
+            console.log("\n", emoji.get("moneybag"), '>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
         }
 
         if (gUser && moment().subtract(gUser.expiry_date, "s").format("X") > -300) {

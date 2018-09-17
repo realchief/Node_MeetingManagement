@@ -33,7 +33,7 @@ var users = {
 
             user.getFacebook().then(function ( fUser ) {
               if ( fUser) {
-                  console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
+                 //console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
               }
 
               cb( null, fUser )
@@ -46,7 +46,7 @@ var users = {
 
             user.getGoogle().then(function (gUser) {
               if (gUser) {
-                  console.log( emoji.get("smile"), 'Google User>>>', "id", gUser.id )
+                  //console.log( emoji.get("smile"), 'Google User>>>', "id", gUser.id )
               }
 
               cb( null, gUser )

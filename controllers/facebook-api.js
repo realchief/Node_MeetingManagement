@@ -438,7 +438,7 @@ exports.getAccountList = ( fUser, done ) => {
     }, (err, response) => {
         var data = [];
         
-        console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook summary response:', response)
+        console.log("\n", emoji.get("beer"), '>>>>>> facebook summary response:', response)
         
         if ( typeof response.accounts !== 'undefined') {
 
@@ -506,7 +506,7 @@ exports.deauthorize = ( fUser, done) => {
     graph.del(profileId + "/permissions", {
         access_token : fUser.account_token
     }, function (err, response) {
-         console.log("\n", emoji.get("rain_cloud"), '>>>>>> deauthorized app on facebook:', response)
+         console.log("\n", emoji.get("bomb"), '>>>>>> deauthorized app on facebook:', response)
         done(response);
     });
 

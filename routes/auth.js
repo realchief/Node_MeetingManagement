@@ -44,7 +44,7 @@ router.get('/facebook/unlink',  function (req, res) {
 
                 facebookApi.deauthorize( fUser, function(result) {
 
-                    console.log("\n", emoji.get("rain_cloud"), '>>>>>> facebook app deauthorize response:', result)
+                    console.log("\n", emoji.get("bomb"), '>>>>>> facebook app deauthorize response:', result)
 
                     req.user.setFacebook(null).then(function () {
                         cb(null, fUser);

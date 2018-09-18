@@ -18,14 +18,14 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
-exports.getMetrics = (gUser, timeframe, cb) => {
+exports.getMetrics = (gAccount, timeframe, cb) => {
     
     oauth2Client.credentials = {
-        refresh_token: gUser.refresh_token,
-        expiry_date: gUser.expiry_date,
-        access_token: gUser.token,
-        token_type: gUser.token_type,
-        id_token: gUser.id_token
+        refresh_token: gAccount.refresh_token,
+        expiry_date: gAccount.expiry_date,
+        access_token: gAccount.token,
+        token_type: gAccount.token_type,
+        id_token: gAccount.id_token
     }
     
     google.options({
@@ -108,9 +108,9 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                 function ( cb ) {
 
                     analytics.management.goals.list({
-                      'accountId': gUser.account_id,
-                      'webPropertyId': gUser.property_id,
-                      'profileId': gUser.view_id },
+                      'accountId': gAccount.account_id,
+                      'webPropertyId': gAccount.property_id,
+                      'profileId': gAccount.view_id },
                        
                         function (err, response) {
 
@@ -187,7 +187,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                             reportRequests: [
                                 
                                 {
-                                "viewId" : gUser.view_id,
+                                "viewId" : gAccount.view_id,
                                 "dateRanges" : dateRanges,
                                 "metrics" : goalExpressions.slice(0,10),
                                  pageSize : 10,
@@ -195,7 +195,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                               },
 
                               {
-                                "viewId" : gUser.view_id,
+                                "viewId" : gAccount.view_id,
                                 "dateRanges" : dateRanges,
                                  "metrics" : [
                                     { expression: 'ga:transactionRevenue' },
@@ -207,7 +207,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                               },
 
                               {
-                                "viewId" : gUser.view_id,
+                                "viewId" : gAccount.view_id,
                                 "dateRanges" : dateRanges,
                                  "dimensions" : [
                                     { "name" : "ga:productName" },
@@ -258,7 +258,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                     reportRequests: [
 
                         {
-                "viewId" : gUser.view_id,
+                "viewId" : gAccount.view_id,
                 "dateRanges" : dateRanges,
                 "dimensions" : [],
                 "metrics" : [
@@ -281,7 +281,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
 
 
                   {
-                    "viewId" : gUser.view_id,
+                    "viewId" : gAccount.view_id,
                     "dateRanges" : dateRanges,
                     "dimensions" : [
                         { "name" : "ga:hostname" },
@@ -324,7 +324,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
             analyticsreporting.reports.batchGet({
                 "requestBody": {
                     reportRequests: [{
-                         "viewId": gUser.view_id,
+                         "viewId": gAccount.view_id,
                          "dateRanges": dateRanges,
                          "dimensions": [{
                              "name": "ga:eventCategory"
@@ -369,7 +369,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                     reportRequests: [
 
                         {
-                "viewId" : gUser.view_id,
+                "viewId" : gAccount.view_id,
                 "dateRanges" : dateRanges,
                  "dimensions" : [
                     //{ "name" : "ga:pageTitle" },
@@ -399,7 +399,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
 
              
               {
-                "viewId" : gUser.view_id,
+                "viewId" : gAccount.view_id,
                 "dateRanges" : dateRanges,
                  "dimensions" : [
                     //{ "name" : "ga:pageTitle" },
@@ -428,7 +428,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
 
 
               {
-                "viewId" : gUser.view_id,
+                "viewId" : gAccount.view_id,
                 "dateRanges" : dateRanges,
                  "dimensions" : [
                     { "name" : "ga:userType" },
@@ -448,7 +448,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
               },
 
             {
-                "viewId" : gUser.view_id,
+                "viewId" : gAccount.view_id,
                 "dateRanges" : dateRanges,
                  "dimensions" : [
                     { "name" : "ga:channelGrouping" },
@@ -491,7 +491,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
                 "requestBody": {
                      reportRequests: [
                          {
-                            "viewId" : gUser.view_id,
+                            "viewId" : gAccount.view_id,
                             "dateRanges" : dateRanges,
                              "dimensions" : [
                                 //{ "name" : "ga:pageTitle" },
@@ -542,7 +542,7 @@ exports.getMetrics = (gUser, timeframe, cb) => {
     });
 }
 
-exports.getAllMetrics = ( gUser, cb ) => {
+exports.getAllMetrics = ( gAccount, cb ) => {
 
     var thisModule = this
 
@@ -554,7 +554,7 @@ exports.getAllMetrics = ( gUser, cb ) => {
 
                 both : ( cb ) => {
 
-                    thisModule.getMetrics(gUser, 'both', function( err, response ) {
+                    thisModule.getMetrics(gAccount, 'both', function( err, response ) {
                         cb( null, response )
                     })
 
@@ -587,14 +587,14 @@ exports.getAllMetrics = ( gUser, cb ) => {
 
 }
 
-exports.getAccountList = (gUser, cb) => {
+exports.getAccountList = (gAccount, cb) => {
 
     oauth2Client.credentials = {
-        refresh_token: gUser.refresh_token,
-        expiry_date: gUser.expiry_date,
-        access_token: gUser.token,
-        token_type: gUser.token_type,
-        id_token: gUser.id_token
+        refresh_token: gAccount.refresh_token,
+        expiry_date: gAccount.expiry_date,
+        access_token: gAccount.token,
+        token_type: gAccount.token_type,
+        id_token: gAccount.id_token
     }
     google.options({
         auth: oauth2Client
@@ -655,30 +655,30 @@ exports.getAccountList = (gUser, cb) => {
 exports.getAccountListOrSelectView = function (user, cb) {
     Async.waterfall([
         function ( cb ) {
-            user.getGoogle().then(function (gUser) {
-                if (gUser) {
-                    cb(null, gUser)
+            user.getGoogle().then(function (gAccount) {
+                if (gAccount) {
+                    cb(null, gAccount)
                 }
                 else cb({error: 'User is not connected with Google'}, false)
             });
-        }, function (gUser, cb) {
-            if (gUser.view_id && gUser.property_id && gUser.account_id) {               
+        }, function (gAccount, cb) {
+            if (gAccount.view_id && gAccount.property_id && gAccount.account_id) {               
                 cb(null, {
                     chosen_account: {
-                        view_name: gUser.view_name,
-                        account_name: gUser.account_name,
-                        property_name: gUser.property_name,
-                        email: gUser.email
+                        view_name: gAccount.view_name,
+                        account_name: gAccount.account_name,
+                        property_name: gAccount.property_name,
+                        email: gAccount.email
                     }, 
                     account_list: null
                 });
             }
             else {
-                googleApi.getAccountList(gUser, function (err, data) {
-                    console.log('There is no gUser data');
+                googleApi.getAccountList(gAccount, function (err, data) {
+                    console.log('There is no gAccount data');
                     cb(null, {
                         account_list: data, 
-                        user : gUser,
+                        user : gAccount,
                         chosen_account: null
                     })
                 });
@@ -701,19 +701,19 @@ exports.checkToken = (req, res, next) => {
     if (!req.user) {
         return next();
     }
-    req.user.getGoogle().then(function (gUser) {
+    req.user.getGoogle().then(function (gAccount) {
 
-        if ( gUser ) {
-            console.log("\n", emoji.get("moneybag"), '>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"))
+        if ( gAccount ) {
+            console.log("\n", emoji.get("moneybag"), '>>>>>> google refresh token:', gAccount.refresh_token, 'seconds before expiry', moment().subtract(gAccount.expiry_date, "s").format("X"))
         }
 
-        if (gUser && moment().subtract(gUser.expiry_date, "s").format("X") > -300) {
+        if (gAccount && moment().subtract(gAccount.expiry_date, "s").format("X") > -300) {
             // subtract current time from stored expiry_date and see if less than 5 minutes (300s) remain
             console.log('we passed the expiry_date and trying to update google access token')
 
             oauth2Client.setCredentials({
-                access_token: gUser.token,
-                refresh_token: gUser.refresh_token
+                access_token: gAccount.token,
+                refresh_token: gAccount.refresh_token
             });
 
             oauth2Client.refreshAccessToken(function (err, tokens) {
@@ -728,7 +728,7 @@ exports.checkToken = (req, res, next) => {
                 // google returns timestamp with milliseconds, so fix that //
                 var expiry_date = parseInt(tokens.expiry_date / 1000)
 
-                gUser.updateAttributes({
+                gAccount.updateAttributes({
                     token: tokens.access_token,
                     expiry_date: expiry_date
                 }).then(function (result) {

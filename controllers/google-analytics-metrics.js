@@ -27,12 +27,12 @@ exports.makeGoogleAnalyticsData = function() {
 },
 
 
-exports.process = ( gUser, cb ) => {
+exports.process = ( gAccount, cb ) => {
 
     var thisModule = this
     var googleAnalyticsData = this.makeGoogleAnalyticsData();
 
-    googleApi.getAllMetrics(gUser, function( err, results ) {
+    googleApi.getAllMetrics(gAccount, function( err, results ) {
 
         thisModule.gaColumns = results.metrics.both.responses.gaColumns
         thisModule.goalNames = results.metrics.both.responses.goals.metricsList

@@ -14,12 +14,12 @@
 
 				<div class="google-selected-accounts">
 						
-					{{#if googleUser }}		
+					{{#if googleAccount }}		
 
 						<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>	
-						<h2 class="label fb-account">Connected as: {{googleUser.email}}</h2>		
+						<h2 class="label fb-account">Connected as: {{googleAccount.email}}</h2>		
 						<h2 class="select-view-google-text label ga-account">
-							To Account: {{googleUser.account_name}} : {{googleUser.property_name}} - {{googleUser.view_name}}
+							To Account: {{googleAccount.account_name}} : {{googleAccount.property_name}} - {{googleAccount.view_name}}
 						</h2>
 
 						<div class="row">
@@ -48,12 +48,12 @@
 					{{/if}}
 
 
-					{{#if facebookUser }}			
+					{{#if facebookAccount }}			
 
 						<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>	
-						<h2 class="label fb-account">Connected as: {{facebookUser.email}}</h2>
+						<h2 class="label fb-account">Connected as: {{facebookAccount.email}}</h2>
 						<h2 class="select-view-facebook-text label fb-account">
-							To Account: {{facebookUser.account_name}}
+							To Account: {{facebookAccount.account_name}}
 						</h2>
 
 						<div class="row">
@@ -115,6 +115,8 @@
 					{{#if insights}}
 
 					<div class="row insights-listing">
+
+					{{toJSON credentials}}
 
 					<h2>Insights</h2>
 

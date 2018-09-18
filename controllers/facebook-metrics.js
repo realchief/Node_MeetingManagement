@@ -24,13 +24,13 @@ exports.makefacebookData = function() {
 
 },
 
-exports.process = ( fUser, cb ) => {
+exports.process = ( fAccount, cb ) => {
 
     var thisModule = this
 
     var facebookData = this.makefacebookData();
 
-    facebookApi.getAllMetrics( fUser, function( err, results ) {
+    facebookApi.getAllMetrics( fAccount, function( err, results ) {
       
         var insightGroups = [ 'page_info', 'insights_aggregation', 'insights_daily', 'insights_lifetime', 'insights_7days', /*'insights_28days'*/ ]
 

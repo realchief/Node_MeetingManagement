@@ -32,28 +32,28 @@ router.get('/facebook/unlink',  function (req, res) {
     else {
         Async.waterfall([
             function ( cb ) {
-                req.user.getFacebook().then(function ( fUser) {
-                    if ( fUser) {
-                        cb(null, fUser)
+                req.user.getFacebook().then(function ( fAccount) {
+                    if ( fAccount) {
+                        cb(null, fAccount)
                     }
                     else {
                         cb({error: 'This user is not connected with facebook account.'});
                     }
                 })
-            }, function ( fUser, cb ) {
+            }, function ( fAccount, cb ) {
 
-                facebookApi.deauthorize( fUser, function(result) {
+                facebookApi.deauthorize( fAccount, function(result) {
 
                     console.log("\n", emoji.get("bomb"), '>>>>>> facebook app deauthorize response:', result)
 
                     req.user.setFacebook(null).then(function () {
-                        cb(null, fUser);
+                        cb(null, fAccount);
                     })
 
                 })
 
-            }, function ( fUser, cb) {
-                fUser.destroy().then(function () {
+            }, function ( fAccount, cb) {
+                fAccount.destroy().then(function () {
                     cb(null);
                 })
             }
@@ -73,20 +73,20 @@ router.get('/google/unlink',  function (req, res) {
     else {
         Async.waterfall([
             function ( cb ) {
-                req.user.getGoogle().then(function (gUser) {
-                    if (gUser) {
-                        cb(null, gUser)
+                req.user.getGoogle().then(function (gAccount) {
+                    if (gAccount) {
+                        cb(null, gAccount)
                     }
                     else {
                         cb({error: 'This user is not connected with google account.'});
                     }
                 })
-            }, function (gUser, cb) {
+            }, function (gAccount, cb) {
                 req.user.setGoogle(null).then(function () {
-                    cb(null, gUser);
+                    cb(null, gAccount);
                 })
-            }, function (gUser, cb) {
-                gUser.destroy().then(function () {
+            }, function (gAccount, cb) {
+                gAccount.destroy().then(function () {
                     cb(null);
                 })
             }

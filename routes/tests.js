@@ -39,14 +39,14 @@ router.get('/testsocial/:company', function (req, res) {
 
                   getFacebookData: (done) => {
                       
-                      if ( results.facebookUser  == null  ) {
+                      if ( results.facebookAccount  == null  ) {
                         done( err, 'no facebook data')
                         return
                       }
 
-                      let fUser = results.facebookUser
+                      let fAccount = results.facebookAccount
 
-                      graph.setAccessToken( fUser.token);
+                      graph.setAccessToken( fAccount.token);
                       graph.get("me/?fields=name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}", (err, response) => {
                           //console.log('get facebook data - me', me)
                           done(err, response);
@@ -55,14 +55,14 @@ router.get('/testsocial/:company', function (req, res) {
 
                   getGoogleData : (done) => {
 
-                      if ( results.googleUser == null ) {
+                      if ( results.googleAccount == null ) {
                         done( err, { data: 'no google data'})
                         return
                       }
 
                       // Set the global Google credentials for the user //
 
-                      let gUser = results.googleUser
+                      let gAccount = results.googleAccount
 
                       let oauth2Client = new OAuth2(
                           auth.googleAuth.clientID,
@@ -71,18 +71,18 @@ router.get('/testsocial/:company', function (req, res) {
                       );
 
                       oauth2Client.credentials = {
-                          refresh_token: gUser.refresh_token,
-                          expiry_date: gUser.expiry_date,
-                          access_token: gUser.token,
-                          token_type: gUser.token_type,
-                          id_token: gUser.id_token
+                          refresh_token: gAccount.refresh_token,
+                          expiry_date: gAccount.expiry_date,
+                          access_token: gAccount.token,
+                          token_type: gAccount.token_type,
+                          id_token: gAccount.id_token
                       }
                       google.options({
                           auth: oauth2Client
                       });
 
 
-                       console.log('\n', emoji.get("information_source"),'>>>>>> google refresh token:', gUser.refresh_token, 'seconds before expiry', moment().subtract(gUser.expiry_date, "s").format("X"), 'google access token:', gUser.token)
+                       console.log('\n', emoji.get("information_source"),'>>>>>> google refresh token:', gAccount.refresh_token, 'seconds before expiry', moment().subtract(gAccount.expiry_date, "s").format("X"), 'google access token:', gAccount.token)
 
                       // IF FAIL, WE PROBABLY NEED TO REFRESH THE TOKEN. HOW?
 
@@ -121,9 +121,9 @@ router.get('/testsocial/:company', function (req, res) {
 
                             /* GOALS ==== */
                             analytics.management.goals.list({
-                              'accountId': gUser.account_id,
-                              'webPropertyId': gUser.property_id,
-                              'profileId': gUser.view_id },
+                              'accountId': gAccount.account_id,
+                              'webPropertyId': gAccount.property_id,
+                              'profileId': gAccount.view_id },
 
                               function (err, response) {
 
@@ -207,7 +207,7 @@ router.get('/testsocial/:company', function (req, res) {
                             analyticsreporting.reports.batchGet({
                               "requestBody": {
                                 reportRequests: [{
-                                  viewId: gUser.view_id,
+                                  viewId: gAccount.view_id,
                                   dateRanges: dateRanges,
                                   metrics: [
                                     {
@@ -620,7 +620,7 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 
     userInfo.getLinkedAccountsFromId(userId, function( err, results ) {
 
-      facebookApi.extendToken(results.facebookUser, res, function( result ) {
+      facebookApi.extendToken(results.facebookAccount, res, function( result ) {
         res.send(result)
       })
 

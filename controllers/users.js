@@ -31,27 +31,27 @@ var users = {
         
         Async.parallel({
 
-          facebookUser : function( cb ) {
+          facebookAccount : function( cb ) {
 
-            user.getFacebook().then(function ( fUser ) {
-              if ( fUser) {
-                 //console.log( emoji.get("smile"), 'Facebook User>>>', fUser.id)
+            user.getFacebook().then(function ( fAccount ) {
+              if ( fAccount) {
+                 //console.log( emoji.get("smile"), 'Facebook User>>>', fAccount.id)
               }
 
-              cb( null, fUser )
+              cb( null, fAccount )
 
             })
 
           },
 
-          googleUser : function ( cb ) {
+          googleAccount : function ( cb ) {
 
-            user.getGoogle().then(function (gUser) {
-              if (gUser) {
-                  //console.log( emoji.get("smile"), 'Google User>>>', "id", gUser.id )
+            user.getGoogle().then(function (gAccount) {
+              if (gAccount) {
+                  //console.log( emoji.get("smile"), 'Google User>>>', "id", gAccount.id )
               }
 
-              cb( null, gUser )
+              cb( null, gAccount )
 
             })
 
@@ -72,7 +72,6 @@ var users = {
 
   getMetricsFromLinkedAccounts: function( credentials, cb ) {
 
-
     var facebookMetrics = require('../controllers/facebook-metrics')
     var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
 
@@ -80,7 +79,7 @@ var users = {
 
             google_analytics: ( cb ) => {
 
-                googleAnalyticsMetrics.process(credentials.googleUser, function( err, results ) {
+                googleAnalyticsMetrics.process(credentials.facebookAccount, function( err, results ) {
 
                     cb ( null, results )
 
@@ -90,7 +89,7 @@ var users = {
 
             facebook: ( cb ) => {
 
-                facebookMetrics.process(credentials.facebookUser, function( err, results ) {
+                facebookMetrics.process(credentials.facebookAccount, function( err, results ) {
                    
                     cb ( null, results )
 

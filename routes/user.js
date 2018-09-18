@@ -13,8 +13,8 @@ router.get('/google/setprofile', function (req, res) {
     
     if (req.user) {
         if (req.query.view_id && req.query.account_name && req.query.property_id) {
-            req.user.getGoogle().then(function (gUser) {
-                gUser.updateAttributes({
+            req.user.getGoogle().then(function (gAccount) {
+                gAccount.updateAttributes({
                     view_id: req.query.view_id,
                     account_id: req.query.account_id,
                     property_id: req.query.property_id,
@@ -42,8 +42,8 @@ router.get('/facebook/setprofile', function (req, res) {
     if (req.user) {
     
         if (req.query.account_id && req.query.account_name && req.query.account_token) {
-            req.user.getFacebook().then(function ( fUser) {                
-                fUser.updateAttributes({
+            req.user.getFacebook().then(function ( fAccount) {                
+                fAccount.updateAttributes({
                     account_id: req.query.account_id,
                     account_name: req.query.account_name,
                     account_token: req.query.account_token
@@ -149,15 +149,13 @@ router.get('/getuser/:company', function (req, res) {
 
   }
 
-  userInfo.getLinkedAccountsFromId(userId, function( err, results ) {
+  userInfo.getLinkedAccountsFromId(userId, function( err, credentials ) {
 
     res.render('fingertips', {
         version: 'fingertips',
         layout: 'accounts.handlebars',
-        results: results,
-        user: results.user,
-        googleUser: results.googleUser,
-        facebookUser: results.facebookUser
+        user: credentials.user,
+        linkedAccounts: credentials
     });
 
   })

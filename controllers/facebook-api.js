@@ -10,9 +10,9 @@ var colors = require('colors');
 var emoji = require('node-emoji');
 var _ = require('lodash');
 
-exports.getMetrics = ( fUser, timeframe, done) => {
+exports.getMetrics = ( fAccount, timeframe, done) => {
     
-    const token = fUser.token;
+    const token = fAccount.token;
 
     /* dates and timeframes */
 
@@ -72,8 +72,8 @@ exports.getMetrics = ( fUser, timeframe, done) => {
     
         page_info: function ( cb ) {
     
-            graph.get( fUser.account_id, {
-                access_token : fUser.account_token,
+            graph.get( fAccount.account_id, {
+                access_token : fAccount.account_token,
                 fields : 'fan_count,engagement,global_brand_page_name,name,name_with_location_descriptor,posts'
             }, function(err, response) {
             
@@ -99,8 +99,8 @@ exports.getMetrics = ( fUser, timeframe, done) => {
             });
         },
         insights_aggregation: function( cb ) {
-            graph.get( fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
+            graph.get( fAccount.account_id + "/insights", {
+                access_token : fAccount.account_token,
                 metric : 'page_impressions,page_post_engagements,page_consumptions,page_video_views_unique,page_consumptions_unique,page_consumptions_by_consumption_type_unique,page_engaged_users,page_positive_feedback_by_type,page_negative_feedback_by_type,page_video_views,page_video_views_by_paid_non_paid',
                 period: 'day',
                 date_preset : facebookDatePreset,
@@ -132,8 +132,8 @@ exports.getMetrics = ( fUser, timeframe, done) => {
         },
        
         insights_daily: function( cb ) {
-            graph.get( fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
+            graph.get( fAccount.account_id + "/insights", {
+                access_token : fAccount.account_token,
                 metric : 'page_fan_adds,page_fan_removes_unique,page_fan_adds_unique,page_fan_adds_by_paid_non_paid_unique,page_video_view_time,page_story_adds_unique',
                 period : 'day',
 			    date_preset : facebookDatePreset,
@@ -164,8 +164,8 @@ exports.getMetrics = ( fUser, timeframe, done) => {
             });
         },
         insights_lifetime: function( cb ) {
-            graph.get( fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
+            graph.get( fAccount.account_id + "/insights", {
+                access_token : fAccount.account_token,
                 metric : 'page_fans',
 			    period : 'lifetime',
 			    date_preset : facebookDatePreset,
@@ -196,9 +196,9 @@ exports.getMetrics = ( fUser, timeframe, done) => {
         },
        
         insights_posts: function( cb ) {
-            graph.get( fUser.account_id + '/posts/', {
+            graph.get( fAccount.account_id + '/posts/', {
             
-                access_token : fUser.account_token,
+                access_token : fAccount.account_token,
                 limit : 50,
 			    fields : 'created_time,message,id,type,link,permalink_url',
 			    date_preset : facebookDatePreset,
@@ -241,7 +241,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
                     _.forEach( response.data, function( post, index ) {
 
                         var postObject = {
-                            access_token : fUser.account_token,
+                            access_token : fAccount.account_token,
                             period : 'lifetime',
                             metric : 'post_impressions_unique,post_engaged_users,post_video_avg_time_watched,post_video_length,post_video_views,post_video_view_time,post_impressions_paid_unique,post_clicks,post_clicks_by_type_unique,post_activity,post_activity_by_action_type',
                             show_description_from_api_doc : 'true',
@@ -293,8 +293,8 @@ exports.getMetrics = ( fUser, timeframe, done) => {
         },
 
         insights_7days: function( cb ) {
-            graph.get( fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
+            graph.get( fAccount.account_id + "/insights", {
+                access_token : fAccount.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
                 period : 'week',
                 date_preset : facebookDatePreset,
@@ -326,8 +326,8 @@ exports.getMetrics = ( fUser, timeframe, done) => {
         },
        
         insights_28days: function( cb ) {
-            graph.get( fUser.account_id + "/insights", {
-                access_token : fUser.account_token,
+            graph.get( fAccount.account_id + "/insights", {
+                access_token : fAccount.account_token,
                 metric : 'page_impressions_paid_unique,page_impressions_viral_unique,page_impressions_unique,page_impressions_organic_unique,page_impressions_nonviral_unique,page_posts_impressions_unique,page_posts_impressions_organic_unique,page_posts_impressions_paid_unique,page_engaged_users',
                 period : 'days_28',
                 date_preset : facebookDatePreset,
@@ -375,7 +375,7 @@ exports.getMetrics = ( fUser, timeframe, done) => {
 };
 
 
-exports.getAllMetrics = ( fUser, done ) => {
+exports.getAllMetrics = ( fAccount, done ) => {
 
     var thisModule = this
 
@@ -387,7 +387,7 @@ exports.getAllMetrics = ( fUser, done ) => {
 
                 current : ( cb ) => {
 
-                    thisModule.getMetrics( fUser, 'current', function( err, response ) {
+                    thisModule.getMetrics( fAccount, 'current', function( err, response ) {
                         cb( null, response )
                     })
 
@@ -395,7 +395,7 @@ exports.getAllMetrics = ( fUser, done ) => {
 
                 compared : ( cb ) => {
 
-                    thisModule.getMetrics( fUser, 'compared', function( err, response ) {
+                    thisModule.getMetrics( fAccount, 'compared', function( err, response ) {
                         cb( null, response )
                     })
 
@@ -429,11 +429,11 @@ exports.getAllMetrics = ( fUser, done ) => {
 
 }
 
-exports.getAccountList = ( fUser, done ) => {
-    const token = fUser.token;
+exports.getAccountList = ( fAccount, done ) => {
+    const token = fAccount.token;
     graph.setAccessToken(token);
     
-    graph.get( fUser.profile_id, {
+    graph.get( fAccount.profile_id, {
         fields: 'name,first_name,middle_name,last_name,email,accounts{name,global_brand_page_name,id,access_token,link,username}'
     }, (err, response) => {
         var data = [];
@@ -464,27 +464,27 @@ exports.getAccountList = ( fUser, done ) => {
 exports.getAccountListOrSelectView = function (user, done) {
     Async.waterfall([
         function ( cb ) {
-            user.getFacebook().then(function ( fUser) {
-                if ( fUser) {
-                    cb(null, fUser)
+            user.getFacebook().then(function ( fAccount) {
+                if ( fAccount) {
+                    cb(null, fAccount)
                 }
                 else cb({'error': 'User is not connected with Facebook'})
             })
-        }, function ( fUser, cb) {
-            if ( fUser.account_id && fUser.account_name && fUser.account_token) {
+        }, function ( fAccount, cb) {
+            if ( fAccount.account_id && fAccount.account_name && fAccount.account_token) {
                 cb(null, {
                     chosen_account: {
-                        account_name: fUser.account_name,
-                        email: fUser.email
+                        account_name: fAccount.account_name,
+                        email: fAccount.email
                     }, 
                     account_list: null
                 });
             }
             else {
-                facebookApi.getAccountList( fUser, function (err, data) {
+                facebookApi.getAccountList( fAccount, function (err, data) {
                     cb(null, {
                         account_list: data, 
-                        user : fUser,
+                        user : fAccount,
                         chosen_account: null
                     })
                 });
@@ -498,13 +498,13 @@ exports.getAccountListOrSelectView = function (user, done) {
     })
 }
 
-exports.deauthorize = ( fUser, done) => {
-    const token = fUser.token;
-    const profileId = fUser.profile_id;
+exports.deauthorize = ( fAccount, done) => {
+    const token = fAccount.token;
+    const profileId = fAccount.profile_id;
     graph.setAccessToken(token);
 
     graph.del(profileId + "/permissions", {
-        access_token : fUser.account_token
+        access_token : fAccount.account_token
     }, function (err, response) {
          console.log("\n", emoji.get("bomb"), '>>>>>> deauthorized app on facebook:', response)
         done(response);
@@ -516,23 +516,23 @@ exports.checkToken = (req, res, next) => {
     if (!req.user) {
         return next();
     }
-    req.user.getFacebook().then(function ( fUser) {
+    req.user.getFacebook().then(function ( fAccount) {
 
-        if ( fUser ) {
-            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract( fUser.expiry_date, "s").format("X"))
+        if ( fAccount ) {
+            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
         }
 
-        if ( fUser && moment().subtract( fUser.expiry_date, "s").format("X") > 86400) {
+        if ( fAccount && moment().subtract( fAccount.expiry_date, "s").format("X") > 86400) {
 
             graph.extendAccessToken({
-                "access_token": fUser.token,
+                "access_token": fAccount.token,
                 "client_id": auth.facebookAuth.clientID,
                 "client_secret": auth.facebookAuth.clientSecret
             }, function (err, facebookRes) {
 
                 console.log("\n", emoji.get("moneybag"), 'extended facebook access token', facebookRes)
 
-                fUser.updateAttributes({
+                fAccount.updateAttributes({
                     token: facebookRes.token,
                     expiry_date: moment().format('X')
                 }).then(function (result) {
@@ -544,19 +544,19 @@ exports.checkToken = (req, res, next) => {
 };
 
 
-exports.extendToken = (fUser, res, cb ) => {
+exports.extendToken = (fAccount, res, cb ) => {
     //write this
 
     var passport = require('passport');
 
-    if ( fUser ) {
-            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fUser.token, 'seconds since refresh', moment().subtract( fUser.expiry_date, "s").format("X"))
+    if ( fAccount ) {
+            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
         }
 
-        if ( fUser ) {
+        if ( fAccount ) {
 
             graph.extendAccessToken({
-                "access_token": fUser.token,
+                "access_token": fAccount.token,
                 "client_id": auth.facebookAuth.clientID,
                 "client_secret": auth.facebookAuth.clientSecret
             }, function (err, facebookRes) {
@@ -568,7 +568,7 @@ exports.extendToken = (fUser, res, cb ) => {
                     return
                    // passport.authenticate('facebook', {scope : ['email,read_insights,manage_pages']})
 
-                fUser.updateAttributes({
+                fAccount.updateAttributes({
                     token: facebookRes.token,
                     expiry_date: moment().format('X')
                 }).then(function (result) {

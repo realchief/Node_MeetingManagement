@@ -37,15 +37,15 @@ router.get('/data/google/:company',  function (req, res) {
 
         var accountResults = results;
 
-        googleAnalyticsMetrics.process(accountResults.googleUser, function( err, results ) {
+        googleAnalyticsMetrics.process(accountResults.googleAccount, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'data.handlebars',
                 accountResults: accountResults,
                 user: accountResults.user,
-                googleUser: accountResults.googleUser,
-                facebookUser: null,
+                googleAccount: accountResults.googleAccount,
+                facebookAccount: null,
                 metrics : results.metrics.both,
                 dateRange : results.metrics.both.dateRange,
                 metricsTable : results.metricsTable,
@@ -82,15 +82,15 @@ router.get('/data/facebook/:company',  function (req, res) {
 
         var accountResults = results;
 
-        facebookMetrics.process(accountResults.facebookUser, function( err, results ) {
+        facebookMetrics.process(accountResults.facebookAccount, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'data.handlebars',
                 accountResults: accountResults,
                 user: accountResults.user,
-                googleUser: null,
-                facebookUser: accountResults.facebookUser,
+                googleAccount: null,
+                facebookAccount: accountResults.facebookAccount,
                 metrics : results.metrics,
                 dateRange : results.metrics.current.dateRange,
                 postsTable : results.postsTable,

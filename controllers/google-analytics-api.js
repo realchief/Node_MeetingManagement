@@ -20,6 +20,11 @@ let oauth2Client = new OAuth2(
 
 exports.getMetrics = (gAccount, timeframe, cb) => {
     
+    if ( !gAccount) {
+        cb( null, null )
+        return
+    }
+
     oauth2Client.credentials = {
         refresh_token: gAccount.refresh_token,
         expiry_date: gAccount.expiry_date,

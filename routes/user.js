@@ -155,7 +155,7 @@ router.get('/getuser/:company', function (req, res) {
         version: 'fingertips',
         layout: 'accounts.handlebars',
         user: credentials.user,
-        linkedAccounts: credentials
+        linkedAccounts: credentials.accounts
     });
 
   })

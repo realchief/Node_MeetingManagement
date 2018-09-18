@@ -31,7 +31,20 @@ var users = {
         
         Async.parallel({
 
-          facebookAccount : function( cb ) {
+          google_analytics : function ( cb ) {
+
+            user.getGoogle().then(function (gAccount) {
+              if (gAccount) {
+                  //console.log( emoji.get("smile"), 'Google User>>>', "id", gAccount.id )
+              }
+
+              cb( null, gAccount )
+
+            })
+
+          },
+
+          facebook : function( cb ) {
 
             user.getFacebook().then(function ( fAccount ) {
               if ( fAccount) {
@@ -44,24 +57,14 @@ var users = {
 
           },
 
-          googleAccount : function ( cb ) {
+        }, function ( err, credentials ) {
 
-            user.getGoogle().then(function (gAccount) {
-              if (gAccount) {
-                  //console.log( emoji.get("smile"), 'Google User>>>', "id", gAccount.id )
-              }
+            credentials.accounts = Object.assign({}, credentials)
+            credentials.user = user
+            credentials.company = company
 
-              cb( null, gAccount )
-
-            })
-
-          }
-        }, function ( err, results ) {
-
-            results.user = user
-            results.company = company
            // console.log( emoji.get("smile"), 'User from id results>>>', err, results )
-            cb( err, results )
+            cb( err, credentials )
            
         })
 
@@ -72,41 +75,37 @@ var users = {
 
   getMetricsFromLinkedAccounts: function( credentials, cb ) {
 
-    var facebookMetrics = require('../controllers/facebook-metrics')
-    var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
+    var linkedAccounts = {}
 
-     Async.parallel({
+    _.forEach( credentials.accounts, function ( account, accountName ) {
 
-            google_analytics: ( cb ) => {
+      if ( !account ) { 
+        
+        console.log('No account info for', accountName )
+      
+      } else {
+        
+        linkedAccounts[accountName] = ( cb ) => {
 
-                googleAnalyticsMetrics.process(credentials.facebookAccount, function( err, results ) {
+            var metrics = require('../controllers/' + accountName.replace('_', '-') + '-metrics')
+            metrics.process(credentials.accounts[accountName], function( err, results ) {
+                 cb ( null, results )
+            })
 
-                    cb ( null, results )
+        }
 
-                })
+      }
 
-            },
+    })
 
-            facebook: ( cb ) => {
+    Async.parallel(linkedAccounts, function( err, results ) {
 
-                facebookMetrics.process(credentials.facebookAccount, function( err, results ) {
-                   
-                    cb ( null, results )
+        // console.log( emoji.get("moneybag"), 'Google Analytics>>>', results.google_analytics.dataSource.metric_assets )
+        // console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
+         
+         cb ( err, results )
 
-                })
-
-
-            }
-
-
-        }, function( err, results ) {
-
-          // console.log( emoji.get("moneybag"), 'Google Analytics>>>', results.google_analytics.dataSource.metric_assets )
-          // console.log( emoji.get("moneybag"), 'Facebook>>>', results.facebook.dataSource.metric_assets )
-           
-           cb ( err, results )
-
-        })
+      })
 
   },
 

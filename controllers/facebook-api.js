@@ -214,6 +214,7 @@ exports.getMetrics = ( fAccount, timeframe, done) => {
                     
                     console.log("\n", emoji.get("sparkles"), '>>>>>> general insights_posts ERROR', ' ', timeframe, ' ', errorMessage)
 
+                    var postListing = {};
                     postListing.data = [];
                     var postInsights =  {}
                     postInsights.data = [];

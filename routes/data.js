@@ -12,9 +12,6 @@ var emoji = require('node-emoji')
 
 var userInfo = require('../controllers/users')
 
-var facebookMetrics = require('../controllers/facebook-metrics')
-var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
-
 var _ = require('lodash');
 
 router.get('/data/google/:company',  function (req, res) {
@@ -33,18 +30,22 @@ router.get('/data/google/:company',  function (req, res) {
 
     }
 
-    userInfo.getLinkedAccountsFromId(userId, function( err, results ) {
+    userInfo.getLinkedAccountsFromId(userId, function( err, credentials ) {
 
-        var accountResults = results;
+        if ( !credentials.accounts.google_analytics ) {
+            res.send('No Google Analytics Account')
+            return
+        }
 
-        googleAnalyticsMetrics.process(accountResults.googleAccount, function( err, results ) {
+        var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
+        googleAnalyticsMetrics.process(credentials.accounts.google_analytics, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'data.handlebars',
-                accountResults: accountResults,
-                user: accountResults.user,
-                googleAccount: accountResults.googleAccount,
+                accountResults: credentials,
+                user: credentials.user,
+                googleAccount: credentials.accounts.google_analytics,
                 facebookAccount: null,
                 metrics : results.metrics.both,
                 dateRange : results.metrics.both.dateRange,
@@ -78,19 +79,23 @@ router.get('/data/facebook/:company',  function (req, res) {
 
     }
 
-    userInfo.getLinkedAccountsFromId(userId, function( err, results ) {
+    userInfo.getLinkedAccountsFromId(userId, function( err, credentials ) {
 
-        var accountResults = results;
+        if ( !credentials.accounts.facebook ) {
+            res.send('No Facebook Account')
+            return
+        }
 
-        facebookMetrics.process(accountResults.facebookAccount, function( err, results ) {
+        var facebookMetrics = require('../controllers/facebook-metrics')
+        facebookMetrics.process(credentials.accounts.facebook, function( err, results ) {
 
             res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'data.handlebars',
-                accountResults: accountResults,
-                user: accountResults.user,
+                accountResults: credentials,
+                user: credentials.user,
                 googleAccount: null,
-                facebookAccount: accountResults.facebookAccount,
+                facebookAccount: credentials.accounts.facebook,
                 metrics : results.metrics,
                 dateRange : results.metrics.current.dateRange,
                 postsTable : results.postsTable,

@@ -64,7 +64,6 @@ var users = {
 
             credentials.accounts = Object.assign({}, credentials)
             credentials.user = user
-            credentials.company = company
 
            // console.log( emoji.get("smile"), 'User from id results>>>', err, results )
             cb( err, credentials )
@@ -118,19 +117,18 @@ var users = {
     var platform = require('../controllers/platform')
     var insights = require('../controllers/insights')
 
-    var dataSourcesMetrics = {}
+    var dataSourcesFields = {}
     var dataSourcesList = []
     _.forEach ( metrics, function( dataSource, index ) {
-        dataSourcesMetrics[index] = dataSource.dataSource;
+        dataSourcesFields[index] = dataSource.dataSource;
         dataSourcesList.push(index)
     })
 
     // now that we have the data sources set, move each to platform
-    var platformData = platform.setPlatform( dataSourcesMetrics )
+    var platformData = platform.setPlatform( dataSourcesFields )
 
     // now that we have platform, get insights.
-    var allInsights = insights.getInsights( platformData, dataSourcesMetrics )
-
+    var allInsights = insights.getInsights( platformData, dataSourcesFields )
     
     var results = {
        platforms : platformData,

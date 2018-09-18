@@ -10,18 +10,25 @@ var auth             = require('./config/auth.js'),
     Async            = require('async'),
     moment           = require('moment');
 
+var colors = require('colors');
+var emoji = require('node-emoji');
+
 module.exports = function(passport) {
 
     passport.serializeUser(function(user, done) {
+    
         // console.log('>>> serialize user')
         done(null, user.id);
+    
     });
 
     passport.deserializeUser(function(id, done) {
+    
        // console.log('>>> deserializeUser')
         Model.User.findById(id).then(function (user) {
             done(null, user);
         });
+    
     });
 
     passport.use('local', new LocalStrategy(
@@ -31,12 +38,13 @@ module.exports = function(passport) {
             passReqToCallback : true 
         },
         function(req, email, password, done) {
-            req.usedStrategy = 'local';
+         
             Model.User.findOne({
                 where: {
                     'email': email
                 }
             }).then(function (user) {
+              
                 if (!user) {
                     return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
                 }
@@ -47,57 +55,119 @@ module.exports = function(passport) {
                 else {
                     return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
                 }
+            
             })
         }
     ));
 
     passport.use(new FacebookStrategy({
+       
         clientID        : auth.facebookAuth.clientID,
         clientSecret    : auth.facebookAuth.clientSecret,
         callbackURL     : auth.facebookAuth.callbackURL,
         profileFields: ['id', 'emails', 'name', 'displayName', 'profileUrl'],
         passReqToCallback: true
+    
     }, function(req, token, refreshToken, profile, done) {
-        req.usedStrategy = 'facebook';
+    
         process.nextTick(function() {
             Async.waterfall([
                 function ( cb ) {
-                    Model.Facebook.findOne({
+                    
+                    /*Model.Facebook.findOne({
                         where: {
                             profile_id: profile.id
                         }
                     }).then(function(fbUser) {
                         cb(null, fbUser);
-                    });
+                    });*/
+
+                    if ( req.user ) {
+
+                        req.user.getFacebook().then(function ( fAccount ) {
+                            cb( null, fAccount )
+                        })
+
+                    } else {
+                        cb ( null, null )
+                    }
+ 
                 }, function (fbUser, cb) {
                     
-                    if (fbUser) {
-                        // console.log('>>> found an existing facebook user')
-                        // lets add this to the database anyway
-                        // cb(null, fbUser)
-                    }
-                   // else {
+                    if ( fbUser ) {
+
+                        var facebookApi = require('./controllers/facebook-api');
+
+                        console.log("\n", emoji.get("sparkles"), '>>> found an existing facebook account for this user, lets re-authenticate, and update the tokens')
+                    
+                        // update the current access token //
+
+                        fbUser.updateAttributes({
+                        
+                            token: token,
+                            expiry_date: moment().format('X')
+                        
+                        }).then(function ( result ) {
+                             
+                            // now we need to get a new page token
+
+                            if ( fbUser.account_id ) {
+
+                                facebookApi.getAccountList( fbUser, function ( err, accounts ) {
+                                    
+                                    var currentAccount = accounts.filter( function(account){
+                                        return account.account_id == fbUser.account_id
+                                    })
+
+                                    fbUser.updateAttributes({
+                        
+                                        account_token: currentAccount[0].account_token,
+                                   
+                                    }).then(function ( result ) {
+                                            console.log("\n", emoji.get("beer"), '>>> just updated the user and page access tokens for', req.user.company_name, 'to:', token, currentAccount[0].account_token)
+
+                                            cb( null, fbUser )
+
+                                    })
+
+                                });
+
+                            }
+
+                        });
+
+                    } else {
 
                         let newFBUser = {
+                           
                             token       : token,
                             profile_id : profile.id,
                             email       : profile.emails[0].value,
                             given_name  :  profile.name.givenName,
                             family_name : profile.name.familyName,
                             expiry_date : moment().format('X')
+                       
                         };
+
                         Model.Facebook.create(newFBUser).then(function(fbUser) {
                             if (!fbUser) {
                                 cb(req.flash('error', 'can not create new facebook user'));
                             }
                             else cb(null, fbUser);
                         });
-                   // }
-                }, function (fbUser, cb) {
+                    
+                    }
+
+                }, function ( fbUser, cb ) {
+                    
                     if (req.user) {
                         cb(null, req.user, fbUser);
                     }
+
                     else {
+
+                        // I DONT THINK WE EVER GET HERE //
+
                         fbUser.getUser().then(function (user) {
                             if (! user) {
                                 User.create({}).then(function(user) {
@@ -108,39 +178,48 @@ module.exports = function(passport) {
                             else cb(null, user, fbUser);
                         });
                         
+                        // END NEVER GET HERE //
+
                     }
-                }, function (user, fbUser, cb) {
+                
+                }, function ( user, fbUser, cb ) {
+                  
                     user.setFacebook(fbUser).then(function (user) {
                         cb(null, user, fbUser);
                     });
-                }, function (user, fbUser, cb){
+                
+                }, function ( user, fbUser, cb ){
 
                     let facebookApi = require('./controllers/facebook-api');
                     facebookApi.extendToken(fbUser, null, function(result){
                         cb( null, user, fbUser )
                     }) 
+                
                 }
 
             ], function (err, user) {
                // console.log('err:', err);
                 return done(err, user);
+            
             });
         });
     }));
 
     passport.use(new GoogleStrategy({
+       
         clientID     : auth.googleAuth.clientID,
         clientSecret : auth.googleAuth.clientSecret,
         callbackURL  : auth.googleAuth.callbackURL,
         passReqToCallback: true
+    
     }, function(req, token, refreshToken, params, profile, done) {
 
         //console.log( 'GOOGLE THINGS>>>>', 'token', token, 'refresh token', refreshToken, 'params', params)
 
         process.nextTick(function() {
-            req.usedStrategy = 'google';
             Async.waterfall([
                 function ( cb ) {
+                    
                     Model.Google.findOne({
                         where: {
                             profile_id: profile.id
@@ -149,7 +228,9 @@ module.exports = function(passport) {
 
                         cb(null, goUser);
                     });
+                
                 }, function (goUser, cb) {
+                  
                     //if (goUser) {
                     //    console.log('>>> found an existing google user')
                     //    cb(null, goUser);
@@ -173,7 +254,9 @@ module.exports = function(passport) {
                             else cb(null, goUser);
                         });
                     //}
+                
                 }, function (goUser, cb) {
+                  
                     if (req.user) {
                         cb(null, req.user, goUser);
                     }
@@ -186,10 +269,13 @@ module.exports = function(passport) {
                             });
                         });
                     }
+                
                 }, function (user, goUser, cb) {
+                  
                     user.setGoogle(goUser).then(function () {
                         cb(null, user);
                     });
+                
                 }
             ], function (err, user) {                
                 return done(err, user);

@@ -18,7 +18,7 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
-exports.getMetrics = (gAccount, timeframe, cb) => {
+exports.getMetrics = ( gAccount, timeframe, cb ) => {
     
     if ( !gAccount) {
         cb( null, null )
@@ -592,7 +592,7 @@ exports.getAllMetrics = ( gAccount, cb ) => {
 
 }
 
-exports.getAccountList = (gAccount, cb) => {
+exports.getAccountList = ( gAccount, cb ) => {
 
     oauth2Client.credentials = {
         refresh_token: gAccount.refresh_token,
@@ -664,6 +664,7 @@ exports.getAccountListOrSelectView = function ( user, cb ) {
     Async.waterfall([
         
         function ( cb ) {
+            
             user.getGoogle().then(function (gAccount) {
                 if (gAccount) {
                     cb(null, gAccount)

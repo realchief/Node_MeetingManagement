@@ -77,7 +77,7 @@ exports.metricsTable = ( current, compared, insightGroup ) => {
                 
                 var results = current[insightGroup].response
 
-                if ( !results.engagement) return
+                if ( !results || !results.engagement ) return
                 //console.log(results)
                 
                 // THIS IS TO SEE THE OUTPUT IN A TABLE//

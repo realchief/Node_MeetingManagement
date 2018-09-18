@@ -33,7 +33,7 @@ router.get('/data/google/:company',  function (req, res) {
 
     }
 
-    userInfo.getConnectedDataSourcesFromId(userId, function( err, results ) {
+    userInfo.getLinkedAccountsFromId(userId, function( err, results ) {
 
         var accountResults = results;
 
@@ -78,7 +78,7 @@ router.get('/data/facebook/:company',  function (req, res) {
 
     }
 
-    userInfo.getConnectedDataSourcesFromId(userId, function( err, results ) {
+    userInfo.getLinkedAccountsFromId(userId, function( err, results ) {
 
         var accountResults = results;
 
@@ -121,9 +121,9 @@ router.get('/data/combined/:company',  function (req, res) {
 
     }
 
-    userInfo.getConnectedDataSourcesFromId( userId, function( err, credentials ) {
+    userInfo.getLinkedAccountsFromId( userId, function( err, credentials ) {
 
-        userInfo.getMetricsFromDataSources( credentials, function( err, metrics ) {
+        userInfo.getMetricsLinkedAccounts( credentials, function( err, metrics ) {
 
             userInfo.getInsightsFromMetrics( metrics, function( err, results ) {
 

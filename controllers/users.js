@@ -8,7 +8,7 @@ var _ = require('lodash');
 
 var users = {
 
-  getConnectedDataSourcesFromId : function( userId, cb ) {
+  getLinkedAccountsFromId : function( userId, cb ) {
 
       let company = userId
       
@@ -70,7 +70,7 @@ var users = {
   },
 
 
-  getMetricsFromDataSources: function( credentials, cb ) {
+  getMetricsLinkedAccounts: function( credentials, cb ) {
 
 
     var facebookMetrics = require('../controllers/facebook-metrics')

@@ -123,7 +123,7 @@ router.get('/data/combined/:company',  function (req, res) {
 
     userInfo.getLinkedAccountsFromId( userId, function( err, credentials ) {
 
-        userInfo.getMetricsLinkedAccounts( credentials, function( err, metrics ) {
+        userInfo.getMetricsFromLinkedAccounts( credentials, function( err, metrics ) {
 
             userInfo.getInsightsFromMetrics( metrics, function( err, results ) {
 

@@ -70,7 +70,7 @@ var users = {
   },
 
 
-  getMetricsLinkedAccounts: function( credentials, cb ) {
+  getMetricsFromLinkedAccounts: function( credentials, cb ) {
 
 
     var facebookMetrics = require('../controllers/facebook-metrics')

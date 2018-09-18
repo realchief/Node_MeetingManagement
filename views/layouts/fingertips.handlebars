@@ -19,7 +19,7 @@
 								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
 								
 								<ul class="connectors-list">
-									{{#if google_summaries }}
+									{{#if summaries.google_analytics }}
 									<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnect Google Analytics</a></li>
 									{{else}}
 									<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
@@ -28,17 +28,17 @@
 								</ul>
 								<div class="google-accounts ">
 
-									{{#if google_summaries }}
+									{{#if summaries.google_analytics }}
 
-										{{#if google_summaries.account_list }}
+										{{#if summaries.google_analytics.account_list }}
 
 											<div class="select-google-view modal">
 
-											<h5 class="label ga-user">GA Accounts for {{google_summaries.user.email}} </h5>
+											<h5 class="label ga-user">GA Accounts for {{summaries.google_analytics.user.email}} </h5>
 
 												<div class="modal-body">
 													
-													{{#each google_summaries.account_list.users as |account|}}
+													{{#each summaries.google_analytics.account_list.users as |account|}}
 														<h4 class="label ga-account">{{ account.account_name }}</h4>
 														{{#each account.web_properties as |property|}}
 															<h5 class="label ga-property">{{ property.property_name }}</h5>
@@ -61,13 +61,13 @@
 										{{/if}}
 									{{/if}}
 								</div>
-								{{#if google_summaries }}
-									{{#if google_summaries.chosen_account }}
-										{{#if google_summaries.chosen_account.view_name}}
+								{{#if summaries.google_analytics }}
+									{{#if summaries.google_analytics.chosen_account }}
+										{{#if summaries.google_analytics.chosen_account.view_name}}
 											<div class="google-selected-accounts">
-												<h2 class="label ga-account">Connected as: {{google_summaries.chosen_account.email}}</h2>										
+												<h2 class="label ga-account">Connected as: {{summaries.google_analytics.chosen_account.email}}</h2>										
 												<h2 class="select-view-google-text label ga-account">
-													To Account: {{google_summaries.chosen_account.account_name}} : {{google_summaries.chosen_account.property_name}} - {{google_summaries.chosen_account.view_name}}
+													To Account: {{summaries.google_analytics.chosen_account.account_name}} : {{summaries.google_analytics.chosen_account.property_name}} - {{summaries.google_analytics.chosen_account.view_name}}
 												</h2>
 											</div>
 										{{/if}}
@@ -86,23 +86,23 @@
 							<div class="connector">
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
 								<ul class="connectors-list">
-									{{#if facebook_summaries }}
+									{{#if summaries.facebook }}
 									<li class="facebook facebook-authorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnect Facebook</a></li>
 									{{else}}
 									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
 									{{/if}}									
 								</ul>
 								<div class="facebook-accounts">
-									{{#if facebook_summaries }}					
+									{{#if summaries.facebook }}					
 
-										{{#if facebook_summaries.account_list}}
+										{{#if summaries.facebook.account_list}}
 											<div class="select-facebook-view modal">
 												
-												<h5 class="label ga-user">Facebook Page Accounts for {{facebook_summaries.user.email}}</h5>
+												<h5 class="label ga-user">Facebook Page Accounts for {{summaries.facebook.user.email}}</h5>
 
 												<div class="modal-body">											
 													<ul class="views-list">
-														{{#each facebook_summaries.account_list as |account|}}                                                              
+														{{#each summaries.facebook.account_list as |account|}}                                                              
 															<li class="fb-account">
 																{{ account.account_name }}
 																<span class="property-chooser">
@@ -119,14 +119,14 @@
 										{{/if}}
 									{{/if}}
 								</div>
-								{{#if facebook_summaries }}							
-									{{#if facebook_summaries.chosen_account}}
+								{{#if summaries.facebook }}							
+									{{#if summaries.facebook.chosen_account}}
 
-										{{#if facebook_summaries.chosen_account.account_name}}
+										{{#if summaries.facebook.chosen_account.account_name}}
 											<div class="facebook-selected-accounts">
-												<h2 class="label fb-account">Connected as: {{facebook_summaries.chosen_account.email}}</h2>
+												<h2 class="label fb-account">Connected as: {{summaries.facebook.chosen_account.email}}</h2>
 												<h2 class="select-view-facebook-text label fb-account">
-													To Account: {{facebook_summaries.chosen_account.account_name}}
+													To Account: {{summaries.facebook.chosen_account.account_name}}
 												</h2>
 											</div>
 										{{/if}}

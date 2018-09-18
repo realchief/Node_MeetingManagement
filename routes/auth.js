@@ -3,10 +3,8 @@ var express = require('express'),
     passport = require('passport'),
     Async = require('async');
 
-    facebookApi = require('../controllers/facebook-api');
-    googleApi = require('../controllers/google-analytics-api');
-
-
+var facebookApi = require('../controllers/facebook-api');
+var googleApi = require('../controllers/google-analytics-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji');

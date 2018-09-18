@@ -463,15 +463,21 @@ exports.getAccountList = ( fAccount, done ) => {
 }
 
 exports.getAccountListOrSelectView = function (user, done) {
+    
+    var thisModule = this
+
     Async.waterfall([
         function ( cb ) {
+            
             user.getFacebook().then(function ( fAccount) {
                 if ( fAccount) {
                     cb(null, fAccount)
                 }
                 else cb({'error': 'User is not connected with Facebook'})
             })
-        }, function ( fAccount, cb) {
+        
+        }, function ( fAccount, cb ) {
+
             if ( fAccount.account_id && fAccount.account_name && fAccount.account_token) {
                 cb(null, {
                     chosen_account: {
@@ -481,10 +487,11 @@ exports.getAccountListOrSelectView = function (user, done) {
                     account_list: null
                 });
             }
+            
             else {
-                facebookApi.getAccountList( fAccount, function (err, data) {
+                thisModule.getAccountList( fAccount, function ( err, accounts ) {
                     cb(null, {
-                        account_list: data, 
+                        account_list: accounts, 
                         user : fAccount,
                         chosen_account: null
                     })
@@ -548,8 +555,6 @@ exports.checkToken = (req, res, next) => {
 exports.extendToken = (fAccount, res, cb ) => {
     //write this
 
-    var passport = require('passport');
-
     if ( fAccount ) {
             console.log("\n", emoji.get("moneybag"), '>>>>>> facebook refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
         }
@@ -562,13 +567,14 @@ exports.extendToken = (fAccount, res, cb ) => {
                 "client_secret": auth.facebookAuth.clientSecret
             }, function (err, facebookRes) {
 
-                console.log("\n", emoji.get("moneybag"), 'extended facebook access token', facebookRes)
+                
 
+                if ( facebookRes.error ) {
                     console.log("\n", emoji.get("moneybag"), 'ERROR - lets re-authenticate')
-                    res.redirect('/auth/facebook')
-                    return
-                   // passport.authenticate('facebook', {scope : ['email,read_insights,manage_pages']})
-
+                } else {
+                    console.log("\n", emoji.get("moneybag"), 'extended facebook access token', facebookRes)
+                }
+            
                 fAccount.updateAttributes({
                     token: facebookRes.token,
                     expiry_date: moment().format('X')

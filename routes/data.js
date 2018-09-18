@@ -4,8 +4,6 @@ let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
 
-let facebookApi = require('../controllers/facebook-api');
-let googleApi = require('../controllers/google-analytics-api');
 
 var colors = require('colors');
 var emoji = require('node-emoji')

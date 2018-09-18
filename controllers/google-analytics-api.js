@@ -657,8 +657,12 @@ exports.getAccountList = (gAccount, cb) => {
 };
 
 
-exports.getAccountListOrSelectView = function (user, cb) {
+exports.getAccountListOrSelectView = function ( user, cb ) {
+
+    var thisModule = this
+    
     Async.waterfall([
+        
         function ( cb ) {
             user.getGoogle().then(function (gAccount) {
                 if (gAccount) {
@@ -666,8 +670,11 @@ exports.getAccountListOrSelectView = function (user, cb) {
                 }
                 else cb({error: 'User is not connected with Google'}, false)
             });
-        }, function (gAccount, cb) {
+        
+        }, function ( gAccount, cb ) {
+           
             if (gAccount.view_id && gAccount.property_id && gAccount.account_id) {               
+           
                 cb(null, {
                     chosen_account: {
                         view_name: gAccount.view_name,
@@ -677,19 +684,22 @@ exports.getAccountListOrSelectView = function (user, cb) {
                     }, 
                     account_list: null
                 });
+           
             }
             else {
-                googleApi.getAccountList(gAccount, function (err, data) {
-                    console.log('There is no gAccount data');
+           
+                thisModule.getAccountList(gAccount, function ( err, accounts ) {
+                    
                     cb(null, {
-                        account_list: data, 
+                        account_list: accounts, 
                         user : gAccount,
                         chosen_account: null
                     })
                 });
+           
             }
         }
-    ], function (err, result) {
+    ], function ( err, result ) {
         if (err) {
             console.log(err.error);
         }

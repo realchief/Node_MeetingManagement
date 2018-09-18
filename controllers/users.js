@@ -4,6 +4,9 @@ let Async = require('async');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+let facebookApi = require('../controllers/facebook-api');
+let googleApi = require('../controllers/google-analytics-api');
+
 var _ = require('lodash');
 
 var users = {
@@ -81,7 +84,7 @@ var users = {
 
       if ( !account ) { 
         
-        console.log('No account info for', accountName )
+        console.log("\n", emoji.get('warning'), 'No account info for', accountName )
       
       } else {
         
@@ -139,31 +142,47 @@ var users = {
 
   },
 
-  getSummaries : function( user, cb ) {
+  getSummaries : function( userId, cb ) {
 
+    var thisModule = this
 
-    Async.parallel({
-            
-          google_summaries: function ( cb ) {
-              googleApi.getAccountListOrSelectView( user, function (err, data) {
-                  cb(null, data);
-              })
-          },
+    thisModule.getLinkedAccountsFromId(userId, function( err, credentials ) {
+
+      var linkedAccounts = {}
+
+      _.forEach( credentials.accounts, function ( account, accountName ) {
+
+        if ( !account ) { 
           
-          facebook_summaries: function ( cb ) {
-              facebookApi.getAccountListOrSelectView( user, function (err, data) {
-                  cb(null, data);
-              })
-          }
-      }, function (err, results) {
+          console.log("\n", emoji.get('warning'), 'No connected account for', accountName )
+        
+        } else {
+          
+          linkedAccounts[accountName] = ( cb ) => {
 
-        cb ( null, results )
+              var api = require('../controllers/' + accountName.replace('_', '-') + '-api')
+              api.getAccountListOrSelectView(credentials.user, function( err, results ) {
+                   cb ( null, results )
+              })
+
+          }
+
+        }
 
       })
 
+      Async.parallel(linkedAccounts, function ( err, summaries ) {
+
+        summaries.accounts = Object.assign({}, summaries)
+
+        cb ( null, summaries )
+
+      })
+
+    })
+   
   }
 
 }
-
 
 module.exports = users

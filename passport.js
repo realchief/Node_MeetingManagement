@@ -70,11 +70,12 @@ module.exports = function(passport) {
                         cb(null, fbUser);
                     });
                 }, function (fbUser, cb) {
-                    //if (fbUser) {
+                    
+                    if (fbUser) {
                         // console.log('>>> found an existing facebook user')
                         // lets add this to the database anyway
                         // cb(null, fbUser)
-                    //}
+                    }
                    // else {
 
                         let newFBUser = {
@@ -110,11 +111,18 @@ module.exports = function(passport) {
                     }
                 }, function (user, fbUser, cb) {
                     user.setFacebook(fbUser).then(function (user) {
-                        cb(null, user);
+                        cb(null, user, fbUser);
                     });
+                }, function (user, fbUser, cb){
+
+                    let facebookApi = require('./controllers/facebook-api');
+                    facebookApi.extendToken(fbUser, null, function(result){
+                        cb( null, user, fbUser )
+                    }) 
                 }
+
             ], function (err, user) {
-                console.log('err:', err);
+               // console.log('err:', err);
                 return done(err, user);
             });
         });

@@ -10,6 +10,7 @@ module.exports = {
 
         var range = {};
 
+        var numDays = numDays || 28
         comparisonWindow = comparisonWindow || "over"
 
         var dateRanges = {
@@ -443,7 +444,12 @@ module.exports = {
     },
 
 
-    setDateWindow : function(timeWindow) {
+    setDateWindow : function( timeWindow ) {
+
+      var thisModule = this
+
+      var defaultNumDays = 28
+      var timeWindow = timeWindow || thisModule.getDateRangeNumDays(defaultNumDays);
 
       timeWindow = timeWindow || {
         currentFromDate :  moment().format("MM-DD-YYYY"),

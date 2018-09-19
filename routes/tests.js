@@ -350,7 +350,7 @@ router.get('/testdates/', function (req, res) {
     var card = dates.getDateRangeNumDays(7).card
 
     /* set date for all */
-    var defaultNumDays = 7
+    var defaultNumDays = 28
     var range = dates.getDateRangeNumDays(defaultNumDays);
     var defaultDates = JSON.stringify(dates.setDateWindow(range))
 

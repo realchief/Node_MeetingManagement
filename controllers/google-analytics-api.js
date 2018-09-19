@@ -48,9 +48,8 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
      /* dates and timeframes */
 
-    var defaultNumDays = 7
-    var range = dates.getDateRangeNumDays(defaultNumDays);
-    var dateWindow = dates.setDateWindow(range)
+    var range = dates.getDateRangeNumDays();
+    var dateWindow = dates.setDateWindow()
 
     var currentSince = moment( dateWindow.currentFromDate ).format( "YYYY-MM-DD" );
     var currentUntil = moment( dateWindow.currentToDate ).format( "YYYY-MM-DD" );
@@ -664,7 +663,7 @@ exports.getAccountListOrSelectView = function ( user, cb ) {
     Async.waterfall([
         
         function ( cb ) {
-            
+
             user.getGoogle().then(function (gAccount) {
                 if (gAccount) {
                     cb(null, gAccount)

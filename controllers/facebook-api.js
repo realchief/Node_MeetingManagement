@@ -16,9 +16,8 @@ exports.getMetrics = ( fAccount, timeframe, done) => {
 
     /* dates and timeframes */
 
-    var defaultNumDays = 7
-    var range = dates.getDateRangeNumDays(defaultNumDays);
-    var dateWindow = dates.setDateWindow(range)
+    var range = dates.getDateRangeNumDays();
+    var dateWindow = dates.setDateWindow()
 
     var facebookDatePreset = 'today';
     

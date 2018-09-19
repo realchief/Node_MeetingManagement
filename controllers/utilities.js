@@ -462,3 +462,15 @@ exports.getInlineStyle = function(param, value) {
 		return style;
 
 	}
+
+exports.filter = function(listing, key, value) {
+
+		//console.log('Filter:', 'Listing', listing, 'Key', key, 'Value', value)
+
+	var filteredListing = listing.filter(function ( row ){
+        return row[key] === value;
+    });
+
+	return filteredListing
+
+}

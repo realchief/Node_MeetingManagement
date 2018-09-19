@@ -124,28 +124,21 @@ router.get('/data/combined/:company',  function (req, res) {
 
     }
 
-    userInfo.getLinkedAccountsFromId( userId, function( err, credentials ) {
+    userInfo.getInsightsFromId( userId, function( err, results ) {
 
-        userInfo.getMetricsFromLinkedAccounts( credentials, function( err, metrics ) {
+        console.log( "\n", emoji.get("moneybag"), 'Display insights', results.results.dataSourcesList.join(','), 'for user:', results.credentials.user.username, 'company id:', results.credentials.user.company_id )
 
-            userInfo.getInsightsFromMetrics( metrics, function( err, results ) {
-
-                console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', results.dataSourcesList.join(','), 'for user:', credentials.user.username, 'company id:', credentials.user.company_id )
-
-                res.render('fingertips', {
-                    version: 'fingertips',
-                    layout: 'data.handlebars',
-                    accountResults: credentials,
-                    user: credentials.user,
-                    platform : results.platforms,
-                    insights : results.insights
-                });
-
-            })
-
-        })
+        res.render('fingertips', {
+            version: 'fingertips',
+            layout: 'data.handlebars',
+            accountResults: results.credentials,
+            user: results.credentials.user,
+            platform : results.results.platforms,
+            insights : results.results.insights
+        });
 
     })
+
 
 });
 

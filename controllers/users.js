@@ -179,6 +179,39 @@ var users = {
 
     })
    
+  },
+
+  getInsightsFromId : function( userId, cb ) {
+
+    var thisModule = this
+
+    thisModule.getLinkedAccountsFromId( userId, function( err, credentials ) {
+
+        thisModule.getMetricsFromLinkedAccounts( credentials, function( err, metrics ) {
+
+            thisModule.getInsightsFromMetrics( metrics, function( err, results ) {
+
+                console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', results.dataSourcesList.join(','), 'for user:', credentials.user.username, 'company id:', credentials.user.company_id )
+
+                var insightsInfo = {
+                  results: results,
+                  credentials: credentials,
+                }
+
+                if ( cb ) {
+                  cb( null, insightsInfo)
+                } else {
+                  return insightsInfo
+                }
+
+            })
+
+        })
+
+    })
+
+
+
   }
 
 }

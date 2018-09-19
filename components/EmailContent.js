@@ -4,7 +4,7 @@ var _ = require('lodash');
 exports.email  = { 
   
   to: 'martymix@gmail.com',
-  template: 'template',
+  template: 'report',
   
   replacements : { 
     sender: 'marty@loosegrip.net',
@@ -44,7 +44,7 @@ exports.email  = {
 exports.email_lg  = { 
   
   to: 'martymix@gmail.com',
-  template: 'template',
+  template: 'report',
   
   replacements : { 
     sender: 'marty@loosegrip.net',
@@ -84,7 +84,7 @@ exports.email_lg  = {
 exports.email_unilever  = { 
   
   to: 'martymix@gmail.com',
-  template: 'template',
+  template: 'report',
   
   replacements : { 
     sender: 'marty@loosegrip.net',
@@ -154,7 +154,7 @@ exports.processEmail = function( emailContent ) {
     
       var template = emailContent.template
    
-      fs.readFile("static/assets/templates/" + template  + ".html", "utf8", function(err, data) {
+      fs.readFile("templates/" + template  + ".html", "utf8", function(err, data) {
       
         if (err) {
          console.log(err);

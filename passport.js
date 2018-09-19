@@ -70,7 +70,10 @@ module.exports = function(passport) {
     
     }, function(req, token, refreshToken, profile, done) {
     
+        // maybe look for req.params so we dont have to user the logged in user //
+
         process.nextTick(function() {
+    
             Async.waterfall([
                 function ( cb ) {
                     

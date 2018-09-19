@@ -527,7 +527,7 @@ exports.checkToken = (req, res, next) => {
     req.user.getFacebook().then(function ( fAccount) {
 
         if ( fAccount ) {
-            console.log("\n", emoji.get("moneybag"), '>>>>>> facebook check refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
+            // console.log("\n", emoji.get("moneybag"), '>>>>>> facebook check refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
         }
 
         if ( fAccount && moment().subtract( fAccount.expiry_date, "s").format("X") > 86400) {
@@ -556,7 +556,7 @@ exports.extendToken = (fAccount, res, cb ) => {
     //write this
 
     if ( fAccount ) {
-        console.log("\n", emoji.get("moneybag"), '>>>>>> facebook try to extend refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
+       // console.log("\n", emoji.get("moneybag"), '>>>>>> facebook try to extend refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
     }
 
     if ( fAccount ) {

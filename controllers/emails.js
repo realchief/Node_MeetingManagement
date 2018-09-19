@@ -11,6 +11,9 @@ var Async = require('async');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+var userInfo = require('../controllers/users')
+var utilities = require('../controllers/utilities')
+
 exports.meetingFileParse = ( meetingFile ) => {
 
     return new Promise(function(resolve, reject) {
@@ -315,7 +318,7 @@ exports.schedule_email = (meetingId, meetingInfo, meetingDate, msg, meeting, fro
 
     schedule.scheduleJob( meetingId, date, function( data ) {
 
-        thisModule.make_email_content(data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start, function ( msg ) {
+        thisModule.make_email_content(data.meetingInfo.emailDomain, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start, function ( msg ) {
 
           console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meeting.summary, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 
@@ -438,42 +441,58 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
 
 }
 
-exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
+exports.make_email_content = (company_id, organizer, summary, toArray, start_date, cb) => {
     
     const EmailContent = require('../components/EmailContent.js');
     
     let sender = organizer
-    let emailDomain = organizer.replace(/.*@/, "").split('.')[0];
+    let emailDomain = company_id
     let meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
     let meeting_date_for_display = moment(start_date).format("ddd, MMMM D")
 
-    switch ( emailDomain ) {
-        case 'loosegrip' :
-          var email = JSON.parse(JSON.stringify(EmailContent.email_lg))
-        break
+    userInfo.getInsightsFromId( emailDomain, function( err, results ) {
 
-        case 'presidio' :
-          var email = JSON.parse(JSON.stringify(EmailContent.email));
-        break
-
-        case 'unilever' :
-          var email = JSON.parse(JSON.stringify(EmailContent.email_unilever))
-        break
-
-        default :
-          var email = JSON.parse(JSON.stringify(EmailContent.email));
-        break
-      }
-
+      var email = JSON.parse(JSON.stringify(EmailContent.email));
 
       email.replacements.sender = sender
       email.replacements.summary = summary
       email.replacements.meeting_time_for_display = meeting_time_for_display
       email.replacements.meeting_date_for_display = meeting_date_for_display
 
+      if ( results.credentials.user.id ) {
+
+        var bucket_insights = results.results.insights.data.bucket_insights
+
+        var realReplacements = {
+          sender: results.credentials.user.email,
+          summary: summary,
+          brand: results.credentials.user.company_name,
+          headline: "This is a headline from a real parsed endpoint.",
+          interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
+          interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
+          interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,
+          interest_chart: 'chart-1.png',
+          engagement_change: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].negativeMappingsCount,
+          engagement_score: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].totalScore,
+          engagement_status: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].mappingsStatus,
+          engagement_chart: 'chart-1.png',
+          demand_change: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].negativeMappingsCount,
+          demand_score: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].totalScore,
+          demand_status: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].mappingsStatus,
+          demand_chart: 'chart-3.png',
+          action_items: results.results.insights.data.action_items,
+          talking_points: results.results.insights.data.talking_points
+        }  
+
+        _.forEach( realReplacements, function( value, key ){
+             email.replacements[key] = value
+        })
+
+      }
+
       var theEmail = EmailContent.processEmail(email)
 
-      theEmail.then( function(result) {
+      theEmail.then( function( result ) {
 
           var from = "insights@meetbrief.com"
 
@@ -496,6 +515,10 @@ exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
           cb( msg );
 
     });
+
+
+    })
+
 }
 
 exports.reschedule = () => {
@@ -514,6 +537,8 @@ exports.reschedule = () => {
           var meetingId = meeting.summary + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + meeting.UserId
           var msg = null
 
+          meeting.meeting_start = meeting.start_time
+          meeting.emailDomain = meeting.email_domain
           thisModule.schedule_email(meetingId, meeting, meeting.start_time, msg, meeting, 'reschedule');
           
           cb(null);

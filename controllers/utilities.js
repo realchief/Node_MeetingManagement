@@ -467,6 +467,8 @@ exports.filter = function(listing, key, value) {
 
 		//console.log('Filter:', 'Listing', listing, 'Key', key, 'Value', value)
 
+	if ( !listing ) return []
+
 	var filteredListing = listing.filter(function ( row ){
         return row[key] === value;
     });

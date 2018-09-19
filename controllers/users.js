@@ -27,8 +27,14 @@ var users = {
       
           if (!user) {
               console.log('>>> Cant Find user', user)
-              var results = "No User Found"
-              cb( null, results )
+              var credentials = {}
+              var user = {}
+              credentials.accounts = Object.assign({}, null)
+              user.username = 'Dennis Nedry'
+              user.company_id = 'jurassicpark'
+              credentials.user = user
+              cb( null, credentials )
+
               return
           }
         

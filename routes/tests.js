@@ -69,82 +69,82 @@ router.get('/send/:company', function (req, res) {
 
   userInfo.getInsightsFromId( userId, function( err, results ) {
 
-  var email = JSON.parse(JSON.stringify(EmailContent.email_lg));
+    var email = JSON.parse(JSON.stringify(EmailContent.email_lg));
 
-  email.replacements.summary = "LooseGrip Email";
-  email.replacements.meeting_time_for_display = moment().format("ddd, MMMM D [at] h:mma")
-  email.replacements.meeting_date_for_display = moment().format("ddd, MMMM D")
+    email.replacements.summary = "LooseGrip Email";
+    email.replacements.meeting_time_for_display = moment().format("ddd, MMMM D [at] h:mma")
+    email.replacements.meeting_date_for_display = moment().format("ddd, MMMM D")
 
-  //console.log('Insights>>>', results.results.insights.data)
-  //console.log('Insights>>>', results.results.insights.data.bucket_insights)
-  //console.log('Insights>>>', results.credentials)
+    //console.log('Insights>>>', results.results.insights.data)
+    //console.log('Insights>>>', results.results.insights.data.bucket_insights)
+    //console.log('Insights>>>', results.credentials)
 
-  var bucket_insights = results.results.insights.data.bucket_insights
+    var bucket_insights = results.results.insights.data.bucket_insights
 
-   var realReplacements = {
-    sender: results.credentials.user.email,
-    summary: results.credentials.user.company_name + ' ' + 'Email',
-    brand: results.credentials.user.company_name,
-    headline: "This is a headline from a real parsed endpoint.",
-    interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
-    interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
-    interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,
-    interest_chart: 'chart-1.png',
-    engagement_change: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].negativeMappingsCount,
-    engagement_score: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].totalScore,
-    engagement_status: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].mappingsStatus,
-    engagement_chart: 'chart-1.png',
-    demand_change: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].negativeMappingsCount,
-    demand_score: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].totalScore,
-    demand_status: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].mappingsStatus,
-    demand_chart: 'chart-3.png',
-    action_items: results.results.insights.data.action_items,
-    talking_points: results.results.insights.data.talking_points
-  }  
+     var realReplacements = {
+      sender: results.credentials.user.email,
+      summary: results.credentials.user.company_name + ' ' + 'Email',
+      brand: results.credentials.user.company_name,
+      headline: "This is a headline from a real parsed endpoint.",
+      interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
+      interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
+      interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,
+      interest_chart: 'chart-1.png',
+      engagement_change: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].negativeMappingsCount,
+      engagement_score: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].totalScore,
+      engagement_status: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].mappingsStatus,
+      engagement_chart: 'chart-1.png',
+      demand_change: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].negativeMappingsCount,
+      demand_score: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].totalScore,
+      demand_status: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].mappingsStatus,
+      demand_chart: 'chart-3.png',
+      action_items: results.results.insights.data.action_items,
+      talking_points: results.results.insights.data.talking_points
+    }  
 
-  _.forEach( realReplacements, function( value, key ){
-       email.replacements[key] = value
-  })
+    _.forEach( realReplacements, function( value, key ){
+         email.replacements[key] = value
+    })
 
-  // END ADD REAL CONTENT TO THE EMAIL //
+    // END ADD REAL CONTENT TO THE EMAIL //
 
- var theEmail = EmailContent.processEmail(email)
+   var theEmail = EmailContent.processEmail(email)
 
- theEmail.then( function( result ) {
+   theEmail.then( function( result ) {
 
-    var recipients = to.split(',')
+      var recipients = to.split(',')
 
-    var from = "insights@meetbrief.com"
-      
-      var subject = ""
+      var from = "insights@meetbrief.com"
+        
+        var subject = ""
 
-      subject = result.data.subject;
-      subject += " " + result.data.summary + " "
-      subject += " " + "(" + result.data.meeting_date_for_display + ")"
+        subject = result.data.subject;
+        subject += " " + result.data.summary + " "
+        subject += " " + "(" + result.data.meeting_date_for_display + ")"
 
-      var toArray = [];
+        var toArray = [];
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-       
-      _.forEach(recipients, function(recipient) {
-        toArray.push( { email : recipient } )
-      })
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+         
+        _.forEach(recipients, function(recipient) {
+          toArray.push( { email : recipient } )
+        })
 
-     const msg = {
-        to: toArray,
-        from: {
-          email : from,
-          name: "MeetBrief"
-        },
-        subject: subject,
-        text: result.emailToSend,
-        html: result.emailToSend
+       const msg = {
+          to: toArray,
+          from: {
+            email : from,
+            name: "MeetBrief"
+          },
+          subject: subject,
+          text: result.emailToSend,
+          html: result.emailToSend
 
-      };
+        };
 
-     //sgMail.send(msg);
+       //sgMail.send(msg);
 
-      res.send(result.emailToSend)
+        res.send(result.emailToSend)
  
    })
 

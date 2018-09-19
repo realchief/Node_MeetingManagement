@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     let Meeting = sequelize.define('Meeting', {
-        meeting_name: {
+        summary: {
             type: DataTypes.STRING
         },
         start_time: {
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         end_date: {
             type: DataTypes.STRING
         },
-        sender: {
+        organizer: {
             type: DataTypes.STRING
         },
         file_name: {
@@ -38,6 +38,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         sequence: {
             type: DataTypes.STRING
+        },
+        email_domain: {
+            type: DataTypes.STRING
+        },
+        sendgrid_recipients: {
+            type: DataTypes.ARRAY(DataTypes.JSONB)
         }
     });
 

@@ -13,7 +13,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
      if ( !meetingInfo ) {
       console.log('!!! meeting info is blank.', '\n')
       //res.sendStatus(200);
-      cb(meetingInfo)
+      cb( meetingInfo )
       console.log('\n', emoji.get('eyes'), ' process end ===============================', '\n')
       return
     }
@@ -71,7 +71,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
                   emails.create( user_id, meetingId, meetingInfo, function(meeting) {
                 
                     //res.sendStatus(200);
-                    cb(meetingInfo)
+                    cb( meetingInfo )
                     console.log('\n', emoji.get('eyes'), ' process end update ===============================', '\n')
                     return
 
@@ -91,7 +91,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
                   
                   console.log(emoji.get('mute'), 'we have cancelled these meetings:', meetings)
                   //res.sendStatus(200);
-                  cb(meetingInfo)
+                  cb( meetingInfo )
                   console.log('\n', emoji.get('eyes'), ' process end cancel ===============================', '\n')
                   return
 
@@ -104,7 +104,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
             
               emails.create( user_id, meetingId, meetingInfo, function(meeting) {
                 //res.sendStatus(200);
-                cb(meetingInfo)
+                cb( meetingInfo )
                 console.log('\n', emoji.get('eyes'), ' process end create ===============================', '\n')
                 return
 
@@ -116,7 +116,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
             /* SEND A RESPONSE IF WE DIDNT UPDATE A MEETING */
             if ( meetingInfo.request_type == "request" && meeting ) {
               //res.sendStatus(200);
-              cb(meetingInfo)
+              cb( meetingInfo )
               console.log('\n', emoji.get('eyes'), ' process no changes ===============================', '\n')
               return
             }

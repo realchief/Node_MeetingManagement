@@ -196,10 +196,10 @@ exports.inboundParse = ( req ) => {
      /* ===== default values ======= */
   
     var organizer = fromEmail
-   var emailDomain = fromEmail.replace(/.*@/, "").split('.')[0];
-   var summary = "Parsed Direct" + " " + subject
-   var meeting_time_for_display = moment().format("ddd, MMMM D [at] h:mma")
-   var meeting_date_for_display = moment().format("ddd, MMMM D")
+    var emailDomain = fromEmail.replace(/.*@/, "").split('.')[0];
+    var summary = "Parsed Direct" + " " + subject
+    var meeting_time_for_display = moment().format("ddd, MMMM D [at] h:mma")
+    var meeting_date_for_display = moment().format("ddd, MMMM D")
 
     //console.log('from', from)
     //console.log('fromEmail', fromEmail)
@@ -280,8 +280,9 @@ exports.inboundParse = ( req ) => {
 
 }
 
-exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
+exports.schedule_email = (meetingId, meetingInfo, meetingDate, msg, meeting, from) => {
 
+    var thisModule = this
     // set time 30 minutes before meeting time
     let current_date = moment().toDate();  
     let date = moment(meetingDate,'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
@@ -289,7 +290,7 @@ exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
     var from = from || ""
 
     if ( from == "reschedule") {
-      //console.log('++++ rescheduling ---', meeting.meeting_name, '--- to send at ---', moment(date).format("ddd, MMMM D [at] h:mma"));
+      //console.log('++++ rescheduling ---', meeting.summary, '--- to send at ---', moment(date).format("ddd, MMMM D [at] h:mma"));
     }
      // if scheduled date is after the (current time - 30 mimutes)
     let isAfter = moment(date).isAfter(current_assert_date);
@@ -301,7 +302,7 @@ exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
 
      if ( isAfter == false || scheduledIsAfter == true ) {
       isAfter = false
-      date = moment().add(1, 'minutes').toDate();
+      date = moment().add(20, 'seconds').toDate();
     }
 
     if ( schedule.scheduledJobs[meetingId] ) {
@@ -309,32 +310,42 @@ exports.schedule_email = (meetingId, meetingDate, msg, meeting, from) => {
       schedule.scheduledJobs[meetingId].cancel()
     }
 
-     console.log('\n', emoji.get('date'), ' schedule email ---', meeting.meeting_name, 'for', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma").underline, 'to send at'.inverse, moment(date).format("ddd, MMMM D [at] h:mma").underline, '--- send later? ---', isAfter, '\n', ' --- meeting id ', meetingId)
+     console.log('\n', emoji.get('date'), ' schedule email ---', meeting.summary, 'for', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma").underline, 'to send at'.inverse, moment(date).format("ddd, MMMM D [at] h:mma").underline, '--- send later? ---', isAfter, '\n', ' --- meeting id ', meetingId)
 
 
-    schedule.scheduleJob(meetingId, date, function(data) {
+    schedule.scheduleJob( meetingId, date, function( data ) {
 
-        console.log('\n', emoji.get('rocket'), ' send scheduled email ---', data.meeting.meeting_name, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
+        thisModule.make_email_content(data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start, function ( msg ) {
 
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail.send(data.msg);           
+          console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meeting.summary, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 
-        data.meeting.updateAttributes({
-          is_sent: true
-        }).then(function (result) {
-          //console.log(emoji.get('thumbsup'), '---- marked as sent: ', result.meeting_name);
-        });
 
-      }.bind(null,{
+          sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+          sgMail.send( msg );           
 
-        msg: msg,
-        meeting: meeting
+          data.meeting.updateAttributes({
+           
+            is_sent: true
+          
+          }).then(function ( result ) {
+            
+            //console.log(emoji.get('thumbsup'), '---- marked as sent: ', result.summary);
+          
+          });
+
+        })
+
+      }.bind( null , {
+
+          msg: msg,
+          meeting: meeting,
+          meetingInfo: meetingInfo
 
       }));
 }
 
 
-exports.cancel = (user_id, created_time, onFinish) => {
+exports.cancel = ( user_id, created_time, onFinish ) => {
 
     var thisModule = this 
     let whereClause = { 'UserId' : user_id, 'created_time' : created_time }
@@ -353,8 +364,8 @@ exports.cancel = (user_id, created_time, onFinish) => {
 
       Async.each(meetings, function (meeting, done) {
 
-          var meetingId = meeting.meeting_name + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + user_id
-          console.log( emoji.get('scissors'), 'remove', meeting.meeting_name, 'which was at:', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), 'for meeting_id', meetingId)
+          var meetingId = meeting.summary + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + user_id
+          console.log( emoji.get('scissors'), 'remove', meeting.summary, 'which was at:', moment(meeting.start_time).format("ddd, MMMM D [at] h:mma"), 'for meeting_id', meetingId)
           meeting.destroy()
           cancelledMeetings.push(meetingId)
           done();
@@ -393,13 +404,15 @@ exports.cancel = (user_id, created_time, onFinish) => {
 
 exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
 
+  //console.log('meeting Info', meetingInfo)
+
   var thisModule = this;
 
   Model.Meeting.create({
 
       to: meetingInfo.recipients,
-      meeting_name: meetingInfo.summary,
-      sender: meetingInfo.organizer,
+      summary: meetingInfo.summary,
+      organizer: meetingInfo.organizer,
       UserId : user_id,
       meeting_id : meetingId,
       file_name: meetingInfo.file_name,
@@ -409,21 +422,17 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
       end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
       dtstamp_time : meetingInfo.meeting_dtstamp,
       created_time : meetingInfo.meeting_created,
-      sequence : meetingInfo.meeting_sequence
+      sequence : meetingInfo.meeting_sequence,
+      email_domain : meetingInfo.emailDomain,
+      sendgrid_recipients: meetingInfo.sendgrid_recipients
     
-    }).then(function (meeting) {
+    }).then(function ( meeting ) {
        /* ===== modify base email ======= */
 
-       //organizer, summary, toArray, start_date, cb//
-      thisModule.make_email_content(meetingInfo.organizer, meetingInfo.summary, meetingInfo.sendgrid_recipients, meetingInfo.meeting_start, function (msg) {
-          
           // ---- schedule the email for sending
-          thisModule.schedule_email(meetingId, meetingInfo.meeting_start, msg, meeting);
-
-          onFinish(meetingId)
-          
-
-      })
+          var msg = null
+          thisModule.schedule_email(meetingId, meetingInfo, meetingInfo.meeting_start, msg, meeting, 'create');
+          onFinish( meetingId )
 
     });
 
@@ -432,6 +441,7 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
 exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
     
     const EmailContent = require('../components/EmailContent.js');
+    
     let sender = organizer
     let emailDomain = organizer.replace(/.*@/, "").split('.')[0];
     let meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
@@ -454,6 +464,7 @@ exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
           var email = JSON.parse(JSON.stringify(EmailContent.email));
         break
       }
+
 
       email.replacements.sender = sender
       email.replacements.summary = summary
@@ -481,7 +492,8 @@ exports.make_email_content = (organizer, summary, toArray, start_date, cb) => {
             text: result.emailToSend,
             html: result.emailToSend
           };
-          cb(msg);
+
+          cb( msg );
 
     });
 }
@@ -499,19 +511,17 @@ exports.reschedule = () => {
       
       Async.each(meetings, function (meeting, cb) {
         
-        thisModule.make_email_content(meeting.sender, meeting.meeting_name, meeting.to, meeting.start_time, function (msg) {
-          
-          //console.log(emoji.get("repeat"), ' rescheduling ---', meeting.meeting_name);
-          
-          var meetingId = meeting.meeting_name + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + meeting.UserId
-          thisModule.schedule_email(meetingId, meeting.start_time, msg, meeting, 'reschedule');
+          var meetingId = meeting.summary + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + meeting.UserId
+          var msg = null
+
+          thisModule.schedule_email(meetingId, meeting, meeting.start_time, msg, meeting, 'reschedule');
           
           cb(null);
         
-        })
-      
       }, function (err, result) {
+         
          console.log('\n', 'Restarted all scheduled jobs that have not been sent.', '\n');
+      
       });
 
   })

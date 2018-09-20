@@ -68,7 +68,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
                   
                   console.log(emoji.get('mute'), 'we have cancelled this existing meeting:', meetings)
                   
-                  emails.create( user_id, meetingId, meetingInfo, function(meeting) {
+                  emails.create( user_id, meetingId, meetingInfo, function( meeting ) {
                 
                     //res.sendStatus(200);
                     cb( meetingInfo )

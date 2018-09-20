@@ -327,7 +327,7 @@ exports.schedule_email = (meetingId, meetingInfo, meetingDate, msg, meeting, fro
 
         thisModule.make_email_content(data.meetingInfo.emailDomain, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start, function ( msg ) {
 
-          console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meeting.summary, '----', 'for', '---', moment(data.meeting.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
+          console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meetingInfo.summary, '---- from ----', data.meetingInfo.organizer, '----', 'for', '---', moment(data.meetingInfo.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 
 
           sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -471,7 +471,7 @@ exports.make_email_content = (company_id, organizer, summary, toArray, start_dat
         var bucket_insights = results.results.insights.data.bucket_insights
 
         var realReplacements = {
-          sender: results.credentials.user.email,
+          sender: organizer,
           summary: summary,
           brand: results.credentials.user.company_name,
           headline: "This is a headline from a real parsed endpoint.",

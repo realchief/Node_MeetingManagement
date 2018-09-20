@@ -76,12 +76,6 @@
 							</div>
 						</div>
 
-
-
-
-
-
-
 						<div class="col last">
 							<div class="connector">
 								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
@@ -89,8 +83,11 @@
 									{{#if summaries.facebook }}
 									<li class="facebook facebook-authorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnect Facebook</a></li>
 									{{else}}
-									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a></li>
-									{{/if}}									
+									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a><br />
+									</li>
+									<p>Note: Make sure you are logged in to the Facebook Account you want to use first</p>
+									{{/if}}								
+
 								</ul>
 								<div class="facebook-accounts">
 									{{#if summaries.facebook }}					

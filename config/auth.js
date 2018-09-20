@@ -1,16 +1,18 @@
-var port = 3001;
+require('dotenv').config({path: '../variables.env'})
+
+var port = process.env.PORT
 
 module.exports = {
     'port' : port,
     'facebookAuth' : {
-        'clientID'      : '558059437903012',
-        'clientSecret'  : 'b11fe91db9aebf8f5c437974ac990e58',
-        'callbackURL'   : '/auth/facebook/callback'
+        'clientID'      : process.env.FACEBOOK_CLIENTID,
+        'clientSecret'  : process.env.FACEBOOK_CLIENTSECRET,
+        'callbackURL'   : process.env.FACEBOOK_CALLBACKURL
     },
     'googleAuth' : {
-        'clientID'      : '542032120426-5mi2jcld1sn6k2qprbejtt0ci4p275np.apps.googleusercontent.com',
-        'clientSecret'  : '2DuMSm4de1iXSl8jdF9sdP5Q',
-        'callbackURL'   : '/auth/google/callback'
+        'clientID'      : process.env.GOOGLE_CLIENTID,
+        'clientSecret'  : process.env.GOOGLE_CLIENTSECRET,
+        'callbackURL'   : process.env.GOOGLE_CALLBACKURL
     },
     
 };

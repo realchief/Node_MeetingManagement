@@ -1,3 +1,5 @@
+require('dotenv').config({path: '../variables.env'})
+
 'use strict';
 
 var fs        = require('fs');

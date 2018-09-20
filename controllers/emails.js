@@ -66,7 +66,7 @@ exports.meetingFileParse = ( meetingFile ) => {
                 console.log('Attendee:', attendee, "Attendee Email:", attendee.split(':')[1])
             
                 // add only attendees who are not "meetbrief" emails //
-                if ( recipient.indexOf('meetbrief') < 0 ) {
+                if ( recipient.indexOf('meetbrief') < 0 && recipient.indexOf('getfingertips') < 0 ) {
                   toArray.push( { email : recipient } )
                   flatRecipients.push(recipient)
                 } else {
@@ -159,6 +159,13 @@ exports.inboundParse = ( req ) => {
 
     //console.log('\n', emoji.get('email'), 'The whole email:', req.body)
 
+    if ( subject && subject.length > 200 ) {
+      console.log('!!!!!!!!!!!!! ', 'subject is too long.')
+      requestType = "internal"
+      //resolve( { type : 'cancel'} );
+      return resolve();
+    }
+
 
     if ( fromEmail.toLowerCase().indexOf('noreply') >= 0 ) {
       console.log('!!!!!!!!!!!!! ', 'noreply email', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
@@ -195,7 +202,7 @@ exports.inboundParse = ( req ) => {
       requestType = "request"
       return resolve();
     }
-    
+
      /* ===== default values ======= */
   
     var organizer = fromEmail
@@ -218,7 +225,7 @@ exports.inboundParse = ( req ) => {
      var toArray = [];
 
      _.forEach(flatRecipients, function(recipient) {
-        if ( recipient.indexOf('meetbrief') < 0 ) {
+        if ( recipient.indexOf('meetbrief') < 0 && recipient.indexOf('getfingertips') < 0 ) {
           toArray.push( { email : recipient } )
         } else {
           insightType = recipient.split('@')[0]

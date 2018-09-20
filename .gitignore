@@ -62,7 +62,7 @@ uploads/*
 !.gitkeep
 .ebextensions
 
-config/db.js
+#config/db.js
 package-lock.json
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

@@ -2,41 +2,49 @@
 	
 	<body>		
 		<div class='tb-schedule'>
+
+			<style type="text/css">
+				ul.schedule li span {
+					display: inline-block;
+					margin-right: 10px;
+				}
+
+				ul.schedule {
+					list-style-type: none;
+				}
+
+				ul.schedule li {
+					list-style-type: none;
+					margin-bottom: 5px;
+					display: block;
+					border-bottom: 1px solid #e5e5e5;
+					padding: 15px 10px;
+				}
+
+	
+			</style>
+
+
 			<h2>View Meeting Table Data</h2>
-			<table>
-				<thead>
-					<th>To</th>
-					<th>Meeting Name</th>
-					<th>Organizer</th>
-					<th>Start Time</th>
-					<th>Start Date</th>
-					<th>User Id</th>
-					<th>Meeting Id</th>
-					<th>File Name</th>
-					<th>Timestamp Time</th>
-					<th>Created Time</th>
-					<th>Sequence</th>
-					<th>is sent?</th>
-				</thead>
-				<tbody>
+			<ul class="schedule">
 					{{#each meetings}}
-						<tr>
-							<td style="font-size: 12px;">{{this.to}}</td>
-							<td style="font-size: 12px;">{{this.summary}}</td>
-							<td style="font-size: 12px;">{{this.organizer}}</td>
-							<td style="font-size: 12px;">{{moment this.start_time format="ddd, MMMM D [at] h:mma"}}</td>
-							<td style="font-size: 12px;">{{this.start_date}}</td>
-							<td style="font-size: 12px;">{{this.UserId}}</td>
-							<td style="font-size: 12px;">{{this.meeting_id}}</td>
-							<td style="font-size: 12px;">{{this.file_name}}</td>
-							<td style="font-size: 12px;">{{moment this.dtstamp_time format="ddd, MMMM D [at] h:mma"}}</td>
-							<td style="font-size: 12px;">{{moment this.created_time format="ddd, MMMM D [at] h:mma"}}</td>
-							<td style="font-size: 12px;">{{this.sequence}}</td>
-							<td style="font-size: 12px;">{{#if this.is_sent}}sent{{/if}}</td>
-						</tr>
+						<li>
+							<span><strong>User Id:</strong> {{this.UserId}}</span>
+							<span><strong>To:</strong> {{this.to}}</span>
+							<span><strong>Company Id:</strong> {{this.email_domain}}</span>
+							<span><strong>Summary:</strong> {{this.summary}}</span>
+							<span><strong>Organizer:</strong> {{this.organizer}}</span>
+							<br />
+							<span><strong>Start:</strong> {{moment this.start_time format="ddd, MMMM D [at] h:mma"}}</span>
+							<span><strong>.ics:</strong> {{this.file_name}}</span>
+							<span><strong>Timestamp:</strong> {{moment this.dtstamp_time format="ddd, MMMM D [at] h:mma"}}</span>
+							<span><strong>Created:</strong> {{moment this.created_time format="ddd, MMMM D [at] h:mma"}}</span>
+							<br />
+							<span><strong>Sequence:</strong> {{this.sequence}}</span>
+							<span><strong>Sent?:</strong> {{#if this.is_sent}}sent{{/if}}</span>
+						</li>
 					{{/each}}
-				</tbody>
-			</table>
+				</ul>
 		</div>
 
 		<div class="section gutter footer">

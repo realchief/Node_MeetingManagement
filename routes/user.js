@@ -7,6 +7,8 @@ let Async = require('async');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+const moment = require("moment");
+
 var userInfo = require('../controllers/users')
 
 router.get('/google/setprofile', function (req, res) {   
@@ -151,11 +153,19 @@ router.get('/getuser/:company', function (req, res) {
 
   userInfo.getLinkedAccountsFromId(userId, function( err, credentials ) {
 
+    var moreInfo = {}
+
+    moreInfo.currentUTCDate = moment.utc().format("ddd, MMMM D [at] h:mma")
+    moreInfo.currentDate = moment().format("ddd, MMMM D [at] h:mma")
+    moreInfo.UTCOffset = moment.utc() - moment()
+    moreInfo.momentUTCOffset = moment().utcOffset()
+
     res.render('fingertips', {
         version: 'fingertips',
         layout: 'accounts.handlebars',
         user: credentials.user,
-        linkedAccounts: credentials.accounts
+        linkedAccounts: credentials.accounts,
+        moreInfo: moreInfo
     });
 
   })

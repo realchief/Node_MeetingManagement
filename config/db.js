@@ -1,6 +1,7 @@
 require('dotenv').config({path: '../variables.env'})
 
-console.log( 'Database Name>>>', process.env.RDS_DB_NAME, process.env.NODE_ENV)
+var databaseName = process.env.RDS_DB_NAME || process.env.DATABASE_NAME
+console.log( 'Database Name>>>', databaseName, process.env.NODE_ENV)
 
 module.exports = {
     

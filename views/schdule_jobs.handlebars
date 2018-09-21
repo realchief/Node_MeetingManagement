@@ -21,18 +21,18 @@
 				<tbody>
 					{{#each meetings}}
 						<tr>
-							<td style="font-size: 10px;">{{this.to}}</td>
-							<td style="font-size: 10px;">{{this.summary}}</td>
-							<td style="font-size: 10px;">{{this.organizer}}</td>
-							<td style="font-size: 10px;">{{moment this.start_time format="ddd, MMMM D [at] h:mma"}}</td>
-							<td style="font-size: 10px;">{{this.start_date}}</td>
-							<td style="font-size: 10px;">{{this.UserId}}</td>
-							<td style="font-size: 10px;">{{this.meeting_id}}</td>
-							<td style="font-size: 10px;">{{this.file_name}}</td>
-							<td style="font-size: 10px;">{{moment this.dtstamp_time format="ddd, MMMM D [at] h:mma"}}</td>
-							<td style="font-size: 10px;">{{moment this.created_time format="ddd, MMMM D [at] h:mma"}}</td>
-							<td style="font-size: 10px;">{{this.sequence}}</td>
-							<td style="font-size: 10px;">{{#if this.is_sent}}sent{{/if}}</td>
+							<td style="font-size: 12px;">{{this.to}}</td>
+							<td style="font-size: 12px;">{{this.summary}}</td>
+							<td style="font-size: 12px;">{{this.organizer}}</td>
+							<td style="font-size: 12px;">{{moment this.start_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td style="font-size: 12px;">{{this.start_date}}</td>
+							<td style="font-size: 12px;">{{this.UserId}}</td>
+							<td style="font-size: 12px;">{{this.meeting_id}}</td>
+							<td style="font-size: 12px;">{{this.file_name}}</td>
+							<td style="font-size: 12px;">{{moment this.dtstamp_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td style="font-size: 12px;">{{moment this.created_time format="ddd, MMMM D [at] h:mma"}}</td>
+							<td style="font-size: 12px;">{{this.sequence}}</td>
+							<td style="font-size: 12px;">{{#if this.is_sent}}sent{{/if}}</td>
 						</tr>
 					{{/each}}
 				</tbody>

@@ -65,7 +65,7 @@ app.engine('handlebars', exphbs({
     layoutsdir: __dirname + '/views/layouts/',
     partialsdir: __dirname + '/views/partials/',
     helpers : {
-      moment : require('helper-moment'),
+      //moment : require('helper-moment'),
       toJSON : function(object) {
        return JSON.stringify(object, null, 2);
       }

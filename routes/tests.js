@@ -26,17 +26,6 @@ var utilities = require('../controllers/utilities')
 // email content function
 const EmailContent = require('../components/EmailContent.js')
 
-router.get('/chart/:chart', function (req, res) {
-
-  var chartNumbers = req.params.chart
-
-  var chartArray = req.params.chart.split(',')
-
-  res.send(chartArray)
-
-})
-
-
 router.get('/testsched', function (req, res) {
 
   var testDate = moment().add(10, 'seconds').toDate();;

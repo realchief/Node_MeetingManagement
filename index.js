@@ -31,6 +31,7 @@ var testRoutes = require('./routes/tests');
 var scheduleRoutes = require('./routes/schedule');
 var dataRoutes = require('./routes/data');
 var userRoutes = require('./routes/user');
+var chartRoutes = require('./routes/charts')
 
 
 var colors = require('colors');
@@ -140,6 +141,7 @@ app.use('/', testRoutes)
 app.use('/', dataRoutes)
 app.use('/', scheduleRoutes)
 app.use('/', userRoutes)
+app.use('/', chartRoutes)
 app.use('/auth', authRoutes);
 
 // lastly, handle any errors 

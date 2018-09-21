@@ -36,6 +36,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
 
        // SEE IF THERE IS AN EXISTING MEETING
        let whereClause = { 'meeting_id' : meetingId, 'is_sent' : null }
+       
        Model.Meeting.findOne({
 
         where: whereClause

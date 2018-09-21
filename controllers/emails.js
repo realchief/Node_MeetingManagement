@@ -128,6 +128,7 @@ exports.meetingFileParse = ( meetingFile ) => {
             'meeting_created' : moment(JSON.stringify(parseIcal.created),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_dtstamp' : moment(JSON.stringify(parseIcal.dtstamp),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_sequence' : sequence,
+            'meeting_timezone' : null,
             'insight_type' : insightType,
             'request_type' : requestType,
             'status' : status,
@@ -281,6 +282,7 @@ exports.inboundParse = ( req ) => {
             'meeting_created' : moment().toDate(),
             'meeting_dtstamp' : moment().toDate(),
             'meeting_sequence' : 0,
+            'meeting_timezone' : null,
             'insight_type' : insightType,
             'request_type' : 'request',
             'status' : 'add'
@@ -327,7 +329,7 @@ exports.schedule_email = (meetingId, meetingInfo, meetingStart, msg, meeting, fr
 
     schedule.scheduleJob( meetingId, date, function( data ) {
 
-        thisModule.make_email_content(data.meetingInfo.emailDomain, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start_time, function ( msg ) {
+        thisModule.make_email_content(data.meetingInfo.emailDomain, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start_time, data.meetingInfo.meeting_timezone, function ( msg ) {
 
           console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meetingInfo.summary, '---- from ----', data.meetingInfo.organizer, '----', 'for', '---', moment(data.meetingInfo.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 

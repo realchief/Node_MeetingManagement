@@ -59,7 +59,10 @@ router.get('/send/:company', function (req, res) {
     var email = JSON.parse(JSON.stringify(EmailContent.email));
 
     //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
-    var meeting_time_for_display = moment().tz('America/New_York').format("ddd, MMMM D [at] h:mma")
+    //var timezone = "America/New_York"
+    var theTimezone = null
+    var timezone = theTimezone || "America/New_York"
+    var meeting_time_for_display = moment().tz(timezone).format("ddd, MMMM D [at] h:mma")
 
     email.replacements.summary = "LooseGrip Email";
     email.replacements.meeting_time_for_display = meeting_time_for_display

@@ -156,10 +156,18 @@ router.get('/getuser/:company', function (req, res) {
     var moreInfo = {}
 
     moreInfo.currentUTCDate = moment.utc().format("ddd, MMMM D [at] h:mma")
-    moreInfo.currentDate = moment().format("ddd, MMMM D [at] h:mma")
-    moreInfo.UTCOffset = moment.utc() - moment()
+    moreInfo.currentLocalMachineDate = moment().format("ddd, MMMM D [at] h:mma")
     moreInfo.momentUTCOffset = moment().utcOffset()
-    moreInfo.momentTimezone = moment().utc().tz('America/New_York').format("ddd, MMMM D [at] h:mma")
+
+    moreInfo.momentTimezoneEastern = moment().tz('America/New_York').format("ddd, MMMM D [at] h:mma")
+    moreInfo.momentTimezoneCentral = moment().tz('America/Chicago').format("ddd, MMMM D [at] h:mma")
+    moreInfo.momentTimezoneMountain = moment().tz('America/Denver').format("ddd, MMMM D [at] h:mma")
+    moreInfo.momentTimezonePacific = moment().tz('America/Los_Angeles').format("ddd, MMMM D [at] h:mma")
+
+    moreInfo.momentUTCOffsetFromEastern = moment().tz("America/New_York").utcOffset() 
+    moreInfo.momentUTCOffsetFromCentral = moment().tz("America/Chicago").utcOffset()
+    moreInfo.momentUTCOffsetFromMountain = moment().tz("America/Denver").utcOffset()
+    moreInfo.momentUTCOffsetFromPacific = moment().tz("America/Los_Angeles").utcOffset()
 
     res.render('fingertips', {
         version: 'fingertips',

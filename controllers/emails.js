@@ -1,7 +1,7 @@
 'use strict';
 const sgMail = require('@sendgrid/mail');
 const schedule = require('node-schedule');
-const moment = require("moment");
+const moment = require("moment-timezone");
 var ical = require('ical')
 var _ = require('lodash');
 
@@ -122,8 +122,9 @@ exports.meetingFileParse = ( meetingFile ) => {
             'summary' : summary,
             'meeting_time_for_display' : meeting_time_for_display,
             'meeting_date_for_display' : meeting_date_for_display,
-            'meeting_start' : moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
-            'meeting_end' : moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(),
+            'meeting_start_time' : moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
+            'meeting_start_time_utc' : moment.utc(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').toDate(),
+            'meeting_end_time' : moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_created' : moment(JSON.stringify(parseIcal.created),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_dtstamp' : moment(JSON.stringify(parseIcal.dtstamp),'YYYYMMDDTHHmmssZ').toDate(),
             'meeting_sequence' : sequence,
@@ -274,8 +275,9 @@ exports.inboundParse = ( req ) => {
             'summary' : summary,
             'meeting_time_for_display' : meeting_time_for_display,
             'meeting_date_for_display' : meeting_date_for_display,
-            'meeting_start' : moment().toDate(),
-            'meeting_end' : moment().toDate(),
+            'meeting_start_time' : moment().toDate(),
+            'meeting_start_time_utc' : moment.utc().toDate(),
+            'meeting_end_time' : moment().toDate(),
             'meeting_created' : moment().toDate(),
             'meeting_dtstamp' : moment().toDate(),
             'meeting_sequence' : 0,
@@ -290,12 +292,12 @@ exports.inboundParse = ( req ) => {
 
 }
 
-exports.schedule_email = (meetingId, meetingInfo, meetingDate, msg, meeting, from) => {
+exports.schedule_email = (meetingId, meetingInfo, meetingStart, msg, meeting, from) => {
 
     var thisModule = this
     // set time 30 minutes before meeting time
     let current_date = moment().toDate();  
-    let date = moment(meetingDate,'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
+    let date = moment(meetingStart,'YYYYMMDDTHHmmssZ').subtract(30, 'minutes').toDate();   
     let current_assert_date = moment().subtract(30, 'minutes').toDate();  
     var from = from || ""
 
@@ -308,7 +310,7 @@ exports.schedule_email = (meetingId, meetingInfo, meetingDate, msg, meeting, fro
      // if the current time is after the scheduled date
     let scheduledIsAfter = moment(current_date).isAfter(date);
     
-    //console.log('==== current date:', moment(current_date).format("ddd, MMMM D [at] h:mma"), '--meeting date--', moment(meetingDate).format("ddd, MMMM D [at] h:mma"), '--schedule date--', moment(date).format("ddd, MMMM D [at] h:mma"), '--assert_date--', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
+    //console.log('==== current date:', moment(current_date).format("ddd, MMMM D [at] h:mma"), '--meeting date--', moment(meetingStart).format("ddd, MMMM D [at] h:mma"), '--schedule date--', moment(date).format("ddd, MMMM D [at] h:mma"), '--assert_date--', moment(current_assert_date).format("ddd, MMMM D [at] h:mma"))
 
      if ( isAfter == false || scheduledIsAfter == true ) {
       isAfter = false
@@ -325,7 +327,7 @@ exports.schedule_email = (meetingId, meetingInfo, meetingDate, msg, meeting, fro
 
     schedule.scheduleJob( meetingId, date, function( data ) {
 
-        thisModule.make_email_content(data.meetingInfo.emailDomain, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start, function ( msg ) {
+        thisModule.make_email_content(data.meetingInfo.emailDomain, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start_time, function ( msg ) {
 
           console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meetingInfo.summary, '---- from ----', data.meetingInfo.organizer, '----', 'for', '---', moment(data.meetingInfo.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 
@@ -426,10 +428,10 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
       UserId : user_id,
       meeting_id : meetingId,
       file_name: meetingInfo.file_name,
-      start_time: meetingInfo.meeting_start,
-      end_time: meetingInfo.meeting_end, 
-      start_date: moment(JSON.stringify(meetingInfo.meeting_start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
-      end_date: moment(JSON.stringify(meetingInfo.meeting_end),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+      start_time: meetingInfo.meeting_start_time,
+      end_time: meetingInfo.meeting_end_time, 
+      start_date: moment(JSON.stringify(meetingInfo.meeting_start_time),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
+      end_date: moment(JSON.stringify(meetingInfo.meeting_end_time),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D"),
       dtstamp_time : meetingInfo.meeting_dtstamp,
       created_time : meetingInfo.meeting_created,
       sequence : meetingInfo.meeting_sequence,
@@ -441,21 +443,24 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
 
           // ---- schedule the email for sending
           var msg = null
-          thisModule.schedule_email(meetingId, meetingInfo, meetingInfo.meeting_start, msg, meeting, 'create');
+         
+          thisModule.schedule_email(meetingId, meetingInfo, meetingInfo.meeting_start_time, msg, meeting, 'create');
           onFinish( meetingId )
 
     });
 
 }
 
-exports.make_email_content = (company_id, organizer, summary, toArray, start_date, cb) => {
+exports.make_email_content = (company_id, organizer, summary, toArray, start_date, timezone, cb) => {
     
     const EmailContent = require('../components/EmailContent.js');
+    var timezone = timezone || "America/New_York"
     
-    let sender = organizer
-    let emailDomain = company_id
-    let meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
-    let meeting_date_for_display = moment(start_date).format("ddd, MMMM D")
+    var sender = organizer
+    var emailDomain = company_id
+    //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
+    var meeting_date_for_display = moment(start_date).format("ddd, MMMM D")
+    var meeting_time_for_display = moment(start_date).tz(timezone).format("ddd, MMMM D [at] h:mma")
 
     userInfo.getInsightsFromId( emailDomain, function( err, results ) {
 
@@ -542,9 +547,10 @@ exports.reschedule = () => {
       Async.each(meetings, function (meeting, cb) {
         
           var meetingId = meeting.summary + '_' + moment(meeting.created_time,'YYYYMMDDTHHmmssZ') + '_' + meeting.UserId
+          
           var msg = null
 
-          meeting.meeting_start = meeting.start_time
+          meeting.meeting_start_time = meeting.start_time
           meeting.emailDomain = meeting.email_domain
           thisModule.schedule_email(meetingId, meeting, meeting.start_time, msg, meeting, 'reschedule');
           

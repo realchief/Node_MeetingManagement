@@ -85,7 +85,7 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
             /* CANCEL THE MEETING */
             if ( meetingInfo.request_type == "cancel") {
               
-              console.log('\n', emoji.get('trumpet'), emoji.get('trumpet'),  '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
+              console.log('\n', emoji.get('trumpet'), emoji.get('trumpet'),  '!-----','this is a cancel request for', meetingInfo.summary, 'from', meetingInfo.emailDomain, 'for', moment(meetingInfo.meeting_start_time, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"), '\n')
               
               emails.cancel( user_id, meetingInfo.meeting_created, function(meetings) {
                   

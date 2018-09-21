@@ -38,7 +38,9 @@
 							<span><strong>Start:</strong> {{moment this.start_time format="ddd, MMMM D [at] h:mma"}}</span>
 							<span><strong>.ics:</strong> {{this.file_name}}</span>
 							<span><strong>Timestamp:</strong> {{moment this.dtstamp_time format="ddd, MMMM D [at] h:mma"}}</span>
+							<br />
 							<span><strong>Created:</strong> {{moment this.created_time format="ddd, MMMM D [at] h:mma"}}</span>
+							<span><strong>Unformatted Created:</strong> {{ this.created_time }}</span>
 							<br />
 							<span><strong>Sequence:</strong> {{this.sequence}}</span>
 							<span><strong>Sent?:</strong> {{#if this.is_sent}}sent{{/if}}</span>

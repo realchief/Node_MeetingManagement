@@ -23,11 +23,20 @@ router.get('/schedule', function (req, res, next) {
 
 router.get('/allschedule', function (req, res, next) {
     /*if (req.user) {*/
-        Model.Meeting.findAll({}).then(function (meetings) {
+        
+        Model.Meeting.findAll({
+        
+            order: [
+                ['start_time', 'DESC']
+            ]
+        
+        }).then(function (meetings) {
+            
             res.render('schdule_jobs', {
                 meetings: meetings,
                 layout: false
             })
+        
         });
    /* }
     else res.redirect('/signin');*/

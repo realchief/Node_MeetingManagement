@@ -7,7 +7,7 @@ let Async = require('async');
 var colors = require('colors');
 var emoji = require('node-emoji')
 
-const moment = require("moment");
+const moment = require("moment-timezone");
 
 var userInfo = require('../controllers/users')
 
@@ -159,6 +159,7 @@ router.get('/getuser/:company', function (req, res) {
     moreInfo.currentDate = moment().format("ddd, MMMM D [at] h:mma")
     moreInfo.UTCOffset = moment.utc() - moment()
     moreInfo.momentUTCOffset = moment().utcOffset()
+    moreInfo.momentTimezone = moment().utc().tz('America/New_York').format("ddd, MMMM D [at] h:mma")
 
     res.render('fingertips', {
         version: 'fingertips',

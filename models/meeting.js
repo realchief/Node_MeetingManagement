@@ -30,6 +30,9 @@ module.exports = (sequelize, DataTypes) => {
         meeting_id: {
             type: DataTypes.STRING
         },
+        timezone: {
+            type: DataTypes.STRING
+        },
         dtstamp_time: {
              type: DataTypes.DATE
         },

@@ -134,15 +134,20 @@ var users = {
     var platformData = platform.setPlatform( dataSourcesFields )
 
     // now that we have platform, get insights.
-    var allInsights = insights.getInsights( platformData, dataSourcesFields )
-    
-    var results = {
-       platforms : platformData,
-       insights: allInsights,
-       dataSourcesList: dataSourcesList
-    }
 
-    cb ( null, results )
+    insights.getInsights( platformData, dataSourcesFields ).then( function( insights ){
+
+         var results = {
+           platforms : platformData,
+           insights: insights,
+           dataSourcesList: dataSourcesList
+        }
+
+        cb ( null, results )
+
+    })
+    
+   
 
   },
 

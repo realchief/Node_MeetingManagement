@@ -56,6 +56,88 @@ module.exports = {
     },
 
     
+  getPhrasesFromDb: function() {
+
+    var Model = require('../models');
+    var Async = require('async');
+
+    return new Promise(function(resolve, reject) {
+  
+        Async.parallel({
+                
+            allInsights: function ( cb ) {
+               
+               var insightsArray = [];
+
+               Model.Phrase.findAll({
+
+                  where: { type : 'insight' }
+
+                }).then(function (phrases) {
+
+                var allInsights = []
+
+                 _.forEach(phrases, function(phrase,index) {
+                    
+                    insightsArray.push( { 
+                        id : phrase.id,
+                        phrase : phrase.phrase + ' ' + phrase.id,
+                        all_tags : phrase.all_tags
+                    })
+                    
+                })
+
+                 cb ( null, insightsArray )
+
+                 })
+
+
+            },
+            
+            allPoints: function ( cb ) {
+
+                var insightsArray = [];
+               
+                 Model.Phrase.findAll({
+
+                    where: { type : 'point' }
+
+                  }).then(function (phrases) {
+
+                   _.forEach(phrases, function(phrase,index) {
+                      
+                      insightsArray.push( { 
+                          id : phrase.id,
+                          phrase : phrase.phrase + ' ' + phrase.id,
+                          all_tags : phrase.all_tags
+                      })
+
+                    })
+
+                   cb ( null, insightsArray )
+
+                  })
+
+
+            }
+          }, function ( err, phrases ) {
+
+              //console.log('Talking Points:', phrases.allPoints[0])
+              //console.log('Insights:', phrases.allInsights[0])
+      
+              resolve( phrases )
+
+          })
+
+    })    
+
+
+   
+
+
+  },
+
+
   matchingAllTagsFilter : function(arrayToSearchThrough, arrayOfWordsToSearchFor, shuffleSwitch) {
 
     // return an array that *includes* if matches any *all* the filtered tags //  

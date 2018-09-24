@@ -14,6 +14,7 @@ var emoji = require('node-emoji')
 
 var phraseMaker = require('../controllers/phrases');
 
+/*
 var talkingPointsPhrases = require('../definitions/phrases-talking-points');
 var insightsPhrases = require('../definitions/phrases-insights');
  
@@ -22,8 +23,6 @@ var insightsPhrasesList = insightsPhrases.get();
 
 var allPoints = [];
 var allInsights = [];
-var filteredPoints = [];
-var filteredInsights = [];
 
 _.forEach(talkingPointsPhrasesList, function(phrase,index) {
   allPoints.push(phraseMaker.make(phrase))
@@ -32,12 +31,15 @@ _.forEach(talkingPointsPhrasesList, function(phrase,index) {
 _.forEach(insightsPhrasesList, function(phrase,index) {
   allInsights.push(phraseMaker.make(phrase))
 })
+*/
 
 var insights = {
 
 	insightsList : {},
 
 	bucketList : {},
+
+	allPhrases : {},
 
 	makeInsightsList : function() {
 
@@ -52,215 +54,281 @@ var insights = {
 		return this.bucketList
 
 	},
+
+	makePhrasesFromDb : function() {
+
+		var thisModule = this;
+
+		return new Promise(function(resolve, reject) {
+
+			phraseMaker.getPhrasesFromDb().then( function( phrases ) {
+				
+				console.log("\n", emoji.get("sparkle"), 'got phrases from DB')
+
+				thisModule.allPhrases.allPoints = phrases.allPoints
+				thisModule.allPhrases.allInsights = phrases.allInsights
+
+				resolve ( thisModule.allPhrases )
+			})
+
+		})
+
+	},
+
+	makePhrases : function() {
+
+		var thisModule = this
+
+		return new Promise(function(resolve, reject) {
+
+			var talkingPointsPhrases = require('../definitions/phrases-talking-points');
+			var insightsPhrases = require('../definitions/phrases-insights');
+			 
+			var talkingPointsPhrasesList = talkingPointsPhrases.get();
+			var insightsPhrasesList = insightsPhrases.get();
+
+			var allPoints = [];
+			var allInsights = [];
+
+			_.forEach(talkingPointsPhrasesList, function(phrase,index) {
+			  allPoints.push(phraseMaker.make(phrase))
+			})
+
+			_.forEach(insightsPhrasesList, function(phrase,index) {
+			  allInsights.push(phraseMaker.make(phrase))
+			})
+
+			console.log("\n", emoji.get("sparkle"), 'got phrases from file')
+
+			thisModule.allPhrases.allPoints = allPoints
+			thisModule.allPhrases.allInsights = allInsights
+		
+			resolve ( thisModule.allPhrases )
+
+		})
+
+
+	},
 	
 	getInsights : function( platform, allDataSources ) {
 
 		var thisModule = this
-
-		var insightsList = thisModule.makeInsightsList();
-		var bucketList = thisModule.makeBucketList();
-		var insightsData = insightsList.data
-
-		/**
-		 *
-		 * MAKE metric INSIGHT OBJECT 
-		 * 
-		*/
-
-		var addToInsightsObject = function(phraseObject, parentBucket, assetInsights) {
-
-			var status = phraseObject.status
-
-			if ( typeof insightsData.platform_insights.statuses[status] == 'undefined' ) {
-				insightsData.platform_insights.statuses[status] = {
-					count : 0,
-					list : []
-				}
-			}
-
-			if ( typeof insightsData.platform_insights.buckets[parentBucket] == 'undefined' ) {
-				insightsData.platform_insights.buckets[parentBucket] = []
-			}
-
-			insightsData.platform_insights.statuses[status].count++
 		
-			if ( assetInsights ) {
-				phraseObject.data.assetInsights = assetInsights
-			}
+		return new Promise(function(resolve, reject) {
 
-			insightsData.platform_insights.statuses[status].list.push(phraseObject.data)
-			insightsData.platform_insights.metrics.push(phraseObject.data)
-			insightsData.platform_insights.buckets[parentBucket].push(phraseObject.data)
+			var bucketList = thisModule.makeBucketList();
+			var getAllPhrases = thisModule.makePhrasesFromDb();
 
-	
-		}
-		
-		//console.log('>>>>> Insights Data', insightsData)
+			var insightsList = thisModule.makeInsightsList();
+			var insightsData = insightsList.data
 
-		/**
-		 *
-		 * platform level insights
-		 * 
-		*/
-
-		var html = "";
-		
-		_.forEach ( platform, function( category, categoryName ) {
-
-			var bucketName = "none"
-
-			_.forEach ( category.metrics, function( metric, metricName ) {
-
-				if ( typeof metric.data !== 'undefined') {
-
-					bucketName = utilities.getBucket(metricName);
-		
-					var phraseObject = thisModule.platformPhraser(metric);
-					var status = phraseObject.status
-		
-					if ( metric.asset_links ) {
-
-						//console.log( 'base metric: ', metric.asset_insights)
-						var assetInsights = thisModule.getAssetInsights(allDataSources, metric.dataSourcesUsed, metric.asset_links, status, metricName, bucketName )
-						
-						if ( assetInsights ) {
-							
-							_.forEach( assetInsights, function( factor, index ) {
-
-								//console.log('Individual Factor>>>>', asset.meta.parentMetric, factor)
-
-								var assetPhrase = ""
-								assetPhrase = thisModule.assetPhraser( factor )
-							
-							})
-						}
-					}
-
-					/**
-					 *
-					 * MAKE INSIGHT OBJECT -- add to insight object
-					 * 
-					*/
-
-					addToInsightsObject(phraseObject, bucketName, assetInsights)
-
-				}
-
-			})
-
-
-			/* CATEGORY EQUATIONS WERE HERE */
-
-		})
-
-		
-		/**
-		 *
-		 * bucket level insights
-		 * 
-		*/
-
-		var html = "";
-		var pictureTips = [];
-	
-		_.forEach ( bucketList, function( bucket, bucketName ) {
-
-			var scoreValues = [];
-			var scoreWeights = [];
-			var weightedScoreDisplay = "";
-			var positives = [];
-			var negatives = [];
-			var neutrals = [];
-			var mappingsStatus = ""
 
 			/**
 			 *
-			 * SET BUCKET INSIGHTS
+			 * MAKE metric INSIGHT OBJECT 
 			 * 
 			*/
 
-			_.forEach ( bucket.meta.order, function( category, count ) {
+			var addToInsightsObject = function(phraseObject, parentBucket, assetInsights) {
 
-				if ( bucket.meta.mappings[category].length <= 0 ) return;
+				var status = phraseObject.status
 
-				_.forEach ( bucket.meta.mappings[category], function( metric, index ) {
-
-					var metricParent = 'metrics';
-
-					if ( typeof platform[category][metricParent][metric] == "undefined") { 
-						return 
+				if ( typeof insightsData.platform_insights.statuses[status] == 'undefined' ) {
+					insightsData.platform_insights.statuses[status] = {
+						count : 0,
+						list : []
 					}
+				}
 
-					// TODO: dont add metrics to scores if there is no reason for it (I.E. revenue for GA)
-					if ( typeof platform[category][metricParent][metric].data !== "undefined") {
+				if ( typeof insightsData.platform_insights.buckets[parentBucket] == 'undefined' ) {
+					insightsData.platform_insights.buckets[parentBucket] = []
+				}
 
-						var metric = platform[category][metricParent][metric];
-						var status = metric.status;
-					
-						scoreValues.push(metric.metricScore)
-						scoreWeights.push(metric.weight)
-					}
-
-				} )
-
-				var weightedScore = utilities.weightedMean( scoreValues, scoreWeights )
-				weightedScoreDisplay = (weightedScore * 100).toFixed(0) 
+				insightsData.platform_insights.statuses[status].count++
 			
-				bucketList[bucketName].data.totalScore = weightedScoreDisplay;
+				if ( assetInsights ) {
+					phraseObject.data.assetInsights = assetInsights
+				}
 
+				insightsData.platform_insights.statuses[status].list.push(phraseObject.data)
+				insightsData.platform_insights.metrics.push(phraseObject.data)
+				insightsData.platform_insights.buckets[parentBucket].push(phraseObject.data)
+
+		
+			}
+			
+			//console.log('>>>>> Insights Data', insightsData)
+
+			/**
+			 *
+			 * platform level insights
+			 * 
+			*/
+
+			getAllPhrases.then( function( phrases ) {
+
+				var html = "";
+				
+				_.forEach ( platform, function( category, categoryName ) {
+
+					var bucketName = "none"
+
+					_.forEach ( category.metrics, function( metric, metricName ) {
+
+						if ( typeof metric.data !== 'undefined') {
+
+							bucketName = utilities.getBucket(metricName);
+				
+							var phraseObject = thisModule.platformPhraser(metric);
+							var status = phraseObject.status
+				
+							if ( metric.asset_links ) {
+
+								//console.log( 'base metric: ', metric.asset_insights)
+								var assetInsights = thisModule.getAssetInsights(allDataSources, metric.dataSourcesUsed, metric.asset_links, status, metricName, bucketName )
+								
+								if ( assetInsights ) {
+									
+									_.forEach( assetInsights, function( factor, index ) {
+
+										//console.log('Individual Factor>>>>', asset.meta.parentMetric, factor)
+
+										var assetPhrase = ""
+										assetPhrase = thisModule.assetPhraser( factor )
+									
+									})
+								}
+							}
+
+							/**
+							 *
+							 * MAKE INSIGHT OBJECT -- add to insight object
+							 * 
+							*/
+
+							addToInsightsObject(phraseObject, bucketName, assetInsights)
+
+						}
+
+					})
+
+
+					/* CATEGORY EQUATIONS WERE HERE */
+
+				})
+
+				
+				/**
+				 *
+				 * bucket level insights
+				 * 
+				*/
+
+				var html = "";
+				var pictureTips = [];
+			
+				_.forEach ( bucketList, function( bucket, bucketName ) {
+
+					var scoreValues = [];
+					var scoreWeights = [];
+					var weightedScoreDisplay = "";
+					var positives = [];
+					var negatives = [];
+					var neutrals = [];
+					var mappingsStatus = ""
+
+					/**
+					 *
+					 * SET BUCKET INSIGHTS
+					 * 
+					*/
+
+					_.forEach ( bucket.meta.order, function( category, count ) {
+
+						if ( bucket.meta.mappings[category].length <= 0 ) return;
+
+						_.forEach ( bucket.meta.mappings[category], function( metric, index ) {
+
+							var metricParent = 'metrics';
+
+							if ( typeof platform[category][metricParent][metric] == "undefined") { 
+								return 
+							}
+
+							// TODO: dont add metrics to scores if there is no reason for it (I.E. revenue for GA)
+							if ( typeof platform[category][metricParent][metric].data !== "undefined") {
+
+								var metric = platform[category][metricParent][metric];
+								var status = metric.status;
+							
+								scoreValues.push(metric.metricScore)
+								scoreWeights.push(metric.weight)
+							}
+
+						} )
+
+						var weightedScore = utilities.weightedMean( scoreValues, scoreWeights )
+						weightedScoreDisplay = (weightedScore * 100).toFixed(0) 
+					
+						bucketList[bucketName].data.totalScore = weightedScoreDisplay;
+
+
+						/**
+						 *
+						 * Get the number of positive and negative metrics
+						 * 
+						*/
+					
+						positives = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'positive')
+						negatives = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'negative')
+						neutrals = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'neutral')
+						var totalMappingsCount = positives.length + negatives.length + neutrals.length
+						var bucketPerformance = positives.length / totalMappingsCount
+						bucketPerformancePercentage = bucketPerformance * 100;
+
+						if ( bucketPerformancePercentage > 50 ) {
+							mappingsStatus = 'positive'	
+						} else if ( bucketPerformancePercentage < 50 ) {
+							mappingsStatus = 'negative'	
+						} else {
+							mappingsStatus = 'neutral'	
+						}
+
+					} )			
+
+					insightsData.bucket_insights.buckets.push({
+						name : bucketName,
+						scoreValues : scoreValues,
+						scoreWeights : scoreWeights,
+						totalScore : weightedScoreDisplay,
+						positiveMappingsCount : positives.length,
+						negativeMappingsCount : negatives.length,
+						neutralMappingsCount : neutrals.length,
+						mappingsStatus : mappingsStatus
+					})
+
+
+
+				})
 
 				/**
 				 *
-				 * Get the number of positive and negative metrics
+				 * Bring it all together
 				 * 
 				*/
+
 			
-				positives = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'positive')
-				negatives = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'negative')
-				neutrals = thisModule.filter(insightsData.platform_insights.buckets[bucketName], 'status', 'neutral')
-				var totalMappingsCount = positives.length + negatives.length + neutrals.length
-				var bucketPerformance = positives.length / totalMappingsCount
-				bucketPerformancePercentage = bucketPerformance * 100;
+				var bucketInsights = thisModule.arrangeBucketInsights();
 
-				if ( bucketPerformancePercentage > 50 ) {
-					mappingsStatus = 'positive'	
-				} else if ( bucketPerformancePercentage < 50 ) {
-					mappingsStatus = 'negative'	
-				} else {
-					mappingsStatus = 'neutral'	
-				}
+				//console.log("\n", emoji.get("sparkle"), '>>>>>> bucket insights', insightsList.data.bucket_insights)
 
-			} )			
+				var platformInsights = thisModule.arrangePlatformInsights();
 
-			insightsData.bucket_insights.buckets.push({
-				name : bucketName,
-				scoreValues : scoreValues,
-				scoreWeights : scoreWeights,
-				totalScore : weightedScoreDisplay,
-				positiveMappingsCount : positives.length,
-				negativeMappingsCount : negatives.length,
-				neutralMappingsCount : neutrals.length,
-				mappingsStatus : mappingsStatus
+				resolve ( insightsList )
+
 			})
 
-
-
 		})
-
-		/**
-		 *
-		 * Bring it all together
-		 * 
-		*/
-
-	
-		var bucketInsights = thisModule.arrangeBucketInsights();
-
-		//console.log("\n", emoji.get("sparkle"), '>>>>>> bucket insights', insightsList.data.bucket_insights)
-
-		var platformInsights = thisModule.arrangePlatformInsights();
-
-		return insightsList
 
 	},
 
@@ -728,14 +796,13 @@ var insights = {
 		//var insightsTagsSearch = tags.concat(metric.name)
 		var insightsTagsSearch = tags
 
-
 		//console.log( 'ASSET INSIGHTS TAG SEARCH:', asset.meta.field, asset.meta.parentMetric, insightsTagsSearch)
-		var insightsPhrases = phraseMaker.matchingAllTagsFilter(allInsights, insightsTagsSearch) 
+		var insightsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allInsights, insightsTagsSearch) 
 	
 		//console.log( 'ASSET INSIGHTS PHRASES FOUND:', insightsPhrases.length, insightsTagsSearch )
 		//console.log("ASSET TRYING TAGS SEARCH>>>", asset.meta.field, asset.meta.parentMetric, tags.slice(0,3))
 		
-		var pointsPhrases = phraseMaker.matchingAllTagsFilter(allPoints, tags.slice(0,3)) 
+		var pointsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allPoints, tags.slice(0,3)) 
 
 		//console.log('points tags:', tags.slice(0,3))		
 		//console.log( 'ASSET POINTS PHRASES FOUND:', pointsPhrases.length, tags.slice(0,3))
@@ -810,6 +877,7 @@ var insights = {
 
 	platformPhraser : function( metric ) {
 
+		var thisModule = this
 		var insightsList = this.insightsList
 		var insightsData = insightsList.data
 		
@@ -920,11 +988,11 @@ var insights = {
 		
 		// TODO if has metric, and not the current metric EXCLUDE
 		//console.log( 'PLATFORM INSIGHTS TAG SEARCH:', metric.name, insightsTagsSearch)
-		var insightsPhrases = phraseMaker.matchingAllTagsFilter(allInsights, insightsTagsSearch) 
+		var insightsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allInsights, insightsTagsSearch) 
 		//console.log( 'PLATFORM INSIGHTS PHRASES FOUND:', insightsPhrases.length )
 
 		//console.log( 'PLATFORM INSIGHTS TAG SEARCH POINTS:', metric.name, tags)
-		var pointsPhrases = phraseMaker.matchingAllTagsFilter(allPoints, tags)
+		var pointsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allPoints, tags)
 		//console.log( 'PLATFORM POINTS PHRASES FOUND:', pointsPhrases.length ) 
 
 		var replacedPhrases = [];

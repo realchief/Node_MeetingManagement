@@ -204,7 +204,7 @@ var insights = {
 							 * 
 							*/
 
-							addToInsightsObject(phraseObject, bucketName, assetInsights)
+							addToInsightsObject( phraseObject, bucketName, assetInsights )
 
 						}
 
@@ -359,25 +359,25 @@ var insights = {
 		var usedPhrases = insightsList.data.usedPhrases.phrases;
 		var usedTags = insightsList.data.usedPhrases.tags;
 
-		var newPhrase = {}
-		newPhrase.phrase = phraseSet[0].phrase
-		newPhrase.id = phraseSet[0].id
-		newPhrase.tags = phraseSet[0].all_tags
+		var uniquePhrase = {}
+		uniquePhrase.phrase = phraseSet[0].phrase
+		uniquePhrase.id = phraseSet[0].id
+		uniquePhrase.tags = phraseSet[0].all_tags
 
-		if (usedPhrases.indexOf(newPhrase) >= 0) {
+		if (usedPhrases.indexOf(uniquePhrase) >= 0) {
 
 			for ( i = 0; i < phraseSet.length; i++ ) {
 
 				if (usedPhrases.indexOf(phraseSet[i].phrase) == -1) {
 
-					//console.log(">>> Found New Phrase", phraseSet[i] )
+					//console.log(">>> Got New Phrase", phraseSet[i] )
 
-					newPhrase.phrase = phraseSet[i].phrase;
-					newPhrase.id = phraseSet[i].id;
-					newPhrase.tags = phraseSet[i].all_tags;
+					uniquePhrase.phrase = phraseSet[i].phrase;
+					uniquePhrase.id = phraseSet[i].id;
+					uniquePhrase.tags = phraseSet[i].all_tags;
 
-					usedPhrases.push(newPhrase.phrase)
-					usedIds.push(newPhrase.id)
+					usedPhrases.push(uniquePhrase.phrase)
+					usedIds.push(uniquePhrase.id)
 
 					break
 				} 
@@ -385,22 +385,21 @@ var insights = {
 				//console.log(">>> Found DUPE!", phraseSet[i] )
 
 				if ( i == phraseSet.length-1) {
-					newPhrase.phrase = phraseSet[0].phrase + " (duplicate)"
-					newPhrase.id = phraseSet[0].id
-					newPhrase.tags = phraseSet[0].all_tags
+					uniquePhrase.phrase = phraseSet[0].phrase + " (duplicate)"
+					uniquePhrase.id = phraseSet[0].id
+					uniquePhrase.tags = phraseSet[0].all_tags
 				}
 
 			}
 
 		} else {
 
-			usedPhrases.push(newPhrase.phrase)
-			usedIds.push(newPhrase.id)
+			usedPhrases.push(uniquePhrase.phrase)
+			usedIds.push(uniquePhrase.id)
 		
 		}
-		//usedTags.push(tags)
-
-		return newPhrase
+	
+		return uniquePhrase
 
 	},
 

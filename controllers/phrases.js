@@ -81,7 +81,7 @@ module.exports = {
                     
                     insightsArray.push( { 
                         id : phrase.id,
-                        phrase : phrase.phrase + ' ' + phrase.id,
+                        phrase : phrase.phrase,
                         all_tags : phrase.all_tags
                     })
                     
@@ -108,7 +108,7 @@ module.exports = {
                       
                       insightsArray.push( { 
                           id : phrase.id,
-                          phrase : phrase.phrase + ' ' + phrase.id,
+                          phrase : phrase.phrase,
                           all_tags : phrase.all_tags
                       })
 

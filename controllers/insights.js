@@ -55,7 +55,7 @@ var insights = {
 
 	},
 
-	makePhrasesFromDb : function() {
+	getPhrasesFromDb : function() {
 
 		var thisModule = this;
 
@@ -75,7 +75,7 @@ var insights = {
 
 	},
 
-	makePhrases : function() {
+	getPhrases : function() {
 
 		var thisModule = this
 
@@ -117,7 +117,7 @@ var insights = {
 		return new Promise(function(resolve, reject) {
 
 			var bucketList = thisModule.makeBucketList();
-			var getAllPhrases = thisModule.makePhrasesFromDb();
+			var getAllPhrases = thisModule.getPhrasesFromDb();
 
 			var insightsList = thisModule.makeInsightsList();
 			var insightsData = insightsList.data
@@ -129,7 +129,7 @@ var insights = {
 			 * 
 			*/
 
-			var addToInsightsObject = function(phraseObject, parentBucket, assetInsights) {
+			var addToInsightsObject = function( phraseObject, parentBucket, assetInsights ) {
 
 				var status = phraseObject.status
 
@@ -159,16 +159,14 @@ var insights = {
 			
 			//console.log('>>>>> Insights Data', insightsData)
 
-			/**
-			 *
-			 * platform level insights
-			 * 
-			*/
-
 			getAllPhrases.then( function( phrases ) {
 
-				var html = "";
-				
+				/**
+				 *
+				 * platform level insights
+				 * 
+				*/
+
 				_.forEach ( platform, function( category, categoryName ) {
 
 					var bucketName = "none"
@@ -189,12 +187,12 @@ var insights = {
 								
 								if ( assetInsights ) {
 									
-									_.forEach( assetInsights, function( factor, index ) {
+									_.forEach( assetInsights, function( asset, index ) {
 
 										//console.log('Individual Factor>>>>', asset.meta.parentMetric, factor)
 
 										var assetPhrase = ""
-										assetPhrase = thisModule.assetPhraser( factor )
+										assetPhrase = thisModule.assetPhraser( asset )
 									
 									})
 								}
@@ -212,7 +210,6 @@ var insights = {
 
 					})
 
-
 					/* CATEGORY EQUATIONS WERE HERE */
 
 				})
@@ -224,7 +221,6 @@ var insights = {
 				 * 
 				*/
 
-				var html = "";
 				var pictureTips = [];
 			
 				_.forEach ( bucketList, function( bucket, bucketName ) {
@@ -307,8 +303,6 @@ var insights = {
 						mappingsStatus : mappingsStatus
 					})
 
-
-
 				})
 
 				/**
@@ -316,7 +310,6 @@ var insights = {
 				 * Bring it all together
 				 * 
 				*/
-
 			
 				var bucketInsights = thisModule.arrangeBucketInsights();
 
@@ -362,10 +355,14 @@ var insights = {
 
 		utilities.shuffle(phraseSet)
 
+		var usedIds = insightsList.data.usedPhrases.ids;
 		var usedPhrases = insightsList.data.usedPhrases.phrases;
 		var usedTags = insightsList.data.usedPhrases.tags;
 
-		var newPhrase = phraseSet[0].phrase
+		var newPhrase = {}
+		newPhrase.phrase = phraseSet[0].phrase
+		newPhrase.id = phraseSet[0].id
+		newPhrase.tags = phraseSet[0].all_tags
 
 		if (usedPhrases.indexOf(newPhrase) >= 0) {
 
@@ -375,21 +372,31 @@ var insights = {
 
 					//console.log(">>> Found New Phrase", phraseSet[i] )
 
-					newPhrase = phraseSet[i].phrase;
-					usedPhrases.push(newPhrase)
+					newPhrase.phrase = phraseSet[i].phrase;
+					newPhrase.id = phraseSet[i].id;
+					newPhrase.tags = phraseSet[i].all_tags;
+
+					usedPhrases.push(newPhrase.phrase)
+					usedIds.push(newPhrase.id)
+
 					break
 				} 
 
 				//console.log(">>> Found DUPE!", phraseSet[i] )
 
 				if ( i == phraseSet.length-1) {
-					newPhrase = phraseSet[0].phrase + " (duplicate)"
+					newPhrase.phrase = phraseSet[0].phrase + " (duplicate)"
+					newPhrase.id = phraseSet[0].id
+					newPhrase.tags = phraseSet[0].all_tags
 				}
 
 			}
 
 		} else {
-			usedPhrases.push(newPhrase)
+
+			usedPhrases.push(newPhrase.phrase)
+			usedIds.push(newPhrase.id)
+		
 		}
 		//usedTags.push(tags)
 
@@ -413,20 +420,26 @@ var insights = {
 
 		_.forEach( insightsList.data.platform_insights.metrics, function( metric, index ) {
 
-			//console.log(metric.name, utilities.getBucket(metric.name))
 			var parentBucket = bucketList[utilities.getBucket(metric.name)].meta.shortLabel;
-
 			
-			//console.log("REORDERED PHRASE>>>", parentBucket, metric.phrase)
-			//factorList.push(metric.phrase)
-
-			var phraseToUse = thisModule.getUniquePhrase(metric.pointsPhrases)
+			//console.log("REORDERED PHRASE>>>", parentBucket, metric.pointsPhrases )
+			
+			var pointToUse = thisModule.getUniquePhrase(metric.pointsPhrases)
 
 			var inlineStyle = utilities.getInlineStyle('status', metric.status);
 
 			if ( typeof metric.insightsPhrases[0] !== 'undefined') {
+				
 				var bucketTag = '<span class="bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
-				var completePhrase = metric.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag;
+				
+				var completePhrase = {
+					point_id : pointToUse.id,
+					insight_id : metric.insightsPhrases[0].id,
+					point_tags : pointToUse.tags,
+					insight_tags : metric.insightsPhrases[0].tags,
+					phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag
+				}
+
 				phraseList.push(completePhrase)
 				platformPhrases.push(completePhrase)		
 
@@ -439,21 +452,31 @@ var insights = {
 			}
 			var data = [];
 			_.forEach( metric.assetInsights, function( assetInsight, index ) {
-					// datum = {};
-					// datum['inlineStyle'] = inlineStyle
-					var asset = assetInsight.meta
-					//console.log('Asset Insight:', factor)
-					var inlineStyle = utilities.getInlineStyle('status', asset.status);
-					var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
-					if ( typeof asset.pointsPhrases !== 'undefined') {
-						var phraseToUse = thisModule.getUniquePhrase(asset.pointsPhrases)
-						var completePhrase = '<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>'
-						phraseList.push(completePhrase)	
-						assetPhrases.push(completePhrase)			
+	
+				var asset = assetInsight.meta
+				
+				var inlineStyle = utilities.getInlineStyle('status', asset.status);
+				
+				var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
+				
+				if ( typeof asset.pointsPhrases !== 'undefined') {
+					
+					var pointToUse = thisModule.getUniquePhrase(asset.pointsPhrases)
+					var completePhrase = {
+						point_id : pointToUse.id,
+						insight_id : metric.insightsPhrases[0].id,
+						point_tags : pointToUse.tags,
+						insight_tags : metric.insightsPhrases[0].tags,
+						phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
 					}
+					
+					phraseList.push(completePhrase)	
+					assetPhrases.push(completePhrase)			
+				
+				}
 
-					asset.completePhrase = completePhrase
-				})
+				asset.completePhrase = completePhrase
+			})
 		})
 
 
@@ -463,6 +486,7 @@ var insights = {
 		insightsList.data.platform_phrases = platformPhrases 
 
 		insightsList.data.all_phrases = phraseList
+
 		insightsList.data.action_items = phraseList.slice(0,3)
 		insightsList.data.talking_points = phraseList.slice(3,6)
 
@@ -509,7 +533,7 @@ var insights = {
 
 		}
 
-		return listing[0]
+		return listing
 
 	},
 
@@ -599,7 +623,7 @@ var insights = {
 
 					//console.log('LIST>>>', dataSource, assetGroup, sortBy, filter, allDataSources[dataSource].metric_assets[assetGroup].current.list)
 
-					topAsset = thisModule.sort(allDataSources[dataSource].metric_assets[assetGroup].current.list, sortBy, filter )
+					topAsset = thisModule.sort(allDataSources[dataSource].metric_assets[assetGroup].current.list, sortBy, filter )[0]
 				}
 
 				if ( topAsset ) {
@@ -683,7 +707,7 @@ var insights = {
 
 		var thisModule = this
 
-		var insightsList = this.insightsList
+		var insightsList = thisModule.insightsList
 
 		if ( asset.meta.value ) {
 
@@ -825,7 +849,11 @@ var insights = {
 				  return replacements[m1] || m;  
 				});
 
-				replacedPhrases.push(replacedPhrase)
+				replacedPhrases.push({
+					phrase: replacedPhrase,
+					id: insightsPhrase.id,
+					tags: insightsPhrase.all_tags
+				})
 
 			})
 
@@ -1013,7 +1041,11 @@ var insights = {
 				  return replacements[m1] || m;  
 				});
 
-				replacedPhrases.push(replacedPhrase)
+				replacedPhrases.push({
+					phrase: replacedPhrase,
+					id: insightsPhrase.id,
+					tags: insightsPhrase.all_tags
+				})
 
 
 

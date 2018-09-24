@@ -33,7 +33,8 @@ module.exports = {
 			},
 			usedPhrases : {
 				phrases : [],
-				tags : []
+				tags : [],
+				ids: []
 			}
 
 		}

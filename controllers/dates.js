@@ -10,7 +10,7 @@ module.exports = {
 
         var range = {};
 
-        var numDays = numDays || 28
+        var numDays = numDays || 7
         comparisonWindow = comparisonWindow || "over"
 
         var dateRanges = {
@@ -448,7 +448,7 @@ module.exports = {
 
       var thisModule = this
 
-      var defaultNumDays = 28
+      var defaultNumDays = 7
       var timeWindow = timeWindow || thisModule.getDateRangeNumDays(defaultNumDays);
 
       timeWindow = timeWindow || {

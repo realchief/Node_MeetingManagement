@@ -405,8 +405,7 @@ router.get('/phrasetestdb/', function (req, res) {
       
       console.log('got phrases from DB')
         
-        var filteredInsights = phraseMaker.matchingAllTagsFilter(phrases.allInsights, ['google_analytics', 'positive', 'pageviews'])
-
+       var filteredInsights = phraseMaker.matchingAllTagsFilter(phrases.allInsights, ['google_analytics', 'positive', 'pageviews'])
 
       res.render('fingertips', {
         layout: 'phrases-test.handlebars',

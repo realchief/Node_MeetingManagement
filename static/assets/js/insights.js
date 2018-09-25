@@ -323,7 +323,7 @@ FT.insights = {
 			//console.log("REORDERED PHRASE>>>", parentBucket, metric.phrase)
 			//factorList.push(metric.phrase)
 
-			var phraseToUse = FT.insights.getUniquePhrase(metric.pointsPhrases)
+			var phraseToUse = FT.insights.getUniquePhrase(metric.talkingPointsPhrases)
 
 			var inlineStyle = FT.utilities.getInlineStyle('status', metric.status);
 
@@ -346,8 +346,8 @@ FT.insights = {
 					//console.log('Asset Insight:', factor)
 					var inlineStyle = FT.utilities.getInlineStyle('status', asset.status);
 					var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
-					if ( typeof asset.pointsPhrases !== 'undefined') {
-						var phraseToUse = FT.insights.getUniquePhrase(asset.pointsPhrases)
+					if ( typeof asset.talkingPointsPhrases !== 'undefined') {
+						var phraseToUse = FT.insights.getUniquePhrase(asset.talkingPointsPhrases)
 						var completePhrase = '<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>'
 						phraseList.push(completePhrase)			
 					}
@@ -691,10 +691,10 @@ FT.insights = {
 		//console.log( 'ASSET INSIGHTS PHRASES FOUND:', insightsPhrases)
 		//console.log("ASSET TRYING TAGS SEARCH>>>", asset.meta.field, asset.meta.parentMetric, tags.slice(0,3))
 		
-		var pointsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.phrases, tags.slice(0,3)) 
+		var talkingPointsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.phrases, tags.slice(0,3)) 
 
 		//console.log('points tags:', tags.slice(0,3))		
-		//console.log( 'ASSET POINTS PHRASES FOUND:', pointsPhrases)
+		//console.log( 'ASSET POINTS PHRASES FOUND:', talkingPointsPhrases)
 		
 		var replacedPhrases = [];
 
@@ -723,7 +723,7 @@ FT.insights = {
 
 
 			asset.meta.insightsPhrases = replacedPhrases
-			asset.meta.pointsPhrases = pointsPhrases
+			asset.meta.talkingPointsPhrases = talkingPointsPhrases
 
 			/**
 			 *
@@ -878,7 +878,7 @@ FT.insights = {
 		var insightsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.insights, insightsTagsSearch) 
 
 		//console.log( 'PLATFORM INSIGHTS TAG SEARCH POINTS:', metric.name, tags)
-		var pointsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.phrases, tags) 
+		var talkingPointsPhrases = FT.utilities.matchingAllTagsFilter(FT.phrases.phrases, tags) 
 		
 		var replacedPhrases = [];
 
@@ -922,7 +922,7 @@ FT.insights = {
 			tags : tags,
 			rolledUpPercentDelta : rolledUpPercentDelta,
 			insightsPhrases : replacedPhrases,
-			pointsPhrases: pointsPhrases
+			talkingPointsPhrases: talkingPointsPhrases
 		}
 
 		return {

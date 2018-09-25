@@ -94,7 +94,7 @@ module.exports = {
 
             },
             
-            allPoints: function ( cb ) {
+            allTalkingPoints: function ( cb ) {
 
                 var insightsArray = [];
                
@@ -119,10 +119,65 @@ module.exports = {
                   })
 
 
+            },
+
+            allActionItems: function ( cb ) {
+
+                var insightsArray = [];
+               
+                 Model.Phrase.findAll({
+
+                    where: { type : 'action' }
+
+                  }).then(function (phrases) {
+
+                   _.forEach(phrases, function(phrase,index) {
+                      
+                      insightsArray.push( { 
+                          id : phrase.id,
+                          phrase : phrase.phrase,
+                          all_tags : phrase.all_tags
+                      })
+
+                    })
+
+                   cb ( null, insightsArray )
+
+                  })
+
+
+            },
+
+            allResources: function ( cb ) {
+
+                var insightsArray = [];
+               
+                 Model.Phrase.findAll({
+
+                    where: { type : 'resource' }
+
+                  }).then(function (phrases) {
+
+                   _.forEach(phrases, function(phrase,index) {
+                      
+                      insightsArray.push( { 
+                          id : phrase.id,
+                          phrase : phrase.phrase,
+                          all_tags : phrase.all_tags
+                      })
+
+                    })
+
+                   cb ( null, insightsArray )
+
+                  })
+
+
             }
+
           }, function ( err, phrases ) {
 
-              //console.log('Talking Points:', phrases.allPoints[0])
+              //console.log('Talking Points:', phrases.allTalkingPoints[0])
               //console.log('Insights:', phrases.allInsights[0])
       
               resolve( phrases )
@@ -166,6 +221,7 @@ module.exports = {
       }
     );     
   
+    if ( filteredArray.length == 0 ) return null
     return filteredArray;
   },
 
@@ -209,6 +265,7 @@ module.exports = {
       }
     );     
   
+    if ( filteredArray.length == 0 ) return null
     return filteredArray;
   },
 
@@ -241,7 +298,7 @@ module.exports = {
       }
     );     
   
-    
+    if ( filteredArray.length == 0 ) return null
     return filteredArray;
   },
   
@@ -272,6 +329,7 @@ module.exports = {
       }
     );     
   
+    if ( filteredArray.length == 0 ) return null
     return filteredArray;
   },
 

@@ -290,20 +290,20 @@ router.get('/testphrase/', function (req, res) {
   var talkingPointsList = talkingPointsPhrases.get();
   var insightsList = insightsPhrases.get();
 
-  var allPoints = [];
+  var allTalkingPoints = [];
   var allInsights = [];
   var filteredPoints = [];
   var filteredInsights = [];
 
   _.forEach(talkingPointsList, function(phrase,index) {
-      allPoints.push(phraseMaker.make(phrase))
+      allTalkingPoints.push(phraseMaker.make(phrase))
   })
 
   _.forEach(insightsList, function(phrase,index) {
       allInsights.push(phraseMaker.make(phrase))
   })
 
-  var filteredPoints = phraseMaker.matchingAllTagsFilter(allPoints, ['google_analytics', 'positive', 'pageviews'])
+  var filteredPoints = phraseMaker.matchingAllTagsFilter(allTalkingPoints, ['google_analytics', 'positive', 'pageviews'])
   var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics', 'positive', 'pageviews'])
 
 
@@ -362,7 +362,7 @@ router.get('/testphrase/', function (req, res) {
 
   res.render('fingertips', {
         layout: 'phrases-test.handlebars',
-        allPoints : allPoints,
+        allTalkingPoints : allTalkingPoints,
         allInsights : allInsights,
         filteredPoints : filteredPoints,
         filteredInsights : filteredInsights,
@@ -478,7 +478,7 @@ router.get('/phrasetestdb/', function (req, res) {
 
     res.render('fingertips', {
         layout: 'phrases-test.handlebars',
-       // allPoints : allPoints,
+       // allTalkingPoints : allTalkingPoints,
         allInsights : allInsights,
        // filteredPoints : filteredPoints,
         filteredInsights : filteredInsights    
@@ -497,7 +497,7 @@ router.get('/phrasetestdb/', function (req, res) {
 
       res.render('fingertips', {
         layout: 'phrases-test.handlebars',
-       // allPoints : allPoints,
+       // allTalkingPoints : allTalkingPoints,
         allInsights : phrases.allInsights,
        // filteredPoints : filteredPoints,
         filteredInsights : filteredInsights    

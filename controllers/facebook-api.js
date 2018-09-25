@@ -10,14 +10,14 @@ var colors = require('colors');
 var emoji = require('node-emoji');
 var _ = require('lodash');
 
-exports.getMetrics = ( fAccount, timeframe, done) => {
+exports.getMetrics = ( fAccount, dateWindow, timeframe, done) => {
     
     const token = fAccount.token;
 
     /* dates and timeframes */
 
     var range = dates.getDateRangeNumDays();
-    var dateWindow = dates.setDateWindow()
+    //var dateWindow = dates.setDateWindow()
 
     var facebookDatePreset = 'today';
     
@@ -375,58 +375,82 @@ exports.getMetrics = ( fAccount, timeframe, done) => {
 };
 
 
-exports.getAllMetrics = ( fAccount, done ) => {
+exports.getAllMetrics = ( fAccount, dateWindow, done ) => {
 
     var thisModule = this
 
-    Async.parallel({
+    var filePath = './responses/';
+    var readableDate = dateWindow.currentReadable + "--" + dateWindow.comparedReadable
+        readableDate = readableDate.replace(/\s/g, '');
+    var filename = 'fb' + '-' + fAccount.account_id + '-' + readableDate + '.json'
+  
+    var fs = require('fs');
 
-        metrics : ( cb ) => {
+    fs.readFile(filePath+filename, "utf8", function( err, data ) {
+      
+        if (err) {
+        
+            console.log("\n", emoji.get('hand'), 'Facebook file does not exist, pull from API' );
 
             Async.parallel({
 
-                current : ( cb ) => {
+                metrics : ( cb ) => {
 
-                    thisModule.getMetrics( fAccount, 'current', function( err, response ) {
-                        cb( null, response )
+                    Async.parallel({
+
+                        current : ( cb ) => {
+
+                            thisModule.getMetrics( fAccount, dateWindow, 'current', function( err, response ) {
+                                cb( null, response )
+                            })
+
+                        },
+
+                        compared : ( cb ) => {
+
+                            thisModule.getMetrics( fAccount, dateWindow, 'compared', function( err, response ) {
+                                cb( null, response )
+                            })
+
+                        }
+
+                    }, function( err, results ) {
+
+                        var metricTimeframes = {
+                            current: results.current,
+                            compared: results.compared
+                        }
+
+                        cb( null, metricTimeframes )
+
                     })
-
-                },
-
-                compared : ( cb ) => {
-
-                    thisModule.getMetrics( fAccount, 'compared', function( err, response ) {
-                        cb( null, response )
-                    })
+                   
 
                 }
 
             }, function( err, results ) {
 
-                var metricTimeframes = {
-                    current: results.current,
-                    compared: results.compared
-                }
-
-                cb( null, metricTimeframes )
+                /* returns {
+                results.metrics.current
+                results.metrics.compared
+                } */
+                
+                done( null, results )
 
             })
-           
-
-        }
-
-    }, function( err, results ) {
-
-        /* returns {
-        results.metrics.current
-        results.metrics.compared
-        } */
         
-        done( null, results )
+        } else {
+
+            console.log("\n", emoji.get("popcorn"), '>>>>>> facebook API file cache.')
+            data = JSON.parse(data)
+            done( null, data )
+        
+        }
 
     })
 
 
+    
 }
 
 exports.getAccountList = ( fAccount, done ) => {

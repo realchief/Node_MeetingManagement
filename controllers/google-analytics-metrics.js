@@ -13,6 +13,8 @@ var _ = require('lodash');
 var utilities = require('../controllers/utilities')
 var fields = require("../controllers/fields");
 
+var dates = require('../controllers/dates');
+
 var googleAnalyticsDefinition = require('../definitions/source-google-analytics');
 //var googleAnalyticsData = googleAnalyticsDefinition.get().google_analytics;
 
@@ -32,7 +34,10 @@ exports.process = ( gAccount, cb ) => {
     var thisModule = this
     var googleAnalyticsData = this.makeGoogleAnalyticsData();
 
-    googleApi.getAllMetrics(gAccount, function( err, results ) {
+    var range = dates.getDateRangeNumDays();
+    var dateWindow = dates.setDateWindow()
+
+    googleApi.getAllMetrics(gAccount, dateWindow, function( err, results ) {
 
         if ( err ) {
 
@@ -43,7 +48,53 @@ exports.process = ( gAccount, cb ) => {
 
         } else {
         
-        	console.log("\n", emoji.get("beers"), '>>>>>> pulled all metrics from google API.')
+        	console.log("\n", emoji.get("popcorn"), '>>>>>> pulled all metrics from google API.')
+
+            // write results to a file
+
+            var filePath = './responses/';
+            var readableDate = results.metrics.both.dateWindow.currentReadable + "--" + results.metrics.both.dateWindow.comparedReadable
+            readableDate = readableDate.replace(/\s/g, '');
+            var filename = 'ga' + '-' + gAccount.view_id + '-' + readableDate + '.json'
+            
+            // Prevent circular references when parsing to JSON //
+            var cache = [];
+            var resultsJson = JSON.stringify(results, function(key, value) {
+                if (typeof value === 'object' && value !== null) {
+                    if (cache.indexOf(value) !== -1) {
+                        // Duplicate reference found
+                        try {
+                            // If this value does not reference a parent it can be deduped
+                            return JSON.parse(JSON.stringify(value));
+                        } catch (error) {
+                            // discard key if value cannot be deduped
+                            return;
+                        }
+                    }
+                    // Store value in our collection
+                    cache.push(value);
+                }
+                return value;
+            });
+            cache = null; // Enable garbage collection)
+
+            var fs = require('fs');
+
+            fs.writeFile(filePath+filename, resultsJson, function( err ) {
+
+              if (err) {
+
+                console.log("\n", emoji.get("exclamation"), 'File Write error:', err);
+
+              } else {
+
+               console.log("\n", emoji.get("popcorn"), '>>>>>> GA File Write ok', filePath+filename)
+              
+              }
+
+            });
+
+           // end write results to a file //
 
             thisModule.gaColumns = results.metrics.both.responses.gaColumns
             thisModule.goalNames = results.metrics.both.responses.goals.metricsList

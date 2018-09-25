@@ -18,7 +18,7 @@ let oauth2Client = new OAuth2(
     auth.googleAuth.callbackURL
 );
 
-exports.getMetrics = ( gAccount, timeframe, cb ) => {
+exports.getMetrics = ( gAccount, dateWindow, timeframe, cb ) => {
     
     //gAccount.view_id = gAccount.view_id + 'a'
 
@@ -102,7 +102,7 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
                     }
 
-                    console.log("\n", emoji.get("sparkles"), 'Google API gaColumns ok')       
+                    //console.log("\n", emoji.get("sparkles"), 'Google API gaColumns ok')       
                     cb(null, gaColumns);
                 }
 
@@ -164,7 +164,7 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
                                 })
 
-                                console.log("\n", emoji.get("sparkles"), 'Google API goals list ok')       
+                               // console.log("\n", emoji.get("sparkles"), 'Google API goals list ok')       
                                 cb(null, { 
                                     goals : goals, 
                                     metricsList : metrics 
@@ -261,7 +261,7 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
                             response.goals = goalsObject.goals
                             response.metricsList = goalsObject.metricsList
-                            console.log("\n", emoji.get("sparkles"), 'Google API goals metrics ok') 
+                            //console.log("\n", emoji.get("sparkles"), 'Google API goals metrics ok') 
                             cb ( null, response )
                         }
 
@@ -355,7 +355,7 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
                     } else {
 
-                        console.log("\n", emoji.get("sparkles"), 'Google API metrics ok') 
+                       // console.log("\n", emoji.get("sparkles"), 'Google API metrics ok') 
                         cb(null, response);
                         //console.log('Google API Metrics response:', response.data.reports)
                     }
@@ -409,7 +409,7 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                     
                     } else { 
 
-                        console.log("\n", emoji.get("sparkles"), 'Google API events ok') 
+                       // console.log("\n", emoji.get("sparkles"), 'Google API events ok') 
                         cb(null, response);
                         //console.log('Google API Metrics response:', response.data.reports)
                     
@@ -544,7 +544,7 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                     
                     } else {
 
-                        console.log("\n", emoji.get("sparkles"), 'Google API lists ok') 
+                        //console.log("\n", emoji.get("sparkles"), 'Google API lists ok') 
                         cb(null, response);
                         //console.log('Google API Metrics response:', response.data.reports)
                     
@@ -596,7 +596,7 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                     
                     } else {
 
-                        console.log("\n", emoji.get("sparkles"), 'Google API matchups ok') 
+                        //console.log("\n", emoji.get("sparkles"), 'Google API matchups ok') 
                         cb(null, response);
                     
                     }
@@ -627,73 +627,95 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
     });
 }
 
-exports.getAllMetrics = ( gAccount, cb ) => {
+exports.getAllMetrics = ( gAccount, dateWindow, cb ) => {
 
     var thisModule = this
 
-    Async.parallel({
+    var filePath = './responses/';
+    var readableDate = dateWindow.currentReadable + "--" + dateWindow.comparedReadable
+       readableDate = readableDate.replace(/\s/g, '');
+    var filename = 'ga' + '-' + gAccount.view_id + '-' + readableDate + '.json'
+  
+    var fs = require('fs');
 
-        metrics : ( cb ) => {
+    fs.readFile(filePath+filename, "utf8", function( err, data ) {
+      
+        if (err) {
+        
+            console.log("\n", emoji.get('hand'), 'Google file does not exist, pull from API' );
 
             Async.parallel({
 
-                both : ( cb ) => {
+                metrics : ( cb ) => {
 
-                    thisModule.getMetrics(gAccount, 'both', function( err, response ) {
+                    Async.parallel({
+
+                        both : ( cb ) => {
+
+                            thisModule.getMetrics(gAccount, dateWindow, 'both', function( err, response ) {
+
+                                if ( err ) {
+                                    cb( err )
+                                } else {
+                                    cb( null, response )
+                                }
+                            })
+
+                        },
+
+                    }, function( err, results ) {
 
                         if ( err ) {
-                            cb( err )
-                        } else {
-                            cb( null, response )
-                        }
-                    })
 
-                },
+                             //console.log("\n", emoji.get("exclamation"), 'Google API Get Both error:', err.errors[0]);
+
+                             cb( err )
+
+                        } else {
+
+                            var metricTimeframes = {
+                                both: results.both,
+                            }
+
+                            cb( null, metricTimeframes )
+
+                        }
+
+                    })
+                   
+
+                }
 
             }, function( err, results ) {
 
+                /* returns {
+                results.metrics.current
+                results.metrics.compared
+                } */
+
                 if ( err ) {
 
-                     //console.log("\n", emoji.get("exclamation"), 'Google API Get Both error:', err.errors[0]);
+                     console.log("\n", emoji.get("bangbang"), 'Google API Get All Metrics callback error:', err.errors[0].message);
 
                      cb( err )
 
                 } else {
 
-                    var metricTimeframes = {
-                        both: results.both,
-                    }
-
-                    cb( null, metricTimeframes )
+                    cb( null, results )
 
                 }
 
             })
-           
-
-        }
-
-    }, function( err, results ) {
-
-        /* returns {
-        results.metrics.current
-        results.metrics.compared
-        } */
-
-        if ( err ) {
-
-             console.log("\n", emoji.get("bangbang"), 'Google API Get All Metrics callback error:', err.errors[0].message);
-
-             cb( err )
 
         } else {
 
-            cb( null, results )
-
+            console.log("\n", emoji.get("popcorn"), '>>>>>> google API file cache.')
+            data = JSON.parse(data)
+            cb( null, data )
+        
         }
 
     })
-
 
 }
 

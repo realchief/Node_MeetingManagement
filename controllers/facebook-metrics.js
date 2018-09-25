@@ -12,6 +12,8 @@ var colors = require('colors');
 var emoji = require('node-emoji')
 var _ = require('lodash');
 
+var dates = require('../controllers/dates');
+
 var facebookDefinition = require('../definitions/source-facebook');
 //var facebookData = facebookDefinition.get().facebook;
 
@@ -30,7 +32,39 @@ exports.process = ( fAccount, cb ) => {
 
     var facebookData = this.makefacebookData();
 
-    facebookApi.getAllMetrics( fAccount, function( err, results ) {
+    var range = dates.getDateRangeNumDays();
+    var dateWindow = dates.setDateWindow()
+
+    facebookApi.getAllMetrics( fAccount, dateWindow, function( err, results ) {
+
+        console.log("\n", emoji.get("popcorn"), '>>>>>> pulled all metrics from facebook API.')
+
+        // write results to a file
+
+        var filePath = './responses/';
+        var readableDate = results.metrics.current.dateWindow.currentReadable + "--" + results.metrics.compared.dateWindow.comparedReadable
+        readableDate = readableDate.replace(/\s/g, '');
+        var filename = 'fb' + '-' + fAccount.account_id + '-' + readableDate + '.json'
+        
+        var resultsJson = JSON.stringify(results);
+
+        var fs = require('fs');
+
+        fs.writeFile(filePath+filename, resultsJson, function( err ) {
+
+          if (err) {
+
+            console.log("\n", emoji.get("exclamation"), 'File Write error:', err);
+
+          } else {
+
+           console.log("\n", emoji.get("popcorn"), '>>>>>> FB File Write ok', filePath+filename)
+          
+          }
+
+        });
+
+        // end write results to a file //
       
         var insightGroups = [ 'page_info', 'insights_aggregation', 'insights_daily', 'insights_lifetime', 'insights_7days', /*'insights_28days'*/ ]
 

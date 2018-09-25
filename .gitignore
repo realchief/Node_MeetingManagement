@@ -59,6 +59,7 @@ typings/
 
 .DS_Store
 uploads/*
+responses/*
 static/assets/chart-images/*
 !.gitkeep
 .ebextensions

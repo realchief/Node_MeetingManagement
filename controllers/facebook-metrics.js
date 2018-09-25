@@ -39,7 +39,11 @@ exports.process = ( fAccount, cb ) => {
 
         console.log("\n", emoji.get("popcorn"), '>>>>>> pulled all metrics from facebook API.')
 
-        // write results to a file
+         /**
+         *
+         * write results to a file
+         *
+        */
 
         var filePath = './responses/';
         var readableDate = results.metrics.current.dateWindow.currentReadable + "--" + results.metrics.compared.dateWindow.comparedReadable
@@ -64,7 +68,11 @@ exports.process = ( fAccount, cb ) => {
 
         });
 
-        // end write results to a file //
+        /**
+        *
+        * now prep the data into the data source definition
+        *
+        */
       
         var insightGroups = [ 'page_info', 'insights_aggregation', 'insights_daily', 'insights_lifetime', 'insights_7days', /*'insights_28days'*/ ]
 

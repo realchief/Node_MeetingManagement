@@ -50,7 +50,11 @@ exports.process = ( gAccount, cb ) => {
         
         	console.log("\n", emoji.get("popcorn"), '>>>>>> pulled all metrics from google API.')
 
-            // write results to a file
+            /**
+             *
+             * write results to a file
+             *
+            */
 
             var filePath = './responses/';
             var readableDate = results.metrics.both.dateWindow.currentReadable + "--" + results.metrics.both.dateWindow.comparedReadable
@@ -94,7 +98,11 @@ exports.process = ( gAccount, cb ) => {
 
             });
 
-           // end write results to a file //
+           /**
+            *
+            * now prep the data into the data source definition
+            *
+            */
 
             thisModule.gaColumns = results.metrics.both.responses.gaColumns
             thisModule.goalNames = results.metrics.both.responses.goals.metricsList

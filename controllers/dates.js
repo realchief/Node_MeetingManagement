@@ -448,7 +448,7 @@ module.exports = {
 
       var thisModule = this
 
-      var defaultNumDays = 7
+      var defaultNumDays = 28
       var timeWindow = timeWindow || thisModule.getDateRangeNumDays(defaultNumDays);
 
       timeWindow = timeWindow || {

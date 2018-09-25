@@ -20,6 +20,8 @@ let oauth2Client = new OAuth2(
 
 exports.getMetrics = ( gAccount, timeframe, cb ) => {
     
+    //gAccount.view_id = gAccount.view_id + 'a'
+
     if ( !gAccount) {
         cb( null, null )
         return
@@ -82,24 +84,28 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
                     var errorMessage = err || response.error
 
+                    errorMessage = errorMessage.errors[0].message
                     console.log("\n", emoji.get("sparkles"), 'Google API gaColumns error:', errorMessage);
-                    return;
-                }
+                    cb( err );
 
-                let gaColumns = {};
+                } else {
 
-                if (typeof response.data.items !== 'undefined') {
+                    let gaColumns = {};
 
-                    for (var i = 0; i < response.data.items.length; i++) {
-                        let column = response.data.items[i];
-                        gaColumns[column.id] = column.attributes;
+                    if (typeof response.data.items !== 'undefined') {
+
+                        for (var i = 0; i < response.data.items.length; i++) {
+                            let column = response.data.items[i];
+                            gaColumns[column.id] = column.attributes;
+                        }
+
+
                     }
 
-
+                    console.log("\n", emoji.get("sparkles"), 'Google API gaColumns ok')       
+                    cb(null, gaColumns);
                 }
 
-                cb(null, gaColumns);
-                //cb(null, null);
             });
         },
 
@@ -121,44 +127,50 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                             if ( err || response.error ) {
 
                                 var errorMessage = err || response.error
-                                console.log("\n", emoji.get("sparkles"), 'Google API goals error:', errorMessage);
-                                cb(err);
-                            }
 
-                            var goals = [];
-                            var metrics = [];
+                                errorMessage = errorMessage.errors[0].message
+                                console.log("\n", emoji.get("exclamation"), 'Google API goals list error:', errorMessage);
+                                cb( err );
 
-                            if ( typeof response.data != 'undefined') {
+                            } else {
 
-                                //console.log(response.result.items)
+                                var goals = [];
+                                var metrics = [];
 
-                                _.each( response.data.items, function(goal, index) {
-                                    
-                                    var details = ""
-                                    if (goal.urlDestinationDetails) {
-                                        details = goal.urlDestinationDetails
-                                        } else if (goal.eventDetails) {
-                                        details = goal.eventDetails
-                                    }
+                                if ( typeof response.data != 'undefined' ) {
 
-                                    goals.push( {
-                                        id : goal.id,
-                                        name : goal.name,
-                                        type : goal.type,
-                                        details : details
-                                    })
+                                    //console.log(response.result.items)
 
-                                    metrics.push( {  
-                                        metricName: 'ga:goal' + goal.id + 'Completions',
-                                        name : goal.name
-                                    })
+                                    _.each( response.data.items, function(goal, index) {
+                                        
+                                        var details = ""
+                                        if (goal.urlDestinationDetails) {
+                                            details = goal.urlDestinationDetails
+                                            } else if (goal.eventDetails) {
+                                            details = goal.eventDetails
+                                        }
 
-                            })
+                                        goals.push( {
+                                            id : goal.id,
+                                            name : goal.name,
+                                            type : goal.type,
+                                            details : details
+                                        })
 
-                            cb(null, { 
-                                goals : goals, 
-                                metricsList : metrics 
-                            });        
+                                        metrics.push( {  
+                                            metricName: 'ga:goal' + goal.id + 'Completions',
+                                            name : goal.name
+                                        })
+
+                                })
+
+                                console.log("\n", emoji.get("sparkles"), 'Google API goals list ok')       
+                                cb(null, { 
+                                    goals : goals, 
+                                    metricsList : metrics 
+                                });     
+
+                            }   
 
                             //console.log('Google API goals response:', goals, metrics)                      
                         }
@@ -168,6 +180,8 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
                 function ( goalsObject ) {
 
+                    //console.log("\n", emoji.get("sparkles"), 'Google API goals metrics attempt') 
+                    
                     var goalExpressions = [];
 
                     // console.log("\n", emoji.get("medal"), '>>>>>> google goals list:', goalsObject.goals )
@@ -236,9 +250,20 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                         }
                     }, function ( err, response ) {
 
-                        response.goals = goalsObject.goals
-                        response.metricsList = goalsObject.metricsList
-                        cb ( null, response )
+                        if ( err || response.error ) {
+
+                            var errorMessage = err || response.error
+                            errorMessage = errorMessage.errors[0].message
+                            console.log("\n", emoji.get("exclamation"), 'Google API goals metrics error:', errorMessage);
+                            cb( err );
+
+                        } else {
+
+                            response.goals = goalsObject.goals
+                            response.metricsList = goalsObject.metricsList
+                            console.log("\n", emoji.get("sparkles"), 'Google API goals metrics ok') 
+                            cb ( null, response )
+                        }
 
                     })
 
@@ -248,14 +273,25 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
             ], function ( err, result ) {
 
-                cb( null, result )
+                if ( err ) {
 
+                    console.log("\n", emoji.get("bangbang"), 'Google API goals metrics with list callback error:', err.errors[0].message);
+                    cb( err );
+
+                } else {
+
+                    cb( null, result )
+         
+                }
+          
             })
         },
 
         metrics : ( cb ) => {
 
             /* METRICS ==== */
+
+            //console.log("\n", emoji.get("sparkles"), 'Google API metrics attempt') 
 
             analyticsreporting.reports.batchGet({
                 "requestBody": {
@@ -312,11 +348,17 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
 
                         var errorMessage = err || response.error
 
-                        console.log("\n", emoji.get("sparkles"), 'Google API metrics error:', errorMessage);
-                    }
+                        errorMessage = errorMessage.errors[0].message
+                        console.log("\n", emoji.get("exclamation"), 'Google API metrics error:', errorMessage);
+                        
+                        cb( err );
 
-                    cb(null, response);
-                    //console.log('Google API Metrics response:', response.data.reports)
+                    } else {
+
+                        console.log("\n", emoji.get("sparkles"), 'Google API metrics ok') 
+                        cb(null, response);
+                        //console.log('Google API Metrics response:', response.data.reports)
+                    }
 
             })
         },
@@ -324,6 +366,11 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
         events : ( cb ) => {
 
             /* METRICS ==== */
+
+          //  cb(null, null);
+          //  return
+
+            //console.log("\n", emoji.get("sparkles"), 'Google API events attempt')
 
             analyticsreporting.reports.batchGet({
                 "requestBody": {
@@ -355,18 +402,29 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                     if ( err || response.error ) {
 
                         var errorMessage = err || response.error
-                        console.log("\n", emoji.get("sparkles"), 'Google API events error:', errorMessage);
+
+                        errorMessage = errorMessage.errors[0].message
+                        console.log("\n", emoji.get("exclamation"), 'Google API events error:', errorMessage);
+                        cb( err );
+                    
+                    } else { 
+
+                        console.log("\n", emoji.get("sparkles"), 'Google API events ok') 
+                        cb(null, response);
+                        //console.log('Google API Metrics response:', response.data.reports)
+                    
                     }
-
-                    cb(null, response);
-                    //console.log('Google API Metrics response:', response.data.reports)
-
             })
         },
           
         lists : ( cb ) => {
 
             /* METRICS ==== */
+
+           // cb(null, null);
+           // return
+
+            //console.log("\n", emoji.get("sparkles"), 'Google API lists attempt') 
 
             analyticsreporting.reports.batchGet({
                 "requestBody": {
@@ -382,13 +440,13 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                 "metrics" : [
                     { expression: 'ga:pageviews' },
                     { expression: 'ga:sessions' },
-                    { expression: 'ga:entrances' },
+                   // { expression: 'ga:entrances' },
                     { expression: 'ga:newUsers' },
                     { expression: 'ga:bounceRate' },
                     { expression: 'ga:avgTimeOnPage' },                 
                     { expression: 'ga:timeOnPage' },           
                 ],
-                 pageSize : 100,
+                 pageSize : 50,
                  "orderBys" : [
                     {
                       fieldName : "ga:pageviews",
@@ -478,19 +536,27 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                     if ( err || response.error ) {
 
                         var errorMessage = err || response.error
-                        console.log("\n", emoji.get("sparkles"), 'Google API lists error:', errorMessage);
+
+                        errorMessage = errorMessage.errors[0].message
+                        console.log("\n", emoji.get("exclamation"), 'Google API lists error:', errorMessage);
+                        
+                        cb( err );
+                    
+                    } else {
+
+                        console.log("\n", emoji.get("sparkles"), 'Google API lists ok') 
+                        cb(null, response);
+                        //console.log('Google API Metrics response:', response.data.reports)
                     
                     }
-
-                    cb(null, response);
-                //console.log('Google API Metrics response:', response.data.reports)
 
                 })
         },     
 
+        matchups: function ( cb ) {
 
+            //console.log("\n", emoji.get("sparkles"), 'Google API matchups attempt') 
 
-         matchups: function ( cb ) {
              analyticsreporting.reports.batchGet({
                 "requestBody": {
                      reportRequests: [
@@ -523,25 +589,40 @@ exports.getMetrics = ( gAccount, timeframe, cb ) => {
                  if ( err || response.error ) {
 
                         var errorMessage = err || response.error
-                        console.log("\n", emoji.get("sparkles"), 'Google API matchups error:', errorMessage);
+
+                        errorMessage = errorMessage.errors[0].message
+                        console.log("\n", emoji.get("exclamation"), 'Google API matchups error:', errorMessage);
+                        cb( err );
+                    
+                    } else {
+
+                        console.log("\n", emoji.get("sparkles"), 'Google API matchups ok') 
+                        cb(null, response);
                     
                     }
-
-                    cb(null, response);
-             
              })
          
          }
+
     }, function (err, responses) {
 
-        var resultsObject = {
-            responses : responses,
-            dateRange : range,
-            timeframe : timeframe,
-            dateWindow : dateWindow
-        }
+        if ( err ) {
 
-        cb(err, resultsObject);
+            console.log("\n", emoji.get("bangbang"), 'Google API Batch list of metrics callback error:', err.errors[0].message);
+            cb( err );
+
+        } else {
+
+            var resultsObject = {
+                responses : responses,
+                dateRange : range,
+                timeframe : timeframe,
+                dateWindow : dateWindow
+            }
+
+            cb( null, resultsObject );
+
+        }
 
     });
 }
@@ -559,18 +640,33 @@ exports.getAllMetrics = ( gAccount, cb ) => {
                 both : ( cb ) => {
 
                     thisModule.getMetrics(gAccount, 'both', function( err, response ) {
-                        cb( null, response )
+
+                        if ( err ) {
+                            cb( err )
+                        } else {
+                            cb( null, response )
+                        }
                     })
 
                 },
 
             }, function( err, results ) {
 
-                var metricTimeframes = {
-                    both: results.both,
-                }
+                if ( err ) {
 
-                cb( null, metricTimeframes )
+                     //console.log("\n", emoji.get("exclamation"), 'Google API Get Both error:', err.errors[0]);
+
+                     cb( err )
+
+                } else {
+
+                    var metricTimeframes = {
+                        both: results.both,
+                    }
+
+                    cb( null, metricTimeframes )
+
+                }
 
             })
            
@@ -584,7 +680,17 @@ exports.getAllMetrics = ( gAccount, cb ) => {
         results.metrics.compared
         } */
 
-        cb( null, results )
+        if ( err ) {
+
+             console.log("\n", emoji.get("bangbang"), 'Google API Get All Metrics callback error:', err.errors[0].message);
+
+             cb( err )
+
+        } else {
+
+            cb( null, results )
+
+        }
 
     })
 
@@ -609,7 +715,7 @@ exports.getAccountList = ( gAccount, cb ) => {
             google.analytics('v3').management.accountSummaries.list(function (err, response) {
 
                 if (err) {
-                    console.log("\n", emoji.get("sparkles"), 'Google API error:', err);
+                    console.log("\n", emoji.get("exclamation"), 'Google API account list error:', err);
                     return;
                 }
 

@@ -40,31 +40,47 @@ exports.email  = {
 
 }
 
+exports.email_generic  = { 
+
+  template: 'generic',
+
+  replacements : { 
+    sender: 'marty@loosegrip.net',
+    subject: 'Generic Email',
+    body: "Insert Body Here"
+  }
+
+}
+
 exports.processEmail = function( emailContent ) {
 
   var emailContent = JSON.parse(JSON.stringify(emailContent));
 
   /* DELTA CHANGE COLORS */
 
-  if ( parseInt(emailContent.replacements.interest_change) < 0 ) {
-    emailContent.replacements.interest_chart = 'chart-3.png'
-  }
+  if ( emailContent.template == "report" ) {
 
-  if ( parseInt(emailContent.replacements.demand_change) < 0 ) {
-    emailContent.replacements.demand_chart = 'chart-3.png'
-  }
+    if ( parseInt(emailContent.replacements.interest_change) < 0 ) {
+      emailContent.replacements.interest_chart = 'chart-3.png'
+    }
 
-  if ( parseInt(emailContent.replacements.engagement_change) < 0 ) {
-    emailContent.replacements.engagement_chart = 'chart-3.png'
-  }
-  
-  var interest_change = emailContent.replacements.interest_change;
-  var demand_change = emailContent.replacements.demand_change;
-  var engagement_change = emailContent.replacements.engagement_change;
+    if ( parseInt(emailContent.replacements.demand_change) < 0 ) {
+      emailContent.replacements.demand_chart = 'chart-3.png'
+    }
 
-   emailContent.replacements.interest_change =  this.wrapWithHTML( interest_change, 'status-color' )
-  emailContent.replacements.demand_change =  this.wrapWithHTML( demand_change, 'status-color' )
-  emailContent.replacements.engagement_change =  this.wrapWithHTML( engagement_change, 'status-color' )
+    if ( parseInt(emailContent.replacements.engagement_change) < 0 ) {
+      emailContent.replacements.engagement_chart = 'chart-3.png'
+    }
+    
+    var interest_change = emailContent.replacements.interest_change;
+    var demand_change = emailContent.replacements.demand_change;
+    var engagement_change = emailContent.replacements.engagement_change;
+
+     emailContent.replacements.interest_change =  this.wrapWithHTML( interest_change, 'status-color' )
+    emailContent.replacements.demand_change =  this.wrapWithHTML( demand_change, 'status-color' )
+    emailContent.replacements.engagement_change =  this.wrapWithHTML( engagement_change, 'status-color' )
+
+  }
     
   return new Promise(function(resolve, reject) {
 
@@ -80,20 +96,24 @@ exports.processEmail = function( emailContent ) {
 
         var replacements = emailContent.replacements
 
-        var justTalkingPointsPhrases = replacements.talking_points.map(a => a.phrase);
-        var justActionItemsPhrases = replacements.action_items.map(a => a.phrase);
+        if ( emailContent.template == "report" ) {
 
-        var emailActionItems = '<tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">'
-        emailActionItems += justActionItemsPhrases.join('</td></tr><tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">')
-        emailActionItems += '</td></tr>'
+          var justTalkingPointsPhrases = replacements.talking_points.map(a => a.phrase);
+          var justActionItemsPhrases = replacements.action_items.map(a => a.phrase);
 
-        replacements.action_items = emailActionItems
+          var emailActionItems = '<tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">'
+          emailActionItems += justActionItemsPhrases.join('</td></tr><tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">')
+          emailActionItems += '</td></tr>'
 
-        var emailTalkingPoints = '<tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">'
-        emailTalkingPoints += justTalkingPointsPhrases.join('</td></tr><tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">')
-        emailTalkingPoints += '</td></tr>'
+          replacements.action_items = emailActionItems
 
-        replacements.talking_points = emailTalkingPoints
+          var emailTalkingPoints = '<tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">'
+          emailTalkingPoints += justTalkingPointsPhrases.join('</td></tr><tr><td style="border-collapse:collapse;padding-top:0px;padding-bottom:20px;padding-right:0px;padding-left:0px;line-height:1.4em;">')
+          emailTalkingPoints += '</td></tr>'
+
+          replacements.talking_points = emailTalkingPoints
+
+        }
          
         var emailToSend = data.replace(/{{(\w+)}}/g, function (m, m1) {
             return replacements[m1] || m;  

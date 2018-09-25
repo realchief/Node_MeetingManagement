@@ -43,6 +43,7 @@ var users = {
           google_analytics : function ( cb ) {
 
             user.getGoogle().then(function (gAccount) {
+              
               if (gAccount) {
                   //console.log( emoji.get("smile"), 'Google User>>>', "id", gAccount.id )
               }
@@ -56,6 +57,7 @@ var users = {
           facebook : function( cb ) {
 
             user.getFacebook().then(function ( fAccount ) {
+              
               if ( fAccount) {
                  //console.log( emoji.get("smile"), 'Facebook User>>>', fAccount.id)
               }
@@ -97,7 +99,18 @@ var users = {
 
             var metrics = require('../controllers/' + accountName.replace('_', '-') + '-metrics')
             metrics.process(credentials.accounts[accountName], function( err, results ) {
-                 cb ( null, results )
+
+                if ( err ) {
+                   
+                   errorMessage = { message: accountName + ' ' + 'metrics process error from getMetricsFromLinkedAccounts' }
+                   cb( errorMessage )
+
+                } else {
+                   
+                   cb ( null, results )
+                
+                }
+
             })
 
         }
@@ -119,7 +132,6 @@ var users = {
 
   getInsightsFromMetrics: function( metrics, cb ) {
 
-   
     var platform = require('../controllers/platform')
     var insights = require('../controllers/insights')
 
@@ -200,22 +212,33 @@ var users = {
 
         thisModule.getMetricsFromLinkedAccounts( credentials, function( err, metrics ) {
 
-            thisModule.getInsightsFromMetrics( metrics, function( err, results ) {
+            if ( err ) {
 
-                console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', results.dataSourcesList.join(','), 'for user:', credentials.user.username, 'company id:', credentials.user.company_id )
+                console.log("\n", emoji.get("bangbang"), emoji.get("bangbang"), 'Get insights from id error:', err.message);
+                cb ( err )
 
-                var insightsInfo = {
-                  results: results,
-                  credentials: credentials,
-                }
+            } else {
 
-                if ( cb ) {
-                  cb( null, insightsInfo)
-                } else {
-                  return insightsInfo
-                }
+              //console.log( "\n", emoji.get("moneybag"), 'Got all metrics from linked accounts', ' for user:', credentials.user.username, 'company id:', credentials.user.company_id )
 
-            })
+              thisModule.getInsightsFromMetrics( metrics, function( err, results ) {
+
+                  console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', results.dataSourcesList.join(','), 'for user:', credentials.user.username, 'company id:', credentials.user.company_id )
+
+                  var insightsInfo = {
+                    results: results,
+                    credentials: credentials,
+                  }
+
+                  if ( cb ) {
+                    cb( null, insightsInfo)
+                  } else {
+                    return insightsInfo
+                  }
+
+              })
+
+            }
 
         })
 

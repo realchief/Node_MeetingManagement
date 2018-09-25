@@ -48,7 +48,7 @@ router.get('/testsched', function (req, res) {
 router.get('/send/:company', function (req, res) {
 
   var to = 'martymix@gmail.com'
-  console.log('\n', emoji.get('eyes'), ' page refresh show attempt:', to)
+  console.log('\n', emoji.get('eyes'), ' email example:')
 
   // ADD REAL CONTENT TO THE EMAIL //
 
@@ -56,96 +56,106 @@ router.get('/send/:company', function (req, res) {
 
   userInfo.getInsightsFromId( userId, function( err, results ) {
 
-    var email = JSON.parse(JSON.stringify(EmailContent.email));
+    if ( err ) {
+       
+        var errorMessage = 'Error from userInfo.getInsightsFromId in send/:company' + ' - ' + err.message
+        res.send( errorMessage )
 
-    //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
-    //var timezone = "America/New_York"
-    var theTimezone = null
-    var timezone = theTimezone || "America/New_York"
-    var meeting_time_for_display = moment().tz(timezone).format("ddd, MMMM D [at] h:mma")
+    } else {
 
-    email.replacements.summary = "LooseGrip Email";
-    email.replacements.meeting_time_for_display = meeting_time_for_display
-    email.replacements.meeting_date_for_display = moment().format("ddd, MMMM D")
+      var email = JSON.parse(JSON.stringify(EmailContent.email));
 
-    if ( results.credentials.user.id ) {
+      //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
+      //var timezone = "America/New_York"
+      var theTimezone = null
+      var timezone = theTimezone || "America/New_York"
+      var meeting_time_for_display = moment().tz(timezone).format("ddd, MMMM D [at] h:mma")
 
-      var bucket_insights = results.results.insights.data.bucket_insights
+      email.replacements.summary = "LooseGrip Email";
+      email.replacements.meeting_time_for_display = meeting_time_for_display
+      email.replacements.meeting_date_for_display = moment().format("ddd, MMMM D")
 
-      var realReplacements = {
-        sender: results.credentials.user.email,
-        summary: results.credentials.user.company_name + ' ' + 'Email',
-        brand: results.credentials.user.company_name,
-        headline: "This is a headline from a real parsed endpoint.",
-        interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
-        interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
-        interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,
-        interest_chart: 'chart-1.png',
-        engagement_change: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].negativeMappingsCount,
-        engagement_score: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].totalScore,
-        engagement_status: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].mappingsStatus,
-        engagement_chart: 'chart-1.png',
-        demand_change: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].negativeMappingsCount,
-        demand_score: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].totalScore,
-        demand_status: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].mappingsStatus,
-        demand_chart: 'chart-3.png',
-        action_items: results.results.insights.data.action_items,
-        talking_points: results.results.insights.data.talking_points
-      }  
+      if ( results.credentials.user.id ) {
 
-      _.forEach( realReplacements, function( value, key ){
-           email.replacements[key] = value
-      })
+        var bucket_insights = results.results.insights.data.bucket_insights
 
-    }
+        var realReplacements = {
+          sender: results.credentials.user.email,
+          summary: results.credentials.user.company_name + ' ' + 'Email',
+          brand: results.credentials.user.company_name,
+          headline: "This is a headline from a real parsed endpoint.",
+          interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
+          interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
+          interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,
+          interest_chart: 'chart-1.png',
+          engagement_change: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].negativeMappingsCount,
+          engagement_score: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].totalScore,
+          engagement_status: utilities.filter(bucket_insights.buckets, 'name', 'user_engagement')[0].mappingsStatus,
+          engagement_chart: 'chart-1.png',
+          demand_change: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].negativeMappingsCount,
+          demand_score: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].totalScore,
+          demand_status: utilities.filter(bucket_insights.buckets, 'name', 'demand')[0].mappingsStatus,
+          demand_chart: 'chart-3.png',
+          action_items: results.results.insights.data.action_items,
+          talking_points: results.results.insights.data.talking_points
+        }  
 
-    // END ADD REAL CONTENT TO THE EMAIL //
-
-   var theEmail = EmailContent.processEmail(email)
-
-   theEmail.then( function( result ) {
-
-      var recipients = to.split(',')
-
-      var from = "insights@meetbrief.com"
-        
-        var subject = ""
-
-        subject = result.data.subject;
-        subject += " " + result.data.summary + " "
-        subject += " " + "(" + result.data.meeting_date_for_display + ")"
-
-        var toArray = [];
-
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-         
-        _.forEach(recipients, function(recipient) {
-          toArray.push( { email : recipient } )
+        _.forEach( realReplacements, function( value, key ){
+             email.replacements[key] = value
         })
 
-       const msg = {
-          to: toArray,
-          from: {
-            email : from,
-            name: "MeetBrief"
-          },
-          subject: subject,
-          text: result.emailToSend,
-          html: result.emailToSend
+      }
 
-        };
+      // END ADD REAL CONTENT TO THE EMAIL //
 
-       //sgMail.send(msg);
+     var theEmail = EmailContent.processEmail(email)
 
-        res.send(result.emailToSend)
- 
-   })
+     theEmail.then( function( result ) {
+
+        var recipients = to.split(',')
+
+        var from = "insights@meetbrief.com"
+          
+          var subject = ""
+
+          subject = result.data.subject;
+          subject += " " + result.data.summary + " "
+          subject += " " + "(" + result.data.meeting_date_for_display + ")"
+
+          var toArray = [];
+
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+           
+          _.forEach(recipients, function(recipient) {
+            toArray.push( { email : recipient } )
+          })
+
+         const msg = {
+            to: toArray,
+            from: {
+              email : from,
+              name: "MeetBrief"
+            },
+            subject: subject,
+            text: result.emailToSend,
+            html: result.emailToSend
+
+          };
+
+         //sgMail.send(msg);
+
+          res.send(result.emailToSend)
+   
+     })
+
+    }
 
 
   })
 
  
 })
+
 
 router.post('/send', function (req, res) {
 
@@ -191,6 +201,84 @@ router.post('/send', function (req, res) {
 
 }),
 
+
+router.get('/send-generic/:company', function (req, res) {
+
+  var to = 'martymix@gmail.com'
+  console.log('\n', emoji.get('eyes'), ' email example:')
+
+  // ADD REAL CONTENT TO THE EMAIL //
+
+  var userId = req.params.company
+
+  userInfo.getLinkedAccountsFromId( userId, function( err, results ) {
+
+    var email = JSON.parse(JSON.stringify(EmailContent.email_generic));
+
+    //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
+    //var timezone = "America/New_York"
+    var theTimezone = null
+    var timezone = theTimezone || "America/New_York"
+  
+    email.template = "generic"
+
+    if ( results.user.id ) {
+
+      var realReplacements = {
+        body: "This is a test",
+      }  
+
+      _.forEach( realReplacements, function( value, key ){
+           email.replacements[key] = value
+      })
+
+    }
+
+    // END ADD REAL CONTENT TO THE EMAIL //
+
+   var theEmail = EmailContent.processEmail(email)
+
+   theEmail.then( function( result ) {
+
+      var recipients = to.split(',')
+
+      var from = "insights@meetbrief.com"
+        
+        var subject = ""
+
+        subject = result.data.subject;
+      
+        var toArray = [];
+
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+         
+        _.forEach(recipients, function(recipient) {
+          toArray.push( { email : recipient } )
+        })
+
+       const msg = {
+          to: toArray,
+          from: {
+            email : from,
+            name: "MeetBrief"
+          },
+          subject: subject,
+          text: result.emailToSend,
+          html: result.emailToSend
+
+        };
+
+       //sgMail.send(msg);
+
+        res.send(result.emailToSend)
+
+
+    })
+
+  })
+
+ 
+})
 
 
 router.get('/testphrase/', function (req, res) {

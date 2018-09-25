@@ -38,18 +38,28 @@ router.get('/data/google/:company',  function (req, res) {
         var googleAnalyticsMetrics = require('../controllers/google-analytics-metrics')
         googleAnalyticsMetrics.process(credentials.accounts.google_analytics, function( err, results ) {
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'data.handlebars',
-                accountResults: credentials,
-                user: credentials.user,
-                googleAccount: credentials.accounts.google_analytics,
-                facebookAccount: null,
-                metrics : results.metrics.both,
-                dateRange : results.metrics.both.dateRange,
-                metricsTable : results.metricsTable,
-                dataSource : results.dataSource
-            });
+            if ( err ) {
+
+                console.log("\n", emoji.get("bangbang"), emoji.get("bangbang"), emoji.get("bangbang"), emoji.get("bangbang"), 'google analytics metrics process from /data/google/:company', err.message);
+
+                res.send( err.message )
+
+            } else {
+
+                res.render('fingertips', {
+                    version: 'fingertips',
+                    layout: 'data.handlebars',
+                    accountResults: credentials,
+                    user: credentials.user,
+                    googleAccount: credentials.accounts.google_analytics,
+                    facebookAccount: null,
+                    metrics : results.metrics.both,
+                    dateRange : results.metrics.both.dateRange,
+                    metricsTable : results.metricsTable,
+                    dataSource : results.dataSource
+                });
+
+            }
 
         })
 
@@ -126,16 +136,27 @@ router.get('/data/combined/:company',  function (req, res) {
 
     userInfo.getInsightsFromId( userId, function( err, results ) {
 
-        console.log( "\n", emoji.get("moneybag"), 'Display insights', results.results.dataSourcesList.join(','), 'for user:', results.credentials.user.username, 'company id:', results.credentials.user.company_id )
+        if ( err ) {
 
-        res.render('fingertips', {
-            version: 'fingertips',
-            layout: 'data.handlebars',
-            accountResults: results.credentials,
-            user: results.credentials.user,
-            platform : results.results.platforms,
-            insights : results.results.insights
-        });
+            console.log("\n", emoji.get("bangbang"), emoji.get("bangbang"), emoji.get("bangbang"), emoji.get("bangbang"), 'metrics process from /data/combined/:company', err.message);
+
+                res.send( err.message )
+
+        } else {
+
+            console.log( "\n", emoji.get("moneybag"), 'Display insights', results.results.dataSourcesList.join(','), 'for user:', results.credentials.user.username, 'company id:', results.credentials.user.company_id )
+
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'data.handlebars',
+                accountResults: results.credentials,
+                user: results.credentials.user,
+                platform : results.results.platforms,
+                insights : results.results.insights
+            });
+
+        }
+        
 
     })
 

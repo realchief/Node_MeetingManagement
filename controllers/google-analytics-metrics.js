@@ -34,52 +34,65 @@ exports.process = ( gAccount, cb ) => {
 
     googleApi.getAllMetrics(gAccount, function( err, results ) {
 
-        thisModule.gaColumns = results.metrics.both.responses.gaColumns
-        thisModule.goalNames = results.metrics.both.responses.goals.metricsList
-        googleAnalyticsData.metric_assets['goals'] = thisModule.goalNames
-        thisModule.dateWindowReadable = results.metrics.both.dateWindow.dateWindowReadable
+        if ( err ) {
 
-        var insightGroups = [ 'metrics', 'events', 'lists', 'goals', 'matchups']
-        var reportNames = {
-            'metrics' : {
-                1 : 'hostname'
-            },
-            'lists' : {
-                0 : 'overall_totals',
+            console.log("\n", emoji.get("bangbang"), emoji.get("bangbang"), 'Google metrics process error:', err.errors[0].message);
+
+            err = { message: "Google Analytics metrics process error" }
+            cb ( err )
+
+        } else {
+        
+        	console.log("\n", emoji.get("beers"), '>>>>>> pulled all metrics from google API.')
+
+            thisModule.gaColumns = results.metrics.both.responses.gaColumns
+            thisModule.goalNames = results.metrics.both.responses.goals.metricsList
+            googleAnalyticsData.metric_assets['goals'] = thisModule.goalNames
+            thisModule.dateWindowReadable = results.metrics.both.dateWindow.dateWindowReadable
+
+            var insightGroups = [ 'metrics', 'events', 'lists', 'goals', 'matchups']
+            var reportNames = {
+                'metrics' : {
+                    1 : 'hostname'
+                },
+                'lists' : {
+                    0 : 'overall_totals',
+                }
             }
+
+             var metricsOutputTable = []
+
+            _.forEach( insightGroups, function( insightGroup, index ) {
+
+                var group = results.metrics.both.responses[insightGroup]
+            
+                _.forEach( group.data.reports, function( report, index ) {
+
+                    var reportName = "";
+                    var basedIndex = index+1;
+            
+                    if ( typeof reportNames[insightGroup] !== 'undefined') {
+                        if ( typeof reportNames[insightGroup][index] !== 'undefined') {
+                            reportName = reportNames[insightGroup][index];
+                        }
+                    }                   
+
+
+                    var tableResponse = thisModule.metricsTable(report, index, reportName, insightGroup)
+                    metricsOutputTable.push(tableResponse)
+
+                })
+
+             })
+
+            results.metricsTable = metricsOutputTable.join('')
+            results.dataSource = googleAnalyticsData
+
+           console.log("\n", emoji.get("beers"), '>>>>>> google process done. Retrieved API metrics, and put metrics into data source definition')
+
+            cb ( null, results )
+
         }
-
-         var metricsOutputTable = []
-
-        _.forEach( insightGroups, function( insightGroup, index ) {
-
-            var group = results.metrics.both.responses[insightGroup]
-        
-            _.forEach( group.data.reports, function( report, index ) {
-
-                var reportName = "";
-                var basedIndex = index+1;
-        
-                if ( typeof reportNames[insightGroup] !== 'undefined') {
-                    if ( typeof reportNames[insightGroup][index] !== 'undefined') {
-                        reportName = reportNames[insightGroup][index];
-                    }
-                }                   
-
-
-                var tableResponse = thisModule.metricsTable(report, index, reportName, insightGroup)
-                metricsOutputTable.push(tableResponse)
-
-            })
-
-         })
-
-        results.metricsTable = metricsOutputTable.join('')
-        results.dataSource = googleAnalyticsData
-
-       console.log("\n", emoji.get("beers"), '>>>>>> google process done. Retrieved API metrics, and put metrics into data source definition')
-
-        cb ( null, results )
     
     })
     

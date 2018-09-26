@@ -535,4 +535,14 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 
 })
 
+
+router.get('/settings', function(req, res, next) {
+            
+  res.render('fingertips', {
+      version: 'fingertips',
+      layout: 'settings.handlebars'
+  });
+
+});
+
 module.exports = router

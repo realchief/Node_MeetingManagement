@@ -487,6 +487,10 @@ exports.make_email_content = (company_id, organizer, summary, toArray, start_dat
 
       var email = JSON.parse(JSON.stringify(EmailContent.email));
 
+      if ( EmailContent['email_' + emailDomain] ) {
+        email = JSON.parse(JSON.stringify(EmailContent['email_' + emailDomain]));
+      }
+
       email.replacements.sender = sender
       email.replacements.summary = summary
       email.replacements.meeting_time_for_display = meeting_time_for_display

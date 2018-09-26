@@ -63,6 +63,11 @@ router.get('/send/:company', function (req, res) {
 
       var email = JSON.parse(JSON.stringify(EmailContent.email));
 
+      if ( EmailContent['email_' + req.params.company] ) {
+        email = JSON.parse(JSON.stringify(EmailContent['email_' + req.params.company]));
+      }
+
+
       //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
       //var timezone = "America/New_York"
       var theTimezone = null

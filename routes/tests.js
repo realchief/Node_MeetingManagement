@@ -505,4 +505,14 @@ router.get('/settings', function(req, res, next) {
 
 });
 
+router.post('/settings', function(req, res) {  
+
+  let settings_param = req.body;   
+  console.log('=======================settings param===================');
+  console.log(settings_param);
+  let selected_times = settings_param.time;
+  let selected_attendees = settings_param.attendees;
+         
+});
+
 module.exports = router

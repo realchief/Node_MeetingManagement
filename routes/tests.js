@@ -450,45 +450,6 @@ router.get('/phrasetestdb/', function (req, res) {
 
   var phraseMaker = require('../controllers/phrases');
 
-
-  /*
-
-  let whereClause = { type : 'insight' }
-
-  Model.Phrase.findAll({
-
-      where: whereClause
-  
-  }).then(function (phrases) {
-  
-    var allInsights = []
-
-     _.forEach(phrases, function(phrase,index) {
-        
-        allInsights.push( { 
-            id : phrase.id,
-            phrase : phrase.phrase + ' ' + phrase.id,
-            all_tags : phrase.all_tags
-        })
-
-    })
-
-
-     var filteredInsights = phraseMaker.matchingAllTagsFilter(allInsights, ['google_analytics', 'positive', 'pageviews'])
-
-    res.render('fingertips', {
-        layout: 'phrases-test.handlebars',
-       // allTalkingPoints : allTalkingPoints,
-        allInsights : allInsights,
-       // filteredPoints : filteredPoints,
-        filteredInsights : filteredInsights    
-
-    })
-
-  })
-
-  */
-
   phraseMaker.getPhrasesFromDb().then( function( phrases ) {
       
       console.log('got phrases from DB')
@@ -534,7 +495,6 @@ router.get('/tokens/facebook/:company',  function (req, res) {
     })
 
 })
-
 
 router.get('/settings', function(req, res, next) {
             

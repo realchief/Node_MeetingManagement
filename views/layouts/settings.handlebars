@@ -10,28 +10,33 @@
 		<div class="below-header"><div class="below-header-inside">
 			<div class="container">
 				<div class="row clearfix">
-                    <h2 class="with-line">Settings</h2>
-                    <div class="col first">
-                        <h2 class="with-line">When should we send your MeetBrief insights?</h2>
-                        <div class="when-settings" style="text-align:center;">
-                            <select>
-                                <option value="15 minutes">15 minutes</option>
-                                <option value="30 minutes">30 minutes</option>
-                                <option value="1 hour">1 hour</option>
-                                <option value="2 hours">2 hours</option>
-                            </select>
+                    <form method="POST" action="/settings" class="form">
+                        <h2 class="with-line">Settings</h2>
+                        <div class="col first">
+                            <h2 class="with-line">When should we send your MeetBrief insights?</h2>
+                            <div class="when-settings" style="text-align:center;">
+                                <select id="time" name="time">
+                                    <option value="15 minutes" selected="selected">15 minutes</option>
+                                    <option value="30 minutes">30 minutes</option>
+                                    <option value="1 hour">1 hour</option>
+                                    <option value="2 hours">2 hours</option>
+                                </select>
+                            </div>
+                        </div>	
+                        <div class="col second">
+                            <h2 class="with-line">Who should we email insights to?</h2>
+                            <div class="who-settings" style="text-align:center;">
+                                <select id="attendees" name="attendees">
+                                    <option value="All attendees" selected="selected">All attendees</option>
+                                    <option value="Internal attendees">Internal attendees</option>
+                                    <option value="Just Me">Just Me</option>                               
+                                </select>
+                            </div>
                         </div>
-                    </div>	
-                    <div class="col last">
-                        <h2 class="with-line">Who should we email insights to?</h2>
-                        <div class="who-settings" style="text-align:center;">
-                            <select>
-                                <option value="All attendees">All attendees</option>
-                                <option value="Internal attendees">Internal attendees</option>
-                                <option value="Just Me">Just Me</option>                               
-                            </select>
-                        </div>
-                    </div>		
+                        <div class="col last" style="text-align: right;">
+                            <button name="save" type="submit">Save</button>
+                        </div>	
+                    </form>	
 				</div>
 			</div>
 			<div class="section gutter footer">

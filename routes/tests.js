@@ -44,6 +44,19 @@ router.get('/testsched', function (req, res) {
 })
 
 
+router.get('/seecalendar/:filename', function (req, res) {
+
+  var filePath = './uploads/';
+  var filename = req.params.filename
+
+  fs.readFile(filePath+filename, "utf8", function( err, data ) {
+
+    res.send(data)
+
+  })
+
+})
+
 
 router.get('/send/:company', function (req, res) {
 
@@ -508,6 +521,18 @@ router.get('/phrasetestdb/', function (req, res) {
 
 })
 
+router.get('/meetingfiletest/:calendarFile',  function (req, res) {
+ // Resolve with the ICS information
+
+        var emails = require('../controllers/emails');
+        var meetingFile = './uploads/' + req.params.calendarFile
+
+        var icsInfo = emails.meetingFileParse(meetingFile) 
+        icsInfo.then( function(meetingInfo) {
+            res.send( meetingInfo )
+        } )
+
+})
 
 router.get('/tokens/facebook/:company',  function (req, res) {
     

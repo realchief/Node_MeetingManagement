@@ -36,7 +36,9 @@ exports.meetingFileParse = ( meetingFile ) => {
           status = parseIcal.status.toLowerCase();
         }
 
-        //console.log( 'ics data:', parseIcal )
+        
+
+       //console.log( 'ics data:', parseIcal )
 
         console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
         console.log( 'Summary:', parseIcal.summary)
@@ -99,7 +101,10 @@ exports.meetingFileParse = ( meetingFile ) => {
 
 
         var emailDomain = organizer.replace(/.*@/, "").split('.')[0];
+        
         var summary = parseIcal.summary
+
+       
         var sequence = parseIcal.sequence
         var meeting_time_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
         var meeting_date_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")

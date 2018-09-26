@@ -12,6 +12,9 @@ module.exports = {
         phraseAndTagObject.type = phrase.type
         phraseAndTagObject.tags_object = phrase.tags
 
+        phraseAndTagObject.title = phrase.title
+        phraseAndTagObject.link = phrase.link
+
         var allTags = [];
         
         _.forEach(phrase.tags, function(tagList,tagCategory) {
@@ -163,6 +166,8 @@ module.exports = {
                       insightsArray.push( { 
                           id : phrase.id,
                           phrase : phrase.phrase,
+                          title : phrase.title,
+                          link : phrase.link,
                           all_tags : phrase.all_tags
                       })
 

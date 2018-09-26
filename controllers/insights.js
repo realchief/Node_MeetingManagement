@@ -352,7 +352,7 @@ var insights = {
 	},
 
 
-	getUniquePhrase : function( phraseSet ) {
+	getUniquePhrase : function( phraseSet, type, parent ) {
 
 		if ( !phraseSet) return
 
@@ -360,9 +360,9 @@ var insights = {
 
 		utilities.shuffle(phraseSet)
 
-		var usedIds = insightsList.data.usedPhrases.ids;
-		var usedPhrases = insightsList.data.usedPhrases.phrases;
-		var usedTags = insightsList.data.usedPhrases.tags;
+		var usedIds = insightsList.data.usedPhrases[type].ids;
+		var usedPhrases = insightsList.data.usedPhrases[type].phrases;
+		var usedTags = insightsList.data.usedPhrases[type].tags;
 
 		var uniquePhrase = {}
 		uniquePhrase.phrase = phraseSet[0].phrase
@@ -371,11 +371,12 @@ var insights = {
 
 		if (usedPhrases.indexOf(uniquePhrase.phrase) >= 0) {
 
+			// this phrase has been used //
 			for ( i = 0; i < phraseSet.length; i++ ) {
 
 				if (usedPhrases.indexOf(phraseSet[i].phrase) == -1) {
 
-					//console.log(">>> Got New Phrase", phraseSet[i] )
+					console.log(">>> Unique Phrase after finding used", phraseSet[i].phrase, parent, type  )
 
 					uniquePhrase.phrase = phraseSet[i].phrase;
 					uniquePhrase.id = phraseSet[i].id;
@@ -387,9 +388,10 @@ var insights = {
 					break
 				} 
 
-				//console.log(">>> Found DUPE!", phraseSet[i] )
-
 				if ( i == phraseSet.length-1) {
+					
+					console.log(">>> Found DUPE!", phraseSet[i].phrase, parent, type  )
+					
 					uniquePhrase.phrase = phraseSet[0].phrase //+ " (duplicate)"
 					uniquePhrase.id = phraseSet[0].id
 					uniquePhrase.tags = phraseSet[0].all_tags
@@ -399,6 +401,9 @@ var insights = {
 
 		} else {
 
+			// this is a new phrase //
+
+			console.log(">>> Found Unique Phrase on first try", uniquePhrase.phrase, parent, type  )
 			usedPhrases.push(uniquePhrase.phrase)
 			usedIds.push(uniquePhrase.id)
 		
@@ -426,15 +431,20 @@ var insights = {
 
 			var parentBucket = bucketList[utilities.getBucket(metric.name)].meta.shortLabel;
 			
-			//console.log("REORDERED PHRASE>>>", parentBucket, metric.talkingPointsPhrases )
+			console.log("REORDERED PHRASE>>>", parentBucket, metric.resourcesPhrases.length )
 			
-			var pointToUse = thisModule.getUniquePhrase(metric.talkingPointsAndActionItemsPhrases)
-			var talkingPointToUse = thisModule.getUniquePhrase(metric.talkingPointsPhrases)
-			var actionItemToUse = thisModule.getUniquePhrase(metric.actionItemsPhrases)
+			// add id
+			var parent = "Platform: " + metric.name
+			var pointToUse = thisModule.getUniquePhrase(metric.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
+			var talkingPointToUse = thisModule.getUniquePhrase(metric.talkingPointsPhrases, 'talkingPoints', parent )
+			var actionItemToUse = thisModule.getUniquePhrase(metric.actionItemsPhrases, 'actionItems', parent )
+			var resourceToUse = thisModule.getUniquePhrase(metric.resourcePhrases, 'resources', parent )
 
-			console.log( 'Unique Action Item:', 'for platform:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
+			//console.log( 'Unique Action Item:', 'for platform:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 			
-			console.log( 'Unique Talking Point:', 'for platform:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+			//console.log( 'Unique Talking Point:', 'for platform:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+
+			//console.log( 'Unique Resource:', 'for platform:', metric.name, resourceToUse ? resourceToUse.phrase : 'undefined' )
 
 			var inlineStyle = utilities.getInlineStyle('status', metric.status);
 
@@ -471,13 +481,17 @@ var insights = {
 				
 				if ( typeof asset.talkingPointsPhrases !== 'undefined') {
 					
-					var pointToUse = thisModule.getUniquePhrase(asset.talkingPointsAndActionItemsPhrases)
-					var talkingPointToUse = thisModule.getUniquePhrase(asset.talkingPointsPhrases)
-					var actionItemToUse = thisModule.getUniquePhrase(asset.actionItemsPhrases)
+					var parent = "Asset: " + asset.parentMetric 
+					var pointToUse = thisModule.getUniquePhrase(asset.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
+					var talkingPointToUse = thisModule.getUniquePhrase(asset.talkingPointsPhrases, 'talkingPoints', parent )
+					var actionItemToUse = thisModule.getUniquePhrase(asset.actionItemsPhrases, 'actionItems', parent )
+					var resourceToUse = thisModule.getUniquePhrase(asset.resourcePhrases, 'resources', parent )
 
-					console.log( 'Unique Action Item:', 'for asset:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
+					//console.log( 'Unique Action Item:', 'for asset:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 					
-					console.log( 'Unique Talking Point:', 'for asset:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+					//console.log( 'Unique Talking Point:', 'for asset:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+
+					//console.log( 'Unique Resource:', 'for asset:', metric.name, resourceToUse ? resourceToUse.phrase : 'undefined' )
 					
 					var completePhrase = {
 						point_id : pointToUse.id,
@@ -1083,7 +1097,7 @@ var insights = {
 		var resourcesPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allResources, phrasesTags) 
 
 		if ( !resourcesPhrases ) {
-			console.log( 'No talking points for', level, parentInfo )
+			console.log( 'No resources for', level, parentInfo )
 		}
 
 		if ( !talkingPointsPhrases && !actionItemsPhrases ) {

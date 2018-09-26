@@ -36,7 +36,17 @@ exports.meetingFileParse = ( meetingFile ) => {
           status = parseIcal.status.toLowerCase();
         }
 
-        
+        if ( !parseIcal.created ) {
+          parseIcal.created = new Date()
+        }
+
+        if ( !parseIcal.dtstamp ) {
+          parseIcal.dtstamp = new Date()
+        }
+
+        if ( !parseIcal['last-modified'] ) {
+          parseIcal['last-modified'] = new Date()
+        }
 
        //console.log( 'ics data:', parseIcal )
 
@@ -104,7 +114,11 @@ exports.meetingFileParse = ( meetingFile ) => {
         
         var summary = parseIcal.summary
 
-       
+        // Microsoft Exchange Server 2010 sends summaries in a json file 
+        if ( summary.val ) {
+            summary = summary.val
+        }
+        
         var sequence = parseIcal.sequence
         var meeting_time_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
         var meeting_date_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")

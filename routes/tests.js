@@ -43,21 +43,6 @@ router.get('/testsched', function (req, res) {
 
 })
 
-
-router.get('/seecalendar/:filename', function (req, res) {
-
-  var filePath = './uploads/';
-  var filename = req.params.filename
-
-  fs.readFile(filePath+filename, "utf8", function( err, data ) {
-
-    res.send(data)
-
-  })
-
-})
-
-
 router.get('/send/:company', function (req, res) {
 
   var to = 'martymix@gmail.com'
@@ -531,6 +516,20 @@ router.get('/meetingfiletest/:calendarFile',  function (req, res) {
         icsInfo.then( function(meetingInfo) {
             res.send( meetingInfo )
         } )
+
+})
+
+
+router.get('/seecalendar/:filename', function (req, res) {
+
+  var filePath = './uploads/';
+  var filename = req.params.filename
+
+  fs.readFile(filePath+filename, "utf8", function( err, data ) {
+
+    res.send(data)
+
+  })
 
 })
 

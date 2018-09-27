@@ -48,7 +48,9 @@ exports.meetingFileParse = ( meetingFile ) => {
           parseIcal['last-modified'] = new Date()
         }
 
-       //console.log( 'ics data:', parseIcal )
+        // not pulling description or location
+
+        console.log( 'ics data:', parseIcal )
 
         console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
         console.log( 'Summary:', parseIcal.summary)
@@ -114,7 +116,7 @@ exports.meetingFileParse = ( meetingFile ) => {
         
         var summary = parseIcal.summary
 
-        // Microsoft Exchange Server 2010 sends summaries in a json file 
+        // Microsoft Exchange Server 2010 sends summaries with parameters
         if ( summary.val ) {
             summary = summary.val
         }

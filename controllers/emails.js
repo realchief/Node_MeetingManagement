@@ -215,6 +215,14 @@ exports.inboundParse = ( req ) => {
     }
 
 
+    if ( to.toLowerCase().indexOf('neil') || to.toLowerCase().indexOf('marty') || to.toLowerCase().indexOf('rachel') || to.toLowerCase().indexOf('sarah') || to.toLowerCase().indexOf('help') ) {
+      console.log('!!!!!!!!!!!!! ', 'this is to a meetbrief team member.', 'Subject:', subject, 'To:', to)
+      requestType = "internal"
+      //resolve( { type : 'cancel'} );
+      return resolve();
+    }
+
+
     if ( fromEmail.toLowerCase().indexOf('noreply') >= 0 ) {
       console.log('!!!!!!!!!!!!! ', 'noreply email', 'From:', fromEmail, 'Subject:', subject, 'To:', to)
       requestType = "internal"

@@ -1109,6 +1109,23 @@ span.metric-asset {
 	display: block;
 }
 
+ul.user-info {
+	font-size: 14px;
+	padding: 8px 10px 5px 10px;
+	margin-right: 20px;
+	border: 1px solid #b4b4b4;
+	background: #d0d0d0;
+	margin: 0 20px 0 0;
+}
+
+ul.user-info li {
+	margin: 0 10px 0 0;
+}
+
+ul.user-info li:last-child {
+	margin-right: 0;
+}
+
 
 /* ==========================================================================
 Local Debug

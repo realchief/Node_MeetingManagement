@@ -524,7 +524,8 @@ router.get('/settings',  function (req, res) {
                 version: 'fingertips',
                 layout: 'settings.handlebars',
                 time: setting.insights_time,
-                attendees: setting.insights_to
+                attendees: setting.insights_to,
+                user:req.user
               });
           }
       ], function (err, result) {
@@ -574,7 +575,8 @@ router.post('/settings', function(req, res) {
               version: 'fingertips',
               layout: 'settings.handlebars',
               time: setting.insights_time,
-              attendees: setting.insights_to
+              attendees: setting.insights_to,
+              user:req.user
             });
           });            
         }

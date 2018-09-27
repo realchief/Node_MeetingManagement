@@ -4,10 +4,10 @@
 
 // Some details about the site
 
-exports.siteName = 'FingerTips';
-exports.marketName = 'FingerTips';
+exports.siteName = 'MeetBrief';
+exports.marketName = 'MeetBrief';
 exports.description = "Answers before the Ask";
-exports.canonical = "http://www.getfingertips.com";
+exports.canonical = "http://app.meetbrief.com";
 exports.socialImage = "";
 exports.socialTitle = "" 
 exports.socialContent = ""

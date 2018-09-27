@@ -502,11 +502,11 @@ router.get('/settings', function(req, res, next) {
       function (cb)  {
         req.user.getSettings().then(function (setting) {
           if (setting)
-            cb(setting)
+            cb(setting);
           else {
             Model.Settings.create({}).then(function (setting) {
               req.user.setSettings(setting).then(function (){
-                cb(setting)
+                cb(setting);
               })
             })
           }
@@ -521,8 +521,10 @@ router.get('/settings', function(req, res, next) {
         });
       }
     ], function (err, result) {
-      console.log(err);
-      console.log(result);
+      if (err) {
+        req.flash('google_error', err.error);
+      }
+      res.redirect('/settings');
     })
   } else {
     return res.redirect('/signin');

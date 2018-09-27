@@ -529,7 +529,6 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 //   } else {
 //     return res.redirect('/signin');
 //   }
-
 // });
 
 router.get('/settings',  function (req, res) {
@@ -538,16 +537,18 @@ router.get('/settings',  function (req, res) {
   }
   else {
       Async.waterfall([
-          function ( cb ) {
-              console.log('========req.user=======');
-              console.log(req.user);
-              req.user.getSettings().then(function (setting) {
+          function ( cb ) {   
+
+              req.user.getSetting().then(function (setting) {
                   if (setting) {
                       cb(null, setting)
                   }
                   else {
-                      Model.Settings.create({}).then(function (setting) {
-                          req.user.setSettings(setting).then(function (){
+                    Model.Setting.create({
+                      insights_time: '15 minutes',
+                      insights_to: 'All attendees'    
+                    }).then(function (setting) {
+                          req.user.setSetting(setting).then(function (){
                             cb(null, setting)
                           })
                       })
@@ -579,12 +580,47 @@ router.post('/settings', function(req, res) {
   let selected_times = settings_param.time;
   let selected_attendees = settings_param.attendees;
 
-  Model.Settings.updateAttributes({
-    insights_time: selected_times,
-    insights_to: selected_attendees    
-  }).then(function (settings) {
-    console.log(settings);
-  });
+  if (!req.user) {
+    return res.redirect('/signin')
+  } else {
+      Async.waterfall([
+        function ( cb ) {   
+            req.user.getSetting().then(function (setting) {
+                if (setting) {
+                    cb(null, setting)
+                }
+                else {
+                  Model.Setting.create({
+                    insights_time: selected_times,
+                    insights_to: selected_attendees    
+                  }).then(function (setting) {
+                        req.user.setSetting(setting).then(function (){
+                          cb(null, setting)
+                        })
+                    })
+                }
+            })
+        }, function (setting, cb) {
+            setting.updateAttributes({
+              insights_time: selected_times,
+              insights_to: selected_attendees    
+            }).then(function (setting) {
+              res.render('fingertips', {
+              version: 'fingertips',
+              layout: 'settings.handlebars',
+              time: setting.insights_time,
+              attendees: setting.insights_to
+            });
+          });            
+        }
+    ], function (err, result) {
+        if (err) {
+            req.flash('setting_error', err.error);
+        }
+        res.redirect('/settings');
+    })
+  }
+  
          
 });
 

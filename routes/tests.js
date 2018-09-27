@@ -628,7 +628,7 @@ router.post('/profile', function(req, res) {
           console.log(updatedResult);
           res.redirect('/profile');            
         })
-      } 
+       } 
     else res.redirect('signin');
   }       
 });

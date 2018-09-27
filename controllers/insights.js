@@ -120,7 +120,7 @@ var insights = {
 		return new Promise(function(resolve, reject) {
 
 			var bucketList = thisModule.makeBucketList();
-			var getAllPhrases = thisModule.getPhrases();
+			var getAllPhrases = thisModule.getPhrasesFromDb();
 
 			var insightsList = thisModule.makeInsightsList();
 			var insightsData = insightsList.data
@@ -376,7 +376,7 @@ var insights = {
 
 				if (usedPhrases.indexOf(phraseSet[i].phrase) == -1) {
 
-					console.log(">>> Unique Phrase after finding used", phraseSet[i].phrase, parent, type  )
+					//console.log(">>> Unique Phrase after finding used", phraseSet[i].phrase, parent, type  )
 
 					uniquePhrase.phrase = phraseSet[i].phrase;
 					uniquePhrase.id = phraseSet[i].id;
@@ -390,7 +390,7 @@ var insights = {
 
 				if ( i == phraseSet.length-1) {
 					
-					console.log(">>> Found DUPE!", phraseSet[i].phrase, parent, type  )
+					//console.log(">>> Found DUPE!", phraseSet[i].phrase, parent, type  )
 					
 					uniquePhrase.phrase = phraseSet[0].phrase //+ " (duplicate)"
 					uniquePhrase.id = phraseSet[0].id
@@ -403,7 +403,7 @@ var insights = {
 
 			// this is a new phrase //
 
-			console.log(">>> Found Unique Phrase on first try", uniquePhrase.phrase, parent, type  )
+			//console.log(">>> Found Unique Phrase on first try", uniquePhrase.phrase, parent, type  )
 			usedPhrases.push(uniquePhrase.phrase)
 			usedIds.push(uniquePhrase.id)
 		
@@ -431,7 +431,7 @@ var insights = {
 
 			var parentBucket = bucketList[utilities.getBucket(metric.name)].meta.shortLabel;
 			
-			console.log("REORDERED PHRASE>>>", parentBucket, metric.resourcesPhrases.length )
+			//console.log("REORDERED PHRASE>>>", parentBucket, metric.resourcesPhrases.length )
 			
 			// add id
 			var parent = "Platform: " + metric.name
@@ -448,7 +448,7 @@ var insights = {
 
 			var inlineStyle = utilities.getInlineStyle('status', metric.status);
 
-			if ( typeof metric.insightsPhrases[0] !== 'undefined') {
+			if ( typeof metric.insightsPhrases[0] !== 'undefined' ) {
 				
 				var bucketTag = '<span class="bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
 				
@@ -467,9 +467,9 @@ var insights = {
 				metric.completePhrase = completePhrase
 
 			} else {
-
-				//console.log('UNDEFINED INSIGHTS PHRASE', metric)
+				console.log('UNDEFINED PLATFORM PHRASE', metric.name)
 			}
+
 			var data = [];
 			_.forEach( metric.assetInsights, function( assetInsight, index ) {
 	
@@ -479,7 +479,7 @@ var insights = {
 				
 				var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
 				
-				if ( typeof asset.talkingPointsPhrases !== 'undefined') {
+				if ( asset.insightsPhrases ) {
 					
 					var parent = "Asset: " + asset.parentMetric 
 					var pointToUse = thisModule.getUniquePhrase(asset.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
@@ -493,23 +493,32 @@ var insights = {
 
 					//console.log( 'Unique Resource:', 'for asset:', metric.name, resourceToUse ? resourceToUse.phrase : 'undefined' )
 					
-					var completePhrase = {
-						point_id : pointToUse.id,
-						insight_id : metric.insightsPhrases[0].id,
-						point_tags : pointToUse.tags,
-						insight_tags : metric.insightsPhrases[0].tags,
-						phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
-					}
-					
-					phraseList.push(completePhrase)	
-					assetPhrases.push(completePhrase)			
-				
-				}
+					// make sure there is an insights phrase if we have an asset insight! //
+					if ( asset.insightsPhrases[0] ) {
 
-				asset.completePhrase = completePhrase
-				//asset.completePhraseWithTalkingPoint = completePhraseWithTalkingPoint
-				//asset.completePhraseWithActionItem = completePhraseWithActionItem
-				//asset.completePhraseWithResource = completePhraseWithResource
+						var completePhrase = {
+							point_id : pointToUse.id,
+							insight_id : asset.insightsPhrases[0].id,
+							point_tags : pointToUse.tags,
+							insight_tags : asset.insightsPhrases[0].tags,
+							phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
+						}
+						
+						phraseList.push(completePhrase)	
+						assetPhrases.push(completePhrase)	
+
+						asset.completePhrase = completePhrase
+						//asset.completePhraseWithTalkingPoint = completePhraseWithTalkingPoint
+						//asset.completePhraseWithActionItem = completePhraseWithActionItem
+						//asset.completePhraseWithResource = completePhraseWithResource
+
+					}		
+				
+				} else {
+
+					console.log('UNDEFINED ASSET PHRASE:', metric.name, asset.talkingPointsPhrases)
+
+				}
 
 			})
 		})
@@ -1101,7 +1110,7 @@ var insights = {
 		}
 
 		if ( !talkingPointsPhrases && !actionItemsPhrases ) {
-			console.log( 'No action items or talking points for', parentInfo )
+			console.log( 'BOTH!! No action items or talking points for', parentInfo )
 		}
 
 		var replacedPhrases = [];

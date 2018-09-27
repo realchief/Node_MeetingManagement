@@ -116,6 +116,13 @@ module.exports = {
 				tags: { level: "platform", source: "google_analytics", dimension: "returning_users", sentiment: "positive", type: "platform", category: "", metric: "returning_users"}
 			}, 
 
+			{
+				type: 'insight',
+				phrase: "Returning users are the same, {{value}} new users over both timeframes",
+				tags: { level: "platform", source: "google_analytics", dimension: "returning_users", sentiment: "neutral", type: "platform", category: "", metric: "returning_users"}
+			}, 
+
+
 			 {
 				type: 'insight',
 				phrase: "Returning website users are down, from {{compared_value}} to {{value}}, a {{percent_change}} drop",

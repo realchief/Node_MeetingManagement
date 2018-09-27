@@ -496,41 +496,6 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 
 })
 
-// router.get('/settings', function(req, res, next) {
-//   if (req.user) {
-//     Async.waterfall([
-//       function (cb)  {
-//         req.user.getSettings().then(function (setting) {
-//           if (setting)
-//             cb(setting);
-//           else {
-//             Model.Settings.create({}).then(function (setting) {
-//               req.user.setSettings(setting).then(function (){
-//                 cb(setting);
-//               })
-//             })
-//           }
-//         })    
-//       },
-//       function (setting, cb) {
-//         res.render('fingertips', {
-//           version: 'fingertips',
-//           layout: 'settings.handlebars',
-//           time: setting.insights_time,
-//           attendees: setting.insights_to
-//         });
-//       }
-//     ], function (err, result) {
-//       if (err) {
-//         req.flash('setting_error', err.error);
-//       }
-//       res.redirect('/settings');
-//     })
-//   } else {
-//     return res.redirect('/signin');
-//   }
-// });
-
 router.get('/settings',  function (req, res) {
   if (!req.user) {
       return res.redirect('/signin')
@@ -622,6 +587,47 @@ router.post('/settings', function(req, res) {
   }
   
          
+});
+
+
+router.get('/profile', function(req, res, next) {
+  res.render('profile', { title: 'Manage Profile', layout: false });
+});
+
+router.post('/profile', function(req, res) {
+  
+  // validation of profile form
+
+  let newUser = req.body;   
+  let new_password = newUser.password;
+  let new_confirm_password = req.body.confirm_password;
+  let new_email = req.body.email;
+
+  if (new_password != new_confirm_password) {
+      console.log('Not matched');
+      res.render('profile', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
+  }
+
+  else {
+      Model.User.findOne({
+          where: {
+              'email': new_email
+          }
+      }).then(function (user) {
+          if (user) {
+              res.render('profile', {errorMessage: { email:'Duplicated User, This email was already used. Use other email.'}, layout: false} );
+          }
+          else {
+              Model.User.create(newUser).then(function (user) {
+                  console.log(user);
+                  res.redirect('signin');
+              }).catch(function (err) {
+                  console.log(err);
+                  res.render('profile', {errorMessage: { signout:'You can not update profile info', layout: false }});
+              });
+          }
+      })
+  }       
 });
 
 module.exports = router

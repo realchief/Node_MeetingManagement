@@ -602,6 +602,9 @@ router.post('/profile', function(req, res) {
   let new_password = newUser.password;
   let new_confirm_password = req.body.confirm_password;
   let new_email = req.body.email;
+  let new_company_name = req.body.company_name;
+  let new_username = req.body.username;
+  let new_company_id = req.body.company_id;
 
   if (new_password != new_confirm_password) {
       console.log('Not matched');
@@ -609,24 +612,51 @@ router.post('/profile', function(req, res) {
   }
 
   else {
-      Model.User.findOne({
-          where: {
-              'email': new_email
-          }
-      }).then(function (user) {
-          if (user) {
-              res.render('profile', {errorMessage: { email:'Duplicated User, This email was already used. Use other email.'}, layout: false} );
-          }
-          else {
-              Model.User.create(newUser).then(function (user) {
-                  console.log(user);
-                  res.redirect('signin');
-              }).catch(function (err) {
-                  console.log(err);
-                  res.render('profile', {errorMessage: { signout:'You can not update profile info', layout: false }});
+
+    if (!req.user) {
+      return res.redirect('/signin')
+    } else {
+        Async.waterfall([
+          function ( cb ) {   
+              req.user.getUser().then(function (user) {
+                  if (user) {
+                      cb(null, user)
+                  }
+                  else {
+                    Model.User.create({
+                      username: new_username,
+                      email: new_email,
+                      company_name: new_company_name,
+                      company_id: new_company_id,
+                      password: new_password
+                    }).then(function (user) {
+                          req.user.setUser(user).then(function (){
+                            cb(null, user)
+                          })
+                      })
+                  }
+              })
+          }, function (user, cb) {
+              user.updateAttributes({
+                username: new_username,
+                email: new_email,
+                company_name: new_company_name,
+                company_id: new_company_id,
+                password: new_password    
+              }).then(function (user) {
+                res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'profile.handlebars'
               });
+            });            
           }
+      ], function (err, result) {
+          if (err) {
+              req.flash('profile_error', err.error);
+          }
+          res.redirect('/profile');
       })
+    }
   }       
 });
 

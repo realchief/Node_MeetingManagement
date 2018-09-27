@@ -18,7 +18,7 @@ exports.meetingFileParse = ( meetingFile ) => {
 
     return new Promise(function(resolve, reject) {
 
-        console.log( "\n", '+++++++++++ Parse ICS file', meetingFile, 'on', moment(), "\n" );
+        console.log( "\n", '+++++++++++ Parse ICS file', meetingFile, 'on', moment().format("ddd, MMMM D [at] h:mma"), "\n" );
 
         var ical_data = ical.parseFile(meetingFile)  
         var parseIcal = ical_data[Object.keys(ical_data)[0]]
@@ -26,14 +26,18 @@ exports.meetingFileParse = ( meetingFile ) => {
         var requestType = "request"
         var status = "none"
 
+        //console.log('ICAL DATA:', ical_data)
+
         if ( parseIcal.type == "VTIMEZONE") {
             // can be VEVENT or VTIMEZONE
-            console.log("**** FROM ICAL Object")
+            console.log("**** VTIMEZONE is the first value in the calendar", "Type:", parseIcal.type)
             parseIcal = ical_data[Object.keys(ical_data)[1]]
         }
 
         if ( parseIcal.status ) {
           status = parseIcal.status.toLowerCase();
+        } else {
+          status = "UNKNOWN"
         }
 
         if ( !parseIcal.created ) {
@@ -48,9 +52,19 @@ exports.meetingFileParse = ( meetingFile ) => {
           parseIcal['last-modified'] = new Date()
         }
 
+        if ( !parseIcal.sequence ) {
+          parseIcal.sequence = 0
+        }
+
+        if ( !parseIcal.summary ) {
+          parseIcal.summary = "Your MeetBrief"
+        }
+
+       
+
         // not pulling description or location
 
-        console.log( 'ics data:', parseIcal )
+        //console.log( 'ics data:', parseIcal )
 
         console.log( 'Organizer Name:', parseIcal.organizer.params.CN, 'Organizer Email:', parseIcal.organizer.val)
         console.log( 'Summary:', parseIcal.summary)
@@ -62,6 +76,15 @@ exports.meetingFileParse = ( meetingFile ) => {
         console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
        
         console.log( 'Status:', parseIcal.status)
+
+         if ( parseIcal.rrule ) {
+            console.log("\n", emoji.get('game_die'), 'RRULE', parseIcal.rrule.toText(), "\n" )
+            var allRecurring = parseIcal.rrule.all();
+            _.forEach( allRecurring, function( date, index ) {
+              if ( index > 5 ) return false;
+              console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
+            })
+        }
 
         /* =====  get calendar attendees */
 
@@ -119,6 +142,8 @@ exports.meetingFileParse = ( meetingFile ) => {
         // Microsoft Exchange Server 2010 sends summaries with parameters
         if ( summary.val ) {
             summary = summary.val
+            console.log( 'Parsed Summary:', summary)
+
         }
         
         var sequence = parseIcal.sequence

@@ -1,10 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
     let Settings = sequelize.define('Settings', {
         insights_time: {
-            type: DataTypes.STRING
+            type: DataTypes.ENUM, 
+            values: ['15 minutes', '30 minutes', '1 hour', '2 hours'],
+            defaultValue: '15 minutes'          
         },
         insights_to: {
-            type: DataTypes.STRING
+            type: DataTypes.ENUM,
+            values: ['All attendees', 'Internal attendees', 'Just Me'],
+            defaultValue: 'All attendees'
         }     
     });
 

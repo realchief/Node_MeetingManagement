@@ -497,11 +497,36 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 })
 
 router.get('/settings', function(req, res, next) {
-            
-  res.render('fingertips', {
-      version: 'fingertips',
-      layout: 'settings.handlebars'
-  });
+  if (req.user) {
+    Async.waterfall([
+      function (cb)  {
+        req.user.getSettings().then(function (setting) {
+          if (setting)
+            cb(setting)
+          else {
+            Model.Settings.create({}).then(function (setting) {
+              req.user.setSettings(setting).then(function (){
+                cb(setting)
+              })
+            })
+          }
+        })    
+      },
+      function (setting, cb) {
+        res.render('fingertips', {
+          version: 'fingertips',
+          layout: 'settings.handlebars',
+          time: setting.insights_time,
+          attendees: setting.insights_to
+        });
+      }
+    ], function (err, result) {
+      console.log(err);
+      console.log(result);
+    })
+  } else {
+    return res.redirect('/signin');
+  }
 
 });
 
@@ -509,9 +534,16 @@ router.post('/settings', function(req, res) {
 
   let settings_param = req.body;   
   console.log('=======================settings param===================');
-  console.log(settings_param);
+  console.log(settings_param);  
   let selected_times = settings_param.time;
   let selected_attendees = settings_param.attendees;
+
+  Model.Settings.updateAttributes({
+    insights_time: selected_times,
+    insights_to: selected_attendees    
+  }).then(function (settings) {
+    console.log(settings);
+  });
          
 });
 

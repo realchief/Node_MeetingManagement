@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Settings.associate = function(models) {
-        models.Google.hasOne(models.User);
+        models.Settings.hasOne(models.User);
     };
 
     return Settings;

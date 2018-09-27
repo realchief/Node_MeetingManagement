@@ -496,41 +496,80 @@ router.get('/tokens/facebook/:company',  function (req, res) {
 
 })
 
-router.get('/settings', function(req, res, next) {
-  if (req.user) {
-    Async.waterfall([
-      function (cb)  {
-        req.user.getSettings().then(function (setting) {
-          if (setting)
-            cb(setting);
-          else {
-            Model.Settings.create({}).then(function (setting) {
-              req.user.setSettings(setting).then(function (){
-                cb(setting);
-              })
-            })
-          }
-        })    
-      },
-      function (setting, cb) {
-        res.render('fingertips', {
-          version: 'fingertips',
-          layout: 'settings.handlebars',
-          time: setting.insights_time,
-          attendees: setting.insights_to
-        });
-      }
-    ], function (err, result) {
-      if (err) {
-        req.flash('google_error', err.error);
-      }
-      res.redirect('/settings');
-    })
-  } else {
-    return res.redirect('/signin');
-  }
+// router.get('/settings', function(req, res, next) {
+//   if (req.user) {
+//     Async.waterfall([
+//       function (cb)  {
+//         req.user.getSettings().then(function (setting) {
+//           if (setting)
+//             cb(setting);
+//           else {
+//             Model.Settings.create({}).then(function (setting) {
+//               req.user.setSettings(setting).then(function (){
+//                 cb(setting);
+//               })
+//             })
+//           }
+//         })    
+//       },
+//       function (setting, cb) {
+//         res.render('fingertips', {
+//           version: 'fingertips',
+//           layout: 'settings.handlebars',
+//           time: setting.insights_time,
+//           attendees: setting.insights_to
+//         });
+//       }
+//     ], function (err, result) {
+//       if (err) {
+//         req.flash('setting_error', err.error);
+//       }
+//       res.redirect('/settings');
+//     })
+//   } else {
+//     return res.redirect('/signin');
+//   }
 
+// });
+
+router.get('/settings',  function (req, res) {
+  if (!req.user) {
+      return res.redirect('/signin')
+  }
+  else {
+      Async.waterfall([
+          function ( cb ) {
+              console.log('========req.user=======');
+              console.log(req.user);
+              req.user.getSettings().then(function (setting) {
+                  if (setting) {
+                      cb(null, setting)
+                  }
+                  else {
+                      Model.Settings.create({}).then(function (setting) {
+                          req.user.setSettings(setting).then(function (){
+                            cb(null, setting)
+                          })
+                      })
+                  }
+              })
+          }, function (setting, cb) {
+              res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'settings.handlebars',
+                time: setting.insights_time,
+                attendees: setting.insights_to
+              });
+          }
+      ], function (err, result) {
+          if (err) {
+              req.flash('setting_error', err.error);
+          }
+          res.redirect('/settings');
+      })
+  }
 });
+
 
 router.post('/settings', function(req, res) {  
 

@@ -591,72 +591,45 @@ router.post('/settings', function(req, res) {
 
 
 router.get('/profile', function(req, res, next) {
-  res.render('profile', { title: 'Manage Profile', layout: false });
+  if (!req.user) {
+    return res.redirect('/signin')
+  } else {
+    res.render('profile', { title: 'Manage Profile', layout: false });
+  }
 });
 
 router.post('/profile', function(req, res) {
   
   // validation of profile form
 
-  let newUser = req.body;   
-  let new_password = newUser.password;
-  let new_confirm_password = req.body.confirm_password;
-  let new_email = req.body.email;
-  let new_company_name = req.body.company_name;
-  let new_username = req.body.username;
-  let new_company_id = req.body.company_id;
+  let updatedUser = req.body;   
+  let updated_password = updatedUser.password;
+  let updated_confirm_password = updatedUser.confirm_password;
+  let updated_email = updatedUser.email;
+  let updated_company_name = updatedUser.company_name;
+  let updated_username = updatedUser.username;
+  let updated_company_id = updatedUser.company_id;
 
-  if (new_password != new_confirm_password) {
+  if (updated_password != updated_confirm_password) {
       console.log('Not matched');
       res.render('profile', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
   }
 
   else {
-
-    if (!req.user) {
-      return res.redirect('/signin')
-    } else {
-        Async.waterfall([
-          function ( cb ) {   
-              req.user.getUser().then(function (user) {
-                  if (user) {
-                      cb(null, user)
-                  }
-                  else {
-                    Model.User.create({
-                      username: new_username,
-                      email: new_email,
-                      company_name: new_company_name,
-                      company_id: new_company_id,
-                      password: new_password
-                    }).then(function (user) {
-                          req.user.setUser(user).then(function (){
-                            cb(null, user)
-                          })
-                      })
-                  }
-              })
-          }, function (user, cb) {
-              user.updateAttributes({
-                username: new_username,
-                email: new_email,
-                company_name: new_company_name,
-                company_id: new_company_id,
-                password: new_password    
-              }).then(function (user) {
-                res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'profile.handlebars'
-              });
-            });            
-          }
-      ], function (err, result) {
-          if (err) {
-              req.flash('profile_error', err.error);
-          }
-          res.redirect('/profile');
-      })
-    }
+    if (req.user) {
+        req.user.updateAttributes({
+            username: updated_username,
+            email: updated_email,
+            company_name: updated_company_name,
+            company_id: updated_company_id,
+            password: updated_password,        
+        }).then(function (updatedResult) {
+          console.log('=======Updated Result=====');
+          console.log(updatedResult);
+          res.redirect('/profile');            
+        })
+      } 
+    else res.redirect('signin');
   }       
 });
 

@@ -166,6 +166,8 @@ var users = {
   getSummaries : function( userId, cb ) {
 
     var thisModule = this
+    var numberOfConnectedAccounts = 0;
+    var numberOfAccountLists = 0;
 
     thisModule.getLinkedAccountsFromId(userId, function( err, credentials ) {
 
@@ -183,6 +185,8 @@ var users = {
 
               var api = require('../controllers/' + accountName.replace('_', '-') + '-api')
               api.getAccountListOrSelectView(credentials.user, function( err, results ) {
+                   if ( results.chosen_account ) { numberOfConnectedAccounts++ }
+                   if ( results.account_list ) { numberOfAccountLists++ }
                    cb ( null, results )
               })
 
@@ -195,7 +199,8 @@ var users = {
       Async.parallel(linkedAccounts, function ( err, summaries ) {
 
         summaries.accounts = Object.assign({}, summaries)
-
+        summaries.numberOfConnectedAccounts = numberOfConnectedAccounts
+        summaries.numberOfAccountLists = numberOfAccountLists
         cb ( null, summaries )
 
       })

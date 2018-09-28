@@ -1,0 +1,217 @@
+{{> head }}
+
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+		<div class="below-header"><div class="below-header-inside">
+			<div class="container">
+
+				{{!-- 
+				{{#if messages.info}}
+				<div class="flash-message">
+					{{#each messages.info }}
+					<p>{{value}}</p>
+					{{/each}}
+				</div>
+				{{/if}}
+
+				{{#if flash}} 
+					<div class="flash-message">
+						<p>{{flash}}</p>
+					</div>
+				{{/if}}
+				
+				---}}
+
+				{{#if sessionFlash.message}}
+					{{#contains sessionFlash.type "info"}}
+					<div class="flash-message">
+						<p>{{{sessionFlash.message}}}</p>
+					</div>
+					{{/contains}}
+				{{/if}}
+
+				{{#eq numConnections 0 }}
+
+					{{#eq numAccountLists 0 }}
+						<div class="persistent-message">
+							<p>You have not connected any data sources yet. We need to connect a data source so we can send you a MeetBrief!</p>
+						</div>
+					{{/eq}}
+		
+				{{/eq}}
+
+				{{#gt numAccountLists 0 }}
+
+					<div class="persistent-message">
+						<p>Almost there! We need to choose the property that we're going to analyze for insights!</p>
+					</div>
+
+
+				{{/gt}}
+				
+
+				{{#gt numConnections 0 }}
+				
+				<div class="persistent-message">
+					<p>You have set up a connected data source! You can now add  insights@meetbrief.com to any meeting. You'll get insights before the meeting starts! </p>
+				</div>
+		
+				{{/gt}}
+
+
+
+				
+
+				<div class="row clearfix" id="connect-sources">
+				
+					<div class="two-col cols">
+						<div class="col first">
+							<div class="connector">
+
+								<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
+								
+								<ul class="connectors-list">
+									{{#if summaries.google_analytics }}
+									<li class="google google-authorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google/unlink'>Disconnect Google Analytics</a></li>
+									{{else}}
+									<li class="google google-deauthorize-button button"><i class="fab fa-google"></i><a class="title" href='/auth/google'>Connect Google Analytics</a></li>
+									{{/if}}									
+								
+								</ul>
+								<div class="google-accounts ">
+
+									{{#if summaries.google_analytics }}
+
+										{{#if summaries.google_analytics.account_list }}
+
+											<div class="flash-message">
+												<p>Before your Google Analytics account can be connected, we need to choose your view.</p>
+											</div>
+
+											<div class="select-google-view modal">
+
+											<h5 class="label ga-user">GA Accounts for {{summaries.google_analytics.user.email}} </h5>
+
+												<div class="modal-body">
+													
+													{{#each summaries.google_analytics.account_list.users as |account|}}
+														<h4 class="label ga-account">{{ account.account_name }}</h4>
+														{{#each account.web_properties as |property|}}
+															<h5 class="label ga-property">{{ property.property_name }}</h5>
+															
+															<ul class="views-list">
+															{{#each property.views as |view|}}
+																<li>
+																	{{view.view_name}}
+																	<span class="property-chooser">
+																	<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}'>Use</a>
+																	</span>
+																</li>
+															{{/each}}
+															</ul>
+
+														{{/each}}
+													{{/each}}
+												</div>
+											</div>
+										{{/if}}
+									{{/if}}
+								</div>
+								{{#if summaries.google_analytics }}
+									{{#if summaries.google_analytics.chosen_account }}
+										{{#if summaries.google_analytics.chosen_account.view_name}}
+											<div class="google-selected-accounts">
+												<h2 class="label ga-account">Connected as: {{summaries.google_analytics.chosen_account.email}}</h2>										
+												<h2 class="select-view-google-text label ga-account">
+													To Account: {{summaries.google_analytics.chosen_account.account_name}} : {{summaries.google_analytics.chosen_account.property_name}} - {{summaries.google_analytics.chosen_account.view_name}}
+												</h2>
+											</div>
+										{{/if}}
+									{{/if}}
+								{{/if}}
+							</div>
+						</div>
+
+						<div class="col last">
+							<div class="connector">
+								<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
+								<ul class="connectors-list">
+									{{#if summaries.facebook }}
+									<li class="facebook facebook-authorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook/unlink">Disconnect Facebook</a></li>
+									{{else}}
+									<li class="facebook facebook-deauthorize button"><i class="fab fa-facebook"></i><a class="title" href="/auth/facebook">Connect Facebook Account</a><br />
+									</li>
+									<p>Note: Make sure you are logged in to the Facebook Account you want to use first</p>
+									{{/if}}								
+
+								</ul>
+								<div class="facebook-accounts">
+									{{#if summaries.facebook }}					
+
+										{{#if summaries.facebook.account_list}}
+
+											<div class="flash-message">
+												<p>Before your Facebook account can be connected, we need to choose your page account.</p>
+											</div>
+
+											<div class="select-facebook-view modal">
+												
+												<h5 class="label ga-user">Facebook Page Accounts for {{summaries.facebook.user.email}}</h5>
+
+												<div class="modal-body">											
+													<ul class="views-list">
+														{{#each summaries.facebook.account_list as |account|}}                                                              
+															<li class="fb-account">
+																{{ account.account_name }}
+																<span class="property-chooser">
+																<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
+																Use
+																</a>
+																</span>
+																
+															</li>                                                                
+														{{/each}}
+													</ul>
+												</div>               
+											</div>
+										{{/if}}
+									{{/if}}
+								</div>
+								{{#if summaries.facebook }}							
+									{{#if summaries.facebook.chosen_account}}
+
+										{{#if summaries.facebook.chosen_account.account_name}}
+											<div class="facebook-selected-accounts">
+												<h2 class="label fb-account">Connected as: {{summaries.facebook.chosen_account.email}}</h2>
+												<h2 class="select-view-facebook-text label fb-account">
+													To Account: {{summaries.facebook.chosen_account.account_name}}
+												</h2>
+											</div>
+										{{/if}}
+									{{/if}}
+								{{/if}}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="section gutter footer">
+				{{> footer }}
+			</div>
+		</div>
+	</div>	
+</div>
+
+<div class="test"></div>
+	
+	{{> scripts }}
+
+
+</body>
+
+</html>

@@ -52,5 +52,4 @@ router.get('/frontend', function(req, res, next) {
         
 });
 
-
 module.exports = router

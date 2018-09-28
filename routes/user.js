@@ -289,7 +289,7 @@ router.get('/settings',  function (req, res) {
 
     if (!req.user) {
       return res.redirect('/signin')
-    } else {
+    } else {        
         res.render('profile', {
             layout: false,
             user : req.user                     
@@ -297,9 +297,7 @@ router.get('/settings',  function (req, res) {
     }
   });
 
-  router.post('/profile', function(req, res) {
-    
-    // validation of profile form
+  router.post('/profile', function(req, res) {  
   
     let updatedUser = req.body;   
     let updated_password = updatedUser.password;
@@ -315,23 +313,17 @@ router.get('/settings',  function (req, res) {
     }
   
     else {
-      if (req.user) {
+      if (req.user) {     
           req.user.updateAttributes({
               username: updated_username,
               email: updated_email,
               company_name: updated_company_name,
               company_id: updated_company_id,
               password: updated_password,        
-          }).then(function (updatedResult) {      
-            console.log('==========updated Result=======');
-            console.log(updatedResult);
-            console.log(updatedResult.username);
-            res.render('profile', {                
-                layout: false,           
-                user:req.user
-              });  
-            })
-         } 
+          }).then(function (updatedResult) {         
+            res.redirect('/profile');
+          })
+        } 
       else res.redirect('signin');
     }       
   });

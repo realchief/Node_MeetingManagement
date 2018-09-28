@@ -168,10 +168,10 @@ router.post('/signup', function(req, res) {
         res.render('signup', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
     }
 
-    if (new_company_id == 'gmail') {
+    /*if (new_company_id == 'gmail') {
         
         res.render('signup', {errorMessage: { company_id:'You cant have a gmail account.'}, layout: false} );
-    }
+    }*/
 
     else {
 

@@ -183,4 +183,144 @@ router.get('/getuser/:company', function (req, res) {
 })
 
 
+router.get('/settings',  function (req, res) {
+    if (!req.user) {
+        return res.redirect('/signin')
+    }
+    else {
+        Async.waterfall([
+            function ( cb ) {   
+  
+                req.user.getSetting().then(function (setting) {
+                    if (setting) {
+                        cb(null, setting)
+                    }
+                    else {
+                      Model.Setting.create({
+                        insights_time: '15 minutes',
+                        insights_to: 'All attendees'    
+                      }).then(function (setting) {
+                            req.user.setSetting(setting).then(function (){
+                              cb(null, setting)
+                            })
+                        })
+                    }
+                })
+            }, function (setting, cb) {
+                res.render('fingertips', {
+                  version: 'fingertips',
+                  layout: 'settings.handlebars',
+                  time: setting.insights_time,
+                  attendees: setting.insights_to,
+                  user:req.user
+                });
+            }
+        ], function (err, result) {
+            if (err) {
+                req.flash('setting_error', err.error);
+            }
+            res.redirect('/settings');
+        })
+    }
+  });
+  
+  
+  router.post('/settings', function(req, res) {  
+  
+    let settings_param = req.body;   
+    console.log('=======================settings param===================');
+    console.log(settings_param);  
+    let selected_times = settings_param.time;
+    let selected_attendees = settings_param.attendees;
+  
+    if (!req.user) {
+      return res.redirect('/signin')
+    } else {
+        Async.waterfall([
+          function ( cb ) {   
+              req.user.getSetting().then(function (setting) {
+                  if (setting) {
+                      cb(null, setting)
+                  }
+                  else {
+                    Model.Setting.create({
+                      insights_time: selected_times,
+                      insights_to: selected_attendees    
+                    }).then(function (setting) {
+                          req.user.setSetting(setting).then(function (){
+                            cb(null, setting)
+                          })
+                      })
+                  }
+              })
+          }, function (setting, cb) {
+              setting.updateAttributes({
+                insights_time: selected_times,
+                insights_to: selected_attendees    
+              }).then(function (setting) {
+                res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'settings.handlebars',
+                time: setting.insights_time,
+                attendees: setting.insights_to,
+                user:req.user
+              });
+            });            
+          }
+      ], function (err, result) {
+          if (err) {
+              req.flash('setting_error', err.error);
+          }
+          res.redirect('/settings');
+      })
+    }
+    
+           
+  });
+  
+  
+  router.get('/profile', function(req, res, next) {
+    if (!req.user) {
+      return res.redirect('/signin')
+    } else {
+      res.render('profile', { title: 'Manage Profile', layout: false });
+    }
+  });
+  
+  router.post('/profile', function(req, res) {
+    
+    // validation of profile form
+  
+    let updatedUser = req.body;   
+    let updated_password = updatedUser.password;
+    let updated_confirm_password = updatedUser.confirm_password;
+    let updated_email = updatedUser.email;
+    let updated_company_name = updatedUser.company_name;
+    let updated_username = updatedUser.username;
+    let updated_company_id = updatedUser.company_id;
+  
+    if (updated_password != updated_confirm_password) {
+        console.log('Not matched');
+        res.render('profile', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
+    }
+  
+    else {
+      if (req.user) {
+          req.user.updateAttributes({
+              username: updated_username,
+              email: updated_email,
+              company_name: updated_company_name,
+              company_id: updated_company_id,
+              password: updated_password,        
+          }).then(function (updatedResult) {
+            console.log('=======Updated Result=====');
+            console.log(updatedResult);
+            res.redirect('/profile');            
+          })
+         } 
+      else res.redirect('signin');
+    }       
+  });
+
+
 module.exports = router

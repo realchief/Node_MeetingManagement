@@ -28,32 +28,13 @@
 
                      <label for="company_id"><b>Company ID</b></label>
                     <input type="text" placeholder="Company ID" name="company_id" required>                       
-
-                    <label for="password"><b>Password</b></label>
-                    <input type="password" placeholder="Enter Password" name="password" id="password" required> 
-                     
-
-                    {{#if errorMessage}}
-                        {{#if errorMessage.password_match}}
-                        <p class="alert">{{ errorMessage.password_match }}</p>
-                        {{/if}}
-                    {{/if}}                        
-
-                    <label for="psw-repeat"><b>Repeat Password</b></label>
-                    <input type="password" placeholder="Repeat Password" name="confirm_password" id="confirm_password" {{#if errorMessage.email}} class="error" {{/if}} required>
-                    
-                    {{#if errorMessage}}
-                        {{#if errorMessage.password_match}}
-                        <p class="alert">{{ errorMessage.password_match }}</p>
-                        {{/if}}
-                    {{/if}}  
                      
                     <label>
                         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
                     </label>
                     
                     <div class="clearfix">
-                        <a href="/signin" class="cancelbtn">Cancel</a>
+                        <a href="/" class="cancelbtn">Cancel</a>
                         <button type="submit" class="signupbtn">Save</button>
                     </div>
                 </div>

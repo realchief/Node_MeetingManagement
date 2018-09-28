@@ -280,13 +280,23 @@ router.get('/settings',  function (req, res) {
   
   
   router.get('/profile', function(req, res, next) {
+
+    let updatedUser = req.body;   
+    let updated_email = updatedUser.email;
+    let updated_company_name = updatedUser.company_name;
+    let updated_username = updatedUser.username;
+    let updated_company_id = updatedUser.company_id;
+
     if (!req.user) {
       return res.redirect('/signin')
     } else {
-      res.render('profile', { title: 'Manage Profile', layout: false });
+        res.render('profile', {
+            layout: false,
+            user : req.user                     
+        });
     }
   });
-  
+
   router.post('/profile', function(req, res) {
     
     // validation of profile form
@@ -312,11 +322,15 @@ router.get('/settings',  function (req, res) {
               company_name: updated_company_name,
               company_id: updated_company_id,
               password: updated_password,        
-          }).then(function (updatedResult) {
-            console.log('=======Updated Result=====');
+          }).then(function (updatedResult) {      
+            console.log('==========updated Result=======');
             console.log(updatedResult);
-            res.redirect('/profile');            
-          })
+            console.log(updatedResult.username);
+            res.render('profile', {                
+                layout: false,           
+                user:req.user
+              });  
+            })
          } 
       else res.redirect('signin');
     }       

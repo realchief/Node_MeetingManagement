@@ -13,10 +13,11 @@
                     <hr>
                     
                     <label for="username"><b>Administrator Name</b></label>
-                    <input type="text" placeholder="Enter Name" name="username" required>
+                    <input type="text" placeholder={{user.username}} name="username" required>
+                    
                     
                     <label for="email"><b>Email Address</b></label>
-                    <input type="email" placeholder="Enter Email" name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
+                    <input type="email" placeholder={{user.email}} name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
 
                     {{#if errorMessage.email}}
                         <p class="alert">{{ errorMessage.email }}</p>
@@ -24,10 +25,10 @@
                  
                   
                     <label for="company_name"><b>Company Name</b></label>
-                    <input type="text" placeholder="Company Name" name="company_name" required>        
+                    <input type="text" placeholder={{user.company_name}} name="company_name" required>        
 
                      <label for="company_id"><b>Company ID</b></label>
-                    <input type="text" placeholder="Company ID" name="company_id" required>                       
+                    <input type="text" placeholder={{user.company_id}} name="company_id" required>                       
                      
                     <label>
                         <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me

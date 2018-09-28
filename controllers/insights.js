@@ -192,8 +192,6 @@ var insights = {
 									
 									_.forEach( assetInsights, function( asset, index ) {
 
-										//console.log('Individual Factor>>>>', asset.meta.parentMetric, factor)
-
 										var assetPhrase = ""
 										assetPhrase = thisModule.assetPhraser( asset )
 									
@@ -467,7 +465,7 @@ var insights = {
 				metric.completePhrase = completePhrase
 
 			} else {
-				console.log('UNDEFINED PLATFORM PHRASE', metric.name)
+				//console.log('UNDEFINED PLATFORM INSIGHT PHRASE', metric.name)
 			}
 
 			var data = [];
@@ -479,6 +477,7 @@ var insights = {
 				
 				var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
 				
+				// we need to look at whether .insightsPhrases exists because we could have asset-links, but they have no actual values // 
 				if ( asset.insightsPhrases ) {
 					
 					var parent = "Asset: " + asset.parentMetric 
@@ -494,7 +493,7 @@ var insights = {
 					//console.log( 'Unique Resource:', 'for asset:', metric.name, resourceToUse ? resourceToUse.phrase : 'undefined' )
 					
 					// make sure there is an insights phrase if we have an asset insight! //
-					if ( asset.insightsPhrases[0] ) {
+					if ( typeof asset.insightsPhrases[0] !== 'undefined' ) {
 
 						var completePhrase = {
 							point_id : pointToUse.id,
@@ -516,7 +515,7 @@ var insights = {
 				
 				} else {
 
-					console.log('UNDEFINED ASSET PHRASE:', metric.name, asset.talkingPointsPhrases)
+					console.log('Undefined Asset Insight Phrase:', metric.name, ' Check for values where the metric_assets are set, and then check that there is an asset-level insight')
 
 				}
 
@@ -876,6 +875,8 @@ var insights = {
 
 			var allSentences = thisModule.getSentences( 'asset', { insightsTags: insightsTags, phrasesTags : phrasesTags }, replacements, parentInfo   )
 
+			//console.log( 'All sentences:', allSentences.insightsPhrases.length, 'asset', asset.meta.parentMetric)
+
 			asset.meta.insightsPhrases = allSentences.insightsPhrases
 			asset.meta.talkingPointsPhrases = allSentences.talkingPointsPhrases
 			asset.meta.actionItemsPhrases = allSentences.actionItemsPhrases
@@ -916,6 +917,10 @@ var insights = {
 			return {
 				data : data
 			}
+
+		} else {
+
+			console.log('NO ASSET VALUES FOR', asset.meta.parentMetric, 'Check for values where the metric_assets are set.', 'asset.insightsPhrases will not be set')
 
 		}
 
@@ -1038,6 +1043,8 @@ var insights = {
 	    };
 
 		var allSentences = thisModule.getSentences( 'platform', { insightsTags: insightsTags, phrasesTags : phrasesTags }, replacements, parentInfo  )
+
+		//console.log( 'All sentences:', allSentences.insightsPhrases.length, 'platform', metric.name)
 
 		// Add status to platform metric for use in bucket insights lookups
 		metric.status = status;

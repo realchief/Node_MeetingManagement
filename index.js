@@ -71,6 +71,9 @@ app.engine('handlebars', exphbs({
       },
       isChecked :  function(obj_1, obj_2) {
         return obj_1 == obj_2 ? 'checked' : ''
+      },
+      isSelected :  function(obj_1, obj_2) {
+        return obj_1 == obj_2 ? 'selected' : ''
       }
     }
 }));

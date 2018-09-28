@@ -257,15 +257,7 @@ router.get('/settings',  function (req, res) {
               setting.updateAttributes({
                 insights_time: selected_times,
                 insights_to: selected_attendees    
-              }).then(function (setting) {
-                // if (setting.insights_to == "All attendees") {attendees_all = true;} else {attendees_all = false;}
-                // if (setting.insights_to == "Internal attendees") {attendees_internal = true;} else {attendees_internal = false;}
-                // if (setting.insights_to == "Just me") {attendees_me = true;} else {attendees_me = false;}
-                // var json_attendees = {
-                //     'All attendees': attendees_all,
-                //     'Internal attendees': attendees_internal,
-                //     'Just me': attendees_me
-                // }
+              }).then(function (setting) {              
                 res.render('fingertips', {
                 version: 'fingertips',
                 layout: 'settings.handlebars',  

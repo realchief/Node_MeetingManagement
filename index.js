@@ -68,6 +68,9 @@ app.engine('handlebars', exphbs({
       //moment : require('helper-moment'),
       toJSON : function(object) {
        return JSON.stringify(object, null, 2);
+      },
+      isChecked :  function(obj_1, obj_2) {
+        return obj_1 == obj_2 ? 'checked' : ''
       }
     }
 }));

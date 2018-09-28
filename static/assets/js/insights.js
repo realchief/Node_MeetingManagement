@@ -329,10 +329,10 @@ FT.insights = {
 
 			if ( typeof metric.insightsPhrases[0] !== 'undefined') {
 				var bucketTag = '<span class="bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
-				var completePhrase = metric.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag;
-				phraseList.push(completePhrase)
+				var completePhrases = metric.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag;
+				phraseList.push(completePhrases)
 				// write newly used combined phrase back to the metric
-				metric.completePhrase = completePhrase
+				metric.completePhrases = completePhrases
 
 			} else {
 
@@ -348,10 +348,10 @@ FT.insights = {
 					var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
 					if ( typeof asset.talkingPointsPhrases !== 'undefined') {
 						var phraseToUse = FT.insights.getUniquePhrase(asset.talkingPointsPhrases)
-						var completePhrase = '<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>'
-						phraseList.push(completePhrase)			
+						var completePhrases = '<span class="metric-asset">' + asset.insightsPhrases[0] + '.' + ' ' + "<strong>" + phraseToUse + "</strong>" + " " + bucketTag + '</span>'
+						phraseList.push(completePhrases)			
 					}
-					asset.completePhrase = completePhrase
+					asset.completePhrases = completePhrases
 				})
 		})
 

@@ -9,9 +9,43 @@
 		</div>
 		<div class="below-header"><div class="below-header-inside">
 			<div class="container">
-				<div class="row clearfix" id="connect-sources">
-					<h2 class="with-line">Connect API Sources</h2>
 
+				{{#if messages.info}}
+				<div class="flash-message">
+					{{#each messages.info }}
+					<p>{{value}}</p>
+					{{/each}}
+				</div>
+				{{/if}}
+
+				
+				{{!-- 
+
+				{{#if flash}} 
+					<div class="flash-message">
+						<p>{{flash}}</p>
+					</div>
+				{{/if}}
+				
+				---}}
+
+				{{#if sessionFlash.message}}
+					{{#contains sessionFlash.type "info"}}
+					<div class="flash-message">
+						<p>Session Flash: {{{sessionFlash.message}}}</p>
+					</div>
+					{{/contains}}
+				{{/if}}
+
+				{{#if summaries.facebook }}
+				{{else}}
+				<div class="note-message">
+					<p>You have not connected any data sources yet. We need to connect a data source so we can send you a MeetBrief!</p>
+				</div>
+				{{/if}}
+
+				<div class="row clearfix" id="connect-sources">
+				
 					<div class="two-col cols">
 						<div class="col first">
 							<div class="connector">

@@ -27,7 +27,7 @@ router.get('/',  function (req, res) {
                 console.log('***** Error: ', err);
                 return;
             }
-            
+
             //console.log('\n', emoji.get("smile"), '***** Results: ', results);
             console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
 
@@ -35,9 +35,10 @@ router.get('/',  function (req, res) {
                 version: 'fingertips',
                 layout: 'fingertips.handlebars',
                 user : req.user,
-                summaries : summaries.accounts
+                summaries : summaries.accounts,
+                //flash : req.flash('info')
             });
-        
+
         });
     }
     else res.redirect('/signin');

@@ -68,9 +68,20 @@ router.get('/facebook/setprofile', function (req, res) {
 
 router.get('/signin', function(req, res, next) {
     if (req.isAuthenticated()) {
+       
+        req.flash( 'info', 'You are already signed in!')
+
+        req.session.sessionFlash = {
+            type: 'info',
+            message: 'You are already signed in!'
+        }
+
         res.redirect('/');
+    
     } else {
+    
         res.render('signin', { title: 'Sign In', layout: false, errorMessage: req.flash('errMessage') });
+   
     }
 });
 
@@ -114,8 +125,23 @@ router.post('/signup', function(req, res) {
             }
             else {
                 Model.User.create(newUser).then(function (user) {
-                    console.log(user);
-                    res.redirect('signin');
+                   
+                    req.login(user, function (err) {
+                       
+                        if ( ! err ) {
+
+                           req.flash( 'info', 'Thank you for signing up for MeetBrief!')
+                           res.redirect('/');
+                        
+                        } else {
+                       
+                           res.redirect('signin');
+                       
+                        }
+                    })
+
+                    // res.redirect('signin');
+
                 }).catch(function (err) {
                     console.log(err);
                     res.render('signup', {errorMessage: { signout:'You can not logout', layout: false }});

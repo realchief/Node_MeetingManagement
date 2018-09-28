@@ -713,8 +713,8 @@ exports.getAllMetrics = ( gAccount, dateWindow, cb ) => {
             
             if ( !data ) { 
             
-              console.log('no data!')
-              cb( { message: 'no data in GA resources file' }, null )
+              console.log('no data!', filename )
+              cb( { errors : [ { message: 'no data in GA resources file' }] }, null )
 
 
             } else {

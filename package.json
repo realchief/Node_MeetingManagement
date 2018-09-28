@@ -23,6 +23,7 @@
     "express": "^4.16.3",
     "express-ab": "^0.7.2",
     "express-handlebars": "^3.0.0",
+    "express-messages": "^1.0.1",
     "express-session": "^1.15.5",
     "fbgraph": "^1.4.4",
     "fs": "0.0.1-security",

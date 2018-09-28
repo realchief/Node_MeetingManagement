@@ -40,9 +40,11 @@ module.exports = function(passport) {
         function(req, email, password, done) {
          
             Model.User.findOne({
+                
                 where: {
                     'email': email
                 }
+
             }).then(function (user) {
               
                 if (!user) {

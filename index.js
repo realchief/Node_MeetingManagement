@@ -11,11 +11,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helpers = require('./helpers');
+var flash = require('connect-flash');
 
 var passport = require('passport');
 
 var models = require('./models');
-var flash = require('connect-flash');
 var emails = require('./controllers/emails');
 var Model = require('./models');
 var Async = require('async');
@@ -77,7 +77,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
 if ( secureRedirect ) {
 
   app.use(function(req, res, next) {
@@ -110,12 +109,22 @@ app.use(session({
   cookie: cookieOptions
 }));
 
+app.use(flash());
+app.use(function (req, res, next) {
+  
+  res.locals.messages = require('express-messages')(req, res);
+
+  res.locals.sessionFlash = req.session.sessionFlash;
+  delete req.session.sessionFlash;
+  next();
+
+});
+
 // serves up static files from the public folder. Anything in static/ will just be served up as the file it is
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
 
 // DEBUG REQUESTS
 app.use(function(req, res, next) {

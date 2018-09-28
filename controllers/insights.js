@@ -1,3 +1,5 @@
+require('dotenv').config({path: './variables.env'})
+
 var insightsDefinition = require('../definitions/insights');
 //var insightsList = insightsDefinition.get();
 
@@ -120,7 +122,12 @@ var insights = {
 		return new Promise(function(resolve, reject) {
 
 			var bucketList = thisModule.makeBucketList();
-			var getAllPhrases = thisModule.getPhrasesFromDb();
+
+			// SET TO VAR
+			console.log(process.env.PHRASES_LOCATION)
+			var phrasesLocation = ( process.env.PHRASES_LOCATION == 'db' ) ? 'getPhrasesFromDb' : 'getPhrases';
+
+			var getAllPhrases = thisModule[phrasesLocation]();
 
 			var insightsList = thisModule.makeInsightsList();
 			var insightsData = insightsList.data
@@ -375,6 +382,8 @@ var insights = {
 				if (usedPhrases.indexOf(phraseSet[i].phrase) == -1) {
 
 					//console.log(">>> Unique Phrase after finding used", phraseSet[i].phrase, parent, type  )
+
+					console.log(phraseSet[i].id)
 
 					uniquePhrase.phrase = phraseSet[i].phrase;
 					uniquePhrase.id = phraseSet[i].id;

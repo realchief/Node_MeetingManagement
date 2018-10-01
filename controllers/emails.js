@@ -215,7 +215,7 @@ exports.inboundParse = ( req ) => {
     }
 
 
-    if ( to.toLowerCase().indexOf('neil') >= 0 || to.toLowerCase().indexOf('marty') >= 0 || to.toLowerCase().indexOf('rachel') >= 0 || to.toLowerCase().indexOf('sarah') >= 0 || to.toLowerCase().indexOf('help') >= 0 ) {
+    if ( to.toLowerCase().indexOf('neil@meetbrief') >= 0 || to.toLowerCase().indexOf('marty@meetbrief') >= 0 || to.toLowerCase().indexOf('rachel@meetbrief') >= 0 || to.toLowerCase().indexOf('sarah@meetbrief') >= 0 || to.toLowerCase().indexOf('help@meetbrief') >= 0 || to.toLowerCase().indexOf('neil@getfingertips') >= 0 || to.toLowerCase().indexOf('marty@getfingertips') >= 0 || to.toLowerCase().indexOf('rachel@getfingertips') >= 0 || to.toLowerCase().indexOf('sarah@getfingertips') >= 0 || to.toLowerCase().indexOf('help@getfingertips') >= 0  ) {
       console.log('!!!!!!!!!!!!! ', 'this is to a meetbrief team member.', 'Subject:', subject, 'To:', to)
       requestType = "internal"
       //resolve( { type : 'cancel'} );

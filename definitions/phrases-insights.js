@@ -131,7 +131,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "Conversions are up site-wide, with {{total_delta}} conversions, a {{percent_change}} increase",
+				phrase: "Conversions are up site-wide, with {{total_delta}} more conversions, a {{percent_change}} increase - with a total of {{value}} conversions.",
 				tags: { level: "platform", source: "google_analytics", dimension: "conversions", sentiment: "positive", type: "platform", category: "", metric: "conversions"}
 			}, 
 

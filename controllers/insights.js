@@ -585,6 +585,8 @@ var insights = {
 		insightsList.data.platform_phrases = sentencesList['platform']['talkingPointsAndActionItem']  
 
 		insightsList.data.all_phrases = sentencesList['all']
+		insightsList.data.all_platforms = sentencesList['platform']
+		insightsList.data.all_assets = sentencesList['asset']
 
 		insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
 		insightsList.data.talking_points = sentencesList['all']['talkingPoint'].slice(0,3)

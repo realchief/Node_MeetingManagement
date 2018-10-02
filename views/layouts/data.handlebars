@@ -136,6 +136,8 @@
 						{{/each}}
 						</ul>
 
+						<hr />
+
 						<h4>Asset Phrases</h4>
 
 						<ul class="lines">
@@ -147,6 +149,8 @@
 
 						{{/each}}
 						</ul>
+
+						<hr />
 
 						<h4>Platform Phrases</h4>
 
@@ -162,6 +166,80 @@
 
 						<hr />
 
+						<h4>Platform Talking Points</h4>
+
+						<ul class="lines">
+						{{#each insights.data.all_platforms.talkingPoint}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						
+						<h4>Platform Action Items</h4>
+
+						<ul class="lines">
+						{{#each insights.data.all_platforms.actionItem}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						<h4>Asset Talking Points</h4>
+
+						<ul class="lines">
+						{{#each insights.data.all_assets.talkingPoint}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						
+						<h4>Asset Action Items</h4>
+
+						<ul class="lines">
+						{{#each insights.data.all_assets.actionItem}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						<h4>Action Items - Email</h4>
+
+						<ul class="lines">
+						{{#each insights.data.action_items}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+
+						<h4>Talking Points - Email</h4>
 						<ul class="lines">
 						{{#each insights.data.talking_points}}
 
@@ -174,16 +252,7 @@
 
 						<hr />
 
-						<ul class="lines">
-						{{#each insights.data.action_items}}
-
-						<li>
-						{{{this.phrase}}}
-						</li>
-
-						{{/each}}
-						</ul>
-
+						
 					{{/if}}
 
 					</div>

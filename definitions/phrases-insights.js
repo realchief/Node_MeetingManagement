@@ -344,7 +344,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "Quite a difference: {{primary_dimension}}; had the biggest change in returning visitors with {{value}} total visitors",
+				phrase: "Quite a difference: {{primary_dimension}}; had the biggest change in returning visitors with {{value}} new visitors",
 				tags: { level: "asset", source: "google_analytics", dimension: "page", sentiment: "positive", type: "asset", category: "", metric: "returning_users", field: "sessions", sortType: "delta_change"  }
 			},
 

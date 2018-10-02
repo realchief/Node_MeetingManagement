@@ -487,6 +487,13 @@ module.exports = {
 				tags: { level: "asset,platform", source: "", sentiment: "", category: "generic", type: "resource", dimension: "", metric: "" }
 			},
 
+			{
+				type : "action",
+				phrase: "Maybe it's time to promote a product on your home page?",
+				tags: { level: "platform", source: "", sentiment: "positive,negative", category: "", type: "", dimension: "revenue", metric: "revenue" }
+			},
+
+
 		]
 
 		console.log("\n", emoji.get("sparkles"), 'Made action items phrases.');

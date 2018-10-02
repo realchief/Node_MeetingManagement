@@ -438,7 +438,7 @@ var insights = {
 			
 			//console.log("REORDERED PHRASE>>>", parentBucket, metric.resourcesPhrases.length )
 
-			var phraseTypes = [ 'talkingPointsAndActionItem', 'talkingPoint', 'actionItem', 'resource' ]
+			var phraseTypes = [ 'talkingPointsAndActionItem', 'talkingPoint', 'actionItem', 'metricActionItem', 'resource' ]
 			
 			// add id
 			var parent = "Platform: " + metric.name
@@ -446,10 +446,14 @@ var insights = {
 			sentenceTypes.talkingPointsAndActionItemToUse = thisModule.getUniquePhrase(metric.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
 			sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(metric.talkingPointsPhrases, 'talkingPoints', parent )
 			sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(metric.actionItemsPhrases, 'actionItems', parent )
-			sentenceTypesresourceToUse = thisModule.getUniquePhrase(metric.resourcePhrases, 'resources', parent )
+			sentenceTypes.metricActionItemToUse = thisModule.getUniquePhrase(metric.metricActionItemsPhrases, 'metricActionItems', parent )
+			sentenceTypes.resourceToUse = thisModule.getUniquePhrase(metric.resourcePhrases, 'resources', parent )
 
 			//console.log( 'Unique Action Item:', 'for platform:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 			
+			//console.log( 'Unique Metric Action Item:', 'for platform:', metric.name, sentenceTypes.metricActionItemToUse ? sentenceTypes.metricActionItemToUse.phrase : 'undefined' )
+			
+
 			//console.log( 'Unique Talking Point:', 'for platform:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
 
 			//console.log( 'Unique Resource:', 'for platform:', metric.name, resourceToUse ? resourceToUse.phrase : 'undefined' )
@@ -463,13 +467,13 @@ var insights = {
 
 				var completePhrases = {}
 
-				_.forEach( phraseTypes, function( phrase, index ) {
+				_.forEach( phraseTypes, function( phraseType, index ) {
 
-					var pointToUse = sentenceTypes[phrase + 'ToUse']
+					var pointToUse = sentenceTypes[phraseType + 'ToUse']
 
 					if ( pointToUse ) {
 
-						completePhrases[phrase] = {
+						completePhrases[phraseType] = {
 							point_id : pointToUse.id,
 							insight_id : metric.insightsPhrases[0].id,
 							point_tags : pointToUse.tags,
@@ -479,19 +483,22 @@ var insights = {
 
 					} else {
 
-						console.log(phrase + 'ToUse', ' has no phrases for platform insights', 'for: ', metric.name)
+						if ( phraseType !== 'metricActionItem') {
+							console.log(phraseType + 'ToUse', 'has no phrases for platform insights', 'for:', metric.name, 'tags:', metric.tags.join(','))
+						}
 					}
 
 				} )
 
 				var talkingPointsAndActionItemToUse = sentenceTypes.talkingPointsAndActionItemToUse
-										
+				var endOfSentence = sentenceTypes.metricActionItemToUse || sentenceTypes.talkingPointsAndActionItemToUse
+
 				var completePhrases = {
-					point_id : talkingPointsAndActionItemToUse.id,
+					point_id : endOfSentence.id,
 					insight_id : metric.insightsPhrases[0].id,
-					point_tags : talkingPointsAndActionItemToUse.tags,
+					point_tags : endOfSentence.tags,
 					insight_tags : metric.insightsPhrases[0].tags,
-					phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + talkingPointsAndActionItemToUse.phrase + "</strong>" + " " + bucketTag
+					phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + endOfSentence.phrase + "</strong>" + " " + bucketTag
 				}
 
 				phraseList.push(completePhrases)
@@ -522,7 +529,8 @@ var insights = {
 					sentenceTypes.talkingPointsAndActionItemToUse = thisModule.getUniquePhrase(asset.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
 					sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(asset.talkingPointsPhrases, 'talkingPoints', parent )
 					sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(asset.actionItemsPhrases, 'actionItems', parent )
-					sentenceTypesresourceToUse = thisModule.getUniquePhrase(asset.resourcePhrases, 'resources', parent )
+					sentenceTypes.metricActionItemToUse = thisModule.getUniquePhrase(asset.metricActionItemsPhrases, 'metricActionItems', parent )
+					sentenceTypes.resourceToUse = thisModule.getUniquePhrase(asset.resourcePhrases, 'resources', parent )
 
 					//console.log( 'Unique Action Item:', 'for asset:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 					
@@ -535,13 +543,13 @@ var insights = {
 
 						var completePhrases = {}
 				
-						_.forEach( phraseTypes, function( phrase, index ) {
+						_.forEach( phraseTypes, function( phraseType, index ) {
 
-							var pointToUse = sentenceTypes[phrase + 'ToUse']
+							var pointToUse = sentenceTypes[phraseType + 'ToUse']
 
 							if ( pointToUse ) {
 
-								completePhrases[phrase] = {
+								completePhrases[phraseType] = {
 									point_id : pointToUse.id,
 									insight_id : metric.insightsPhrases[0].id,
 									point_tags : pointToUse.tags,
@@ -551,7 +559,9 @@ var insights = {
 
 							} else {
 
-								console.log(phrase + 'ToUse', ' has no phrases for asset insights', 'for: ', metric.name)
+								if ( phraseType !== 'metricActionItem') {
+									console.log(phraseType + 'ToUse', 'has no phrases for asset insights', 'for:', metric.name, 'tags:', asset.tags.join(','))
+								}
 							}
 
 						})
@@ -932,6 +942,7 @@ var insights = {
 			var tags = asset.meta.tags
 			var insightsTags = tags // this tag set has all tags including the metric and sort type
 			var phrasesTags = tags.slice(0,3) // this tag has only the data source, the sentiment, and "asset" or "platform"
+			var actionsTags = [ 'asset', status, asset.meta.parentMetric ]
 
 			var parentInfo = status + ' ' + asset.meta.dataSource + ' ' + asset.meta.parentMetric + ' ' + sourcePhrase
 
@@ -943,7 +954,7 @@ var insights = {
 		        primary_dimension : actionableItem
 		    };
 
-			var allSentences = thisModule.getSentences( 'asset', { insightsTags: insightsTags, phrasesTags : phrasesTags }, replacements, parentInfo   )
+			var allSentences = thisModule.getSentences( 'asset', { insightsTags: insightsTags, phrasesTags : phrasesTags, actionsTags : actionsTags }, replacements, parentInfo   )
 
 			//console.log( 'All sentences:', allSentences.insightsPhrases.length, 'asset', asset.meta.parentMetric)
 
@@ -1109,6 +1120,8 @@ var insights = {
 
 		var insightsTags = tags.concat(metric.name) // "insightsTags" adds the metric to "tags"
 		var phrasesTags = tags // "tags" has only the data source, the sentiment, and "asset" or "platform"
+		var actionsTags = [ 'platform', status, metric.name ]
+
 
 		var parentInfo = status + ' ' + metric.dataSourcesUsed[0] + ' ' + metric.name
 
@@ -1120,7 +1133,7 @@ var insights = {
 	        primary_dimension : 'nothing'
 	    };
 
-		var allSentences = thisModule.getSentences( 'platform', { insightsTags: insightsTags, phrasesTags : phrasesTags }, replacements, parentInfo  )
+		var allSentences = thisModule.getSentences( 'platform', { insightsTags: insightsTags, phrasesTags : phrasesTags, actionsTags : actionsTags }, replacements, parentInfo  )
 
 		
 		/*if ( metric.name == "returning_users" ) {
@@ -1149,6 +1162,7 @@ var insights = {
 			insightsPhrases : allSentences.insightsPhrases,
 			talkingPointsPhrases: allSentences.talkingPointsPhrases,
 			actionItemsPhrases: allSentences.actionItemsPhrases,
+			metricActionItemsPhrases : allSentences.metricActionItemsPhrases,
 			resourcesPhrases: allSentences.resourcesPhrases,
 			talkingPointsAndActionItemsPhrases : allSentences.talkingPointsAndActionItemsPhrases
 		}
@@ -1173,6 +1187,7 @@ var insights = {
 
 		var insightsTags = tags.insightsTags
 		var phrasesTags = tags.phrasesTags
+		var actionsTags = tags.actionsTags || tags.phrasesTags
 
 		/*if ( parentInfo.indexOf('returning_users') >= 0 && level == "asset" ) {
 			console.log(level, 'insights tags:', insightsTags, 'phrases tags:', phrasesTags, parentInfo)
@@ -1203,6 +1218,17 @@ var insights = {
 
 		if ( !actionItemsPhrases ) {
 			//console.log( 'No action items for', level, parentInfo )
+		}
+
+		var metricActionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allActionItems, actionsTags )
+
+		if ( !metricActionItemsPhrases ) {
+			//console.log( 'No metric action items for', level, parentInfo, actionsTags.join(',') )
+		} else {
+			console.log( 'metric action items for', level, parentInfo, actionsTags.join(',') )
+			_.forEach ( metricActionItemsPhrases, function( phrase, index) {
+				console.log("-", phrase.phrase)
+			})
 		}
 
 		var resourcesPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allResources, phrasesTags) 
@@ -1242,6 +1268,7 @@ var insights = {
 			talkingPointsAndActionItemsPhrases: talkingPointsAndActionItemsPhrases,
 			talkingPointsPhrases: talkingPointsPhrases,
 			actionItemsPhrases : actionItemsPhrases,
+			metricActionItemsPhrases : metricActionItemsPhrases,
 			resourcesPhrases : resourcesPhrases
 		}
 

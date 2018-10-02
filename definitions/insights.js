@@ -47,6 +47,11 @@ module.exports = {
 					tags : [],
 					ids: []
 				},
+				metricActionItems : {
+					phrases : [],
+					tags : [],
+					ids: []
+				},
 				resources : {
 					phrases : [],
 					tags : [],

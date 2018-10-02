@@ -33,7 +33,7 @@ module.exports = {
 
 			 {
 				type : "action",
-				phrase: "Keep it moving Try to drive even more traffic by including a link in your next email newsletter.",
+				phrase: "Keep it moving. Try to drive even more traffic by including a link in your next email newsletter.",
 				tags: { level: "asset", source: "google_analytics,facebook,linkedin,twitter", sentiment: "positive,negative", category: "promote", type: "tip", dimension: "", metric: "" }
 			},
 

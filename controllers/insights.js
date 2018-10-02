@@ -422,11 +422,12 @@ var insights = {
 	
 		var insightsList = this.insightsList
 		var bucketList = this.bucketList
-	
-		var factorList = []
-		var phraseList = []
-		var assetPhrases = []
-		var platformPhrases = []
+
+		var sentencesList = {
+			'platform' : [],
+			'asset' : [],
+			'all' : []
+		}
 
 		var thisModule = this
 	
@@ -447,7 +448,7 @@ var insights = {
 			sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(metric.talkingPointsPhrases, 'talkingPoints', parent )
 			sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(metric.actionItemsPhrases, 'actionItems', parent )
 			sentenceTypes.metricActionItemToUse = thisModule.getUniquePhrase(metric.metricActionItemsPhrases, 'metricActionItems', parent )
-			sentenceTypes.resourceToUse = thisModule.getUniquePhrase(metric.resourcePhrases, 'resources', parent )
+			sentenceTypes.resourceToUse = thisModule.getUniquePhrase(metric.resourcesPhrases, 'resources', parent )
 
 			//console.log( 'Unique Action Item:', 'for platform:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 			
@@ -456,7 +457,7 @@ var insights = {
 
 			//console.log( 'Unique Talking Point:', 'for platform:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
 
-			//console.log( 'Unique Resource:', 'for platform:', metric.name, resourceToUse ? resourceToUse.phrase : 'undefined' )
+			//console.log( 'Unique Resource:', 'for platform:', metric.name, sentenceTypes.resourceToUse ? resourceToUse.phrase : 'undefined' )
 
 			var inlineStyle = utilities.getInlineStyle('status', metric.status);
 
@@ -468,6 +469,12 @@ var insights = {
 				var completePhrases = {}
 
 				_.forEach( phraseTypes, function( phraseType, index ) {
+
+					if ( typeof sentencesList['all'][phraseType] == 'undefined' ) {
+						sentencesList['all'][phraseType] = []
+						sentencesList['platform'][phraseType] = []
+						sentencesList['asset'][phraseType] = []
+					}
 
 					var pointToUse = sentenceTypes[phraseType + 'ToUse']
 
@@ -481,6 +488,9 @@ var insights = {
 							phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag
 							}
 
+						sentencesList['all'][phraseType].push(completePhrases[phraseType])
+						sentencesList['platform'][phraseType].push(completePhrases[phraseType])		
+
 					} else {
 
 						if ( phraseType !== 'metricActionItem') {
@@ -490,28 +500,14 @@ var insights = {
 
 				} )
 
-				var talkingPointsAndActionItemToUse = sentenceTypes.talkingPointsAndActionItemToUse
-				var endOfSentence = sentenceTypes.metricActionItemToUse || sentenceTypes.talkingPointsAndActionItemToUse
-
-				var completePhrases = {
-					point_id : endOfSentence.id,
-					insight_id : metric.insightsPhrases[0].id,
-					point_tags : endOfSentence.tags,
-					insight_tags : metric.insightsPhrases[0].tags,
-					phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + endOfSentence.phrase + "</strong>" + " " + bucketTag
-				}
-
-				phraseList.push(completePhrases)
-				platformPhrases.push(completePhrases)		
-
-				// write newly used combined phrase back to the metric
+		
 				metric.completePhrases = completePhrases
+		
 
 			} else {
 				//console.log('UNDEFINED PLATFORM INSIGHT PHRASE', metric.name)
 			}
 
-			var data = [];
 			_.forEach( metric.assetInsights, function( assetInsight, index ) {
 	
 				var asset = assetInsight.meta
@@ -530,7 +526,7 @@ var insights = {
 					sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(asset.talkingPointsPhrases, 'talkingPoints', parent )
 					sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(asset.actionItemsPhrases, 'actionItems', parent )
 					sentenceTypes.metricActionItemToUse = thisModule.getUniquePhrase(asset.metricActionItemsPhrases, 'metricActionItems', parent )
-					sentenceTypes.resourceToUse = thisModule.getUniquePhrase(asset.resourcePhrases, 'resources', parent )
+					sentenceTypes.resourceToUse = thisModule.getUniquePhrase(asset.resourcesPhrases, 'resources', parent )
 
 					//console.log( 'Unique Action Item:', 'for asset:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 					
@@ -551,12 +547,15 @@ var insights = {
 
 								completePhrases[phraseType] = {
 									point_id : pointToUse.id,
-									insight_id : metric.insightsPhrases[0].id,
+									insight_id : asset.insightsPhrases[0].id,
 									point_tags : pointToUse.tags,
-									insight_tags : metric.insightsPhrases[0].tags,
-									phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag
+									insight_tags : asset.insightsPhrases[0].tags,
+									phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
 									}
-
+								
+								sentencesList['all'][phraseType].push(completePhrases[phraseType])
+								sentencesList['asset'][phraseType].push(completePhrases[phraseType])	
+						
 							} else {
 
 								if ( phraseType !== 'metricActionItem') {
@@ -566,26 +565,8 @@ var insights = {
 
 						})
 
-						var talkingPointsAndActionItemToUse = sentenceTypes.talkingPointsAndActionItemToUse
-
-						var completePhrases = {
-							point_id : talkingPointsAndActionItemToUse.id,
-							insight_id : asset.insightsPhrases[0].id,
-							point_tags : talkingPointsAndActionItemToUse.tags,
-							insight_tags : asset.insightsPhrases[0].tags,
-							phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + talkingPointsAndActionItemToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
-						}
-
-
-						
-						phraseList.push(completePhrases)	
-						assetPhrases.push(completePhrases)	
-
 						asset.completePhrases = completePhrases
-						//asset.completePhrasesWithTalkingPoint = completePhrasesWithTalkingPoint
-						//asset.completePhrasesWithActionItem = completePhrasesWithActionItem
-						//asset.completePhrasesWithResource = completePhrasesWithResource
-
+						
 					}		
 				
 				} else {
@@ -600,13 +581,13 @@ var insights = {
 
 		/* FOR EMAIL */
 
-		insightsList.data.asset_phrases = assetPhrases 
-		insightsList.data.platform_phrases = platformPhrases 
+		insightsList.data.asset_phrases = sentencesList['asset']['talkingPointsAndActionItem'] 
+		insightsList.data.platform_phrases = sentencesList['platform']['talkingPointsAndActionItem']  
 
-		insightsList.data.all_phrases = phraseList
+		insightsList.data.all_phrases = sentencesList['all']
 
-		insightsList.data.action_items = phraseList.slice(0,3)
-		insightsList.data.talking_points = phraseList.slice(3,6)
+		insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
+		insightsList.data.talking_points = sentencesList['all']['talkingPoint'].slice(0,3)
 
 		/* return the object! */
 		return insightsList
@@ -1225,10 +1206,12 @@ var insights = {
 		if ( !metricActionItemsPhrases ) {
 			//console.log( 'No metric action items for', level, parentInfo, actionsTags.join(',') )
 		} else {
+			/*
 			console.log( 'metric action items for', level, parentInfo, actionsTags.join(',') )
 			_.forEach ( metricActionItemsPhrases, function( phrase, index) {
 				console.log("-", phrase.phrase)
 			})
+			*/
 		}
 
 		var resourcesPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allResources, phrasesTags) 

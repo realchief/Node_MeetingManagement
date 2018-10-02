@@ -263,7 +263,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "And just like that, they were gone; bounce rate was up, coming in at {{value}}",
+				phrase: "And just like that, they were gone; bounce rate was up, coming in at {{value}}%",
 				tags: { level: "platform", source: "google_analytics", dimension: "bounce_rate", sentiment: "negative", type: "platform", category: "", metric: "bounce_rate"}
 			},  
 
@@ -344,7 +344,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "They keep coming back to {{primary_dimension}}; it had the most biggest change in returning visitors with {{value}} visitors",
+				phrase: "Quite a difference: {{primary_dimension}}; had the biggest change in returning visitors with {{value}} total visitors",
 				tags: { level: "asset", source: "google_analytics", dimension: "page", sentiment: "positive", type: "asset", category: "", metric: "returning_users", field: "sessions", sortType: "delta_change"  }
 			},
 

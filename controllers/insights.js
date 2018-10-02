@@ -519,10 +519,10 @@ var insights = {
 					var parent = "Asset: " + asset.parentMetric 
 					
 					var sentenceTypes = {}
-					sentenceTypes.talkingPointsAndActionItemToUse = thisModule.getUniquePhrase(metric.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
-					sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(metric.talkingPointsPhrases, 'talkingPoints', parent )
-					sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(metric.actionItemsPhrases, 'actionItems', parent )
-					sentenceTypesresourceToUse = thisModule.getUniquePhrase(metric.resourcePhrases, 'resources', parent )
+					sentenceTypes.talkingPointsAndActionItemToUse = thisModule.getUniquePhrase(asset.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
+					sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(asset.talkingPointsPhrases, 'talkingPoints', parent )
+					sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(asset.actionItemsPhrases, 'actionItems', parent )
+					sentenceTypesresourceToUse = thisModule.getUniquePhrase(asset.resourcePhrases, 'resources', parent )
 
 					//console.log( 'Unique Action Item:', 'for asset:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 					
@@ -681,6 +681,7 @@ var insights = {
 
 		// NEED TO GET RID OF THIS!!!
 		var status = "positive";
+		
 		var thisModule = this
 		var topAssets = [];
 		
@@ -792,6 +793,10 @@ var insights = {
 						
 								if ( topAsset.meta.title == "(not set)" ) {
 									topAsset.meta.title = pageInfo[0]['secondary_dimension']
+								}
+
+								if ( topAsset[assetLink.linkable] == "/") {
+									topAsset.meta.title = "the Home Page"
 								}
 
 							}
@@ -941,6 +946,14 @@ var insights = {
 			var allSentences = thisModule.getSentences( 'asset', { insightsTags: insightsTags, phrasesTags : phrasesTags }, replacements, parentInfo   )
 
 			//console.log( 'All sentences:', allSentences.insightsPhrases.length, 'asset', asset.meta.parentMetric)
+
+			/*if ( asset.meta.parentMetric == "returning_users" ) {
+				console.log( parentInfo )
+				_.forEach( allSentences.talkingPointsPhrases, function( phrase, index) {
+					console.log("-", allSentences.insightsPhrases[0].phrase, phrase.phrase)
+				})
+			}*/
+
 
 			asset.meta.insightsPhrases = allSentences.insightsPhrases
 			asset.meta.talkingPointsPhrases = allSentences.talkingPointsPhrases
@@ -1109,7 +1122,13 @@ var insights = {
 
 		var allSentences = thisModule.getSentences( 'platform', { insightsTags: insightsTags, phrasesTags : phrasesTags }, replacements, parentInfo  )
 
-		//console.log( 'All sentences:', allSentences.insightsPhrases.length, 'platform', metric.name)
+		
+		/*if ( metric.name == "returning_users" ) {
+			console.log( status, 'All sentences:', allSentences.talkingPointsPhrases.length, 'platform', metric.name)
+			_.forEach( allSentences.talkingPointsPhrases, function( phrase, index) {
+				console.log("-", phrase.phrase)
+			})
+		}*/
 
 		// Add status to platform metric for use in bucket insights lookups
 		metric.status = status;
@@ -1155,10 +1174,14 @@ var insights = {
 		var insightsTags = tags.insightsTags
 		var phrasesTags = tags.phrasesTags
 
+		/*if ( parentInfo.indexOf('returning_users') >= 0 && level == "asset" ) {
+			console.log(level, 'insights tags:', insightsTags, 'phrases tags:', phrasesTags, parentInfo)
+		}*/
+
 		var insightsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allInsights, insightsTags) 
 	
 		if ( !insightsPhrases ) {
-			console.log( 'No insights phrases for', level, parentInfo )
+			//console.log( 'No insights phrases for', level, parentInfo )
 		}
 
 		var talkingPointsAndActionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPointsAndActionItems, phrasesTags) 
@@ -1166,23 +1189,30 @@ var insights = {
 		var talkingPointsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPoints, phrasesTags) 
 
 		if ( !talkingPointsPhrases ) {
-			console.log( 'No talking points for', level, parentInfo )
+			//console.log( 'No talking points for', level, parentInfo )
 		}
+
+		/*if ( parentInfo.indexOf('returning_users') >= 0 && level == "asset" ) {
+			console.log(level, 'action item talking points phrases:')
+			_.forEach( talkingPointsPhrases, function( phrase, index) {
+				console.log("-", phrase.phrase)
+			})
+		}*/
 
 		var actionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allActionItems, phrasesTags )
 
 		if ( !actionItemsPhrases ) {
-			console.log( 'No action items for', level, parentInfo )
+			//console.log( 'No action items for', level, parentInfo )
 		}
 
 		var resourcesPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allResources, phrasesTags) 
 
 		if ( !resourcesPhrases ) {
-			console.log( 'No resources for', level, parentInfo )
+			//console.log( 'No resources for', level, parentInfo )
 		}
 
 		if ( !talkingPointsPhrases && !actionItemsPhrases ) {
-			console.log( 'BOTH!! No action items or talking points for', parentInfo )
+			//console.log( 'BOTH!! No action items or talking points for', parentInfo )
 		}
 
 		var replacedPhrases = [];

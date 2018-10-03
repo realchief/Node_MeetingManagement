@@ -90,6 +90,13 @@ module.exports = {
 				phrase: "Is the call-to-action clear?",
 				tags: { level: "asset,platform", source: "google_analytics,facebook,linkedin,twitter", sentiment: "negative", category: "discuss", type: "", dimension: "", metric: "" }
 
+			},
+
+			{
+				type : "point",
+				phrase: "Pageviews are key. Make sure to look at this resource!",
+				tags: { level: "asset,platform", source: "", sentiment: "positive,negative,neutral", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
+
 			}
 
 		]

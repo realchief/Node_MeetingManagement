@@ -493,6 +493,12 @@ module.exports = {
 				tags: { level: "platform", source: "", sentiment: "positive,negative", category: "", type: "", dimension: "revenue", metric: "revenue" }
 			},
 
+			{
+				type : "action",
+				phrase: "Lets see if we can leverage some of your engaging content on your home page.",
+				tags: { level: "platform", source: "", sentiment: "positive,negative", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
+			},
+
 
 		]
 

@@ -42,6 +42,11 @@ module.exports = {
 					tags : [],
 					ids: []
 				},
+				metricTalkingPoints : {
+					phrases : [],
+					tags : [],
+					ids: []
+				},
 				actionItems : {
 					phrases : [],
 					tags : [],

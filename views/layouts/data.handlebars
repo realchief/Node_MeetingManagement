@@ -195,10 +195,52 @@
 
 						<hr />
 
+						<h4>Platform Metric Action Items</h4>
+
+						<ul class="lines">
+						{{#each insights.data.all_platforms.metricActionItem}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						<h4>Platform Metric Talking Points</h4>
+
+						<ul class="lines">
+						{{#each insights.data.all_platforms.metricTalkingPoint}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
 						<h4>Asset Talking Points</h4>
 
 						<ul class="lines">
 						{{#each insights.data.all_assets.talkingPoint}}
+
+						<li>
+						{{{this.phrase}}}
+						</li>
+
+						{{/each}}
+						</ul>
+
+						<hr />
+
+						<h4>Asset Metric Talking Points</h4>
+
+						<ul class="lines">
+						{{#each insights.data.all_assets.metricTalkingPoint}}
 
 						<li>
 						{{{this.phrase}}}

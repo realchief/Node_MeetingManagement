@@ -94,8 +94,15 @@ module.exports = {
 
 			{
 				type : "point",
-				phrase: "Pageviews are key. Make sure to look at this resource!",
-				tags: { level: "asset,platform", source: "", sentiment: "positive,negative,neutral", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
+				phrase: "Are all your sources performing as expected?",
+				tags: { level: "platform", source: "", sentiment: "positive,negative,neutral", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
+
+			},
+
+			{
+				type : "point",
+				phrase: "Check the sources of this page to find where the change was.",
+				tags: { level: "asset", source: "", sentiment: "positive,negative,neutral", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
 
 			}
 

@@ -9,13 +9,25 @@
 		</div>
 		<div class="below-header"><div class="below-header-inside">
 			<div class="container">
+
+                {{#if sessionFlash.message}}
+                    {{#contains sessionFlash.type "info"}}
+                    <div class="flash-message">
+                        <p>{{{sessionFlash.message}}}</p>
+                    </div>
+                    {{/contains}}
+                {{/if}}
+
+
 				<div class="row clearfix">
+
                     <form method="POST" action="/settings" class="form">
                         <div class="col first" style="text-align:center;">
                             <h2 class="with-line">Current Settings</h2>
                             <p>{{time}}</p>
                             <p>{{attendees}}</p>
                         </div>
+
                         <div class="col second">
                             <h2 class="with-line">When should we send your MeetBrief insights?</h2>
                             <div class="when-settings" style="text-align:center;">
@@ -27,7 +39,9 @@
                                 </select>
                             </div>
                         </div>	
+
                         <div class="col third">
+
                             <h2 class="with-line">Who should we email insights to?</h2>                            
                             <div class="who-settings" style="text-align:center;">
                                 <input type="radio" name="attendees" value="All attendees" {{isChecked attendees 'All attendees'}}>All attendees<br>
@@ -35,9 +49,11 @@
                                 <input type="radio" name="attendees" value="Just me" {{isChecked attendees 'Just me'}}>Just me<br>
                             </div>
                         </div>
+
                         <div class="col last" style="text-align: right;">
                             <button name="save" type="submit">Save</button>
                         </div>	
+
                     </form>	
 				</div>
 			</div>

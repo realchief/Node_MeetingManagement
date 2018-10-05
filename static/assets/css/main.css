@@ -323,6 +323,11 @@ header ul li {
 }
 
 header ul li a {
+	color: #444;
+	text-decoration: none;
+}
+
+header ul li a.button {
 	background: #60b99a;
 	padding: 5px 12px;
 	font-size: 13px;
@@ -331,7 +336,7 @@ header ul li a {
 	color: #fff;
 }
 
-header ul li a:hover {
+header ul li a.button:hover {
 	background: #4ea788;
 }
 

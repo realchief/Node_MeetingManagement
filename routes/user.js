@@ -309,7 +309,9 @@ router.get('/settings',  function (req, res) {
                         })
                     }
                 })
+           
             }, function (setting, cb) {
+                
                 res.render('fingertips', {
                   version: 'fingertips',
                   layout: 'settings.handlebars',
@@ -337,37 +339,50 @@ router.get('/settings',  function (req, res) {
     let selected_attendees = settings_param.attendees;
   
     if (!req.user) {
+    
       return res.redirect('/signin')
+    
     } else {
+       
         Async.waterfall([
+       
           function ( cb ) {   
+          
               req.user.getSetting().then(function (setting) {
                   if (setting) {
                       cb(null, setting)
                   }
                   else {
                     Model.Setting.create({
+                    
                       insights_time: selected_times,
                       insights_to: selected_attendees    
+                    
                     }).then(function (setting) {
+                    
                           req.user.setSetting(setting).then(function (){
                             cb(null, setting)
                           })
-                      })
+                    })
                   }
               })
+          
           }, function (setting, cb) {
+              
               setting.updateAttributes({
+                
                 insights_time: selected_times,
                 insights_to: selected_attendees    
+
               }).then(function (setting) {              
-                res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'settings.handlebars',  
-                time: setting.insights_time,
-                attendees: setting.insights_to,
-                user:req.user
-              });
+                
+                req.session.sessionFlash = {
+                    type: 'info',
+                    message: 'Settings have been updated.'
+                }
+
+                res.redirect('/settings');
+            
             });            
           }
       ], function (err, result) {

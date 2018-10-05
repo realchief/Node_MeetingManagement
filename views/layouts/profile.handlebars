@@ -30,8 +30,9 @@
                              <input type="text" value="{{user.username}}" name="username" required>
 
                              <br />
+                             <br />
                              
-                              <label for="email"><b>Email Address</b></label>
+                              <label for="email"><b>Login Email Address</b></label>
                     <input type="email" value="{{user.email}}" name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
 
                     {{#if errorMessage.email}}
@@ -43,12 +44,16 @@
                     {{/if}}
                  
 
+                             <br />
                             <br />
 
                              <label for="company_name"><b>Company Name</b></label>
-                             <input type="text" value="{{user.company_name}}" name="company_name" required>
+                             <input type="text" value="{{user.company_name}}" name="company_name" >
+
+                            
 
                             <br />
+                             <br />
 
                               <label for="password"><b>Update Password</b></label>
                     <input type="password" placeholder="Enter New Password" name="password" id="password" > 
@@ -60,13 +65,34 @@
                         {{/if}}
                     {{/if}}                        
 
+                             <br />
                     <br />
 
                     <label for="psw-repeat"><b>Repeat Password</b></label>
                     <input type="password" placeholder="Repeat New Password" name="confirm_password" id="confirm_password" {{#if errorMessage.email}} class="error" {{/if}} >
                     
-                    <br />
+                    <br /><br />
                     <button name="save" type="submit">Save</button>
+
+<br />
+                    <br />
+                              <br />
+                    <h4>Advanced Settings</h4>
+                  
+                     <br />
+
+                              <label for="email"><b>Email address you can schedule from</b></label>
+                    <input type="text" style="background: #e5e5e5;text-color:#333" value="{{user.company_id}}" name="company_id" >
+
+                           
+                             <br />
+
+                             <br />
+
+                              <label for="email"><b>Company-wide domain allowed to schedule from</b></label>
+                    <input type="text" style="background: #e5e5e5;text-color:#333" value="{{user.email_domain}}" name="email_domain" >
+
+                    
                     
                     </form>	
 				</div>

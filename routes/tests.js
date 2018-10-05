@@ -62,6 +62,7 @@ router.get('/send/:company', function (req, res) {
     } else {
 
       var email = JSON.parse(JSON.stringify(EmailContent.email));
+      var emailDomain = results.credentials.user.email_domain
 
       if ( EmailContent['email_' + req.params.company] ) {
         email = JSON.parse(JSON.stringify(EmailContent['email_' + req.params.company]));

@@ -52,7 +52,7 @@ exports.email_generic  = {
 
 }
 
-exports.email_unilever  = { 
+exports['email_unilever.com']  = { 
   
   to: 'martymix@gmail.com',
   template: 'report',

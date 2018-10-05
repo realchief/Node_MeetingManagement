@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         company_id: {
             type: DataTypes.STRING
         },
-        company_id_full: {
+        email_domain: {
             type: DataTypes.STRING
         },
         password: {
@@ -26,16 +26,53 @@ module.exports = (sequelize, DataTypes) => {
         }
     });
 
-    User.beforeSave((user, options) => {
+    User.beforeCreate( (user, options) => {
         
-        var company_id = user.email.replace(/.*@/, "").split('.')[0].toLowerCase();
+        //var company_id = user.email.replace(/.*@/, "").split('.')[0].toLowerCase();
+        
+        var company_id = user.email.toLowerCase();
         user.company_id = company_id
+    
+        var email_domain = user.email.split('@')[1].toLowerCase();
+        user.email_domain = email_domain
+    
+    });
 
-        if (user.changed('password'))
+    User.beforeUpdate( (user, options) => {
+
+        if ( user.changed('company_id') ) {
+            console.log('USER CHANGED COMPANY ID')
+        } else {
+          
+        }
+
+        if ( user.changed('email_domain') ) {
+            console.log('USER CHANGED EMAIL DOMAIN')
+        } else {
+           
+        }
+
+         if ( user.company_id == "") {
+            var company_id = user.email.toLowerCase();
+            user.company_id = company_id
+       }
+
+       if ( user.email_domain == "") {
+            var email_domain = user.email.split('@')[1].toLowerCase();
+            user.email_domain = email_domain
+       }
+
+    })
+
+    User.beforeSave( (user, options) => {
+        
+        if (user.changed('password')) {
             return bcrypt.hash(user.password, 10).then(function (hash) {
                 user.password = hash;
             });
-        else Promise.resolve();
+        } else {
+          Promise.resolve();  
+        } 
     
     });
 

@@ -135,8 +135,10 @@ exports.meetingFileParse = ( meetingFile ) => {
         }
 
 
-        var emailDomain = organizer.replace(/.*@/, "").split('.')[0];
-        
+        //var companyId = organizer.replace(/.*@/, "").split('.')[0];
+        var companyId = organizer.toLowerCase();
+        var emailDomain = organizer.split('@')[1].toLowerCase();
+
         var summary = parseIcal.summary
 
         // Microsoft Exchange Server 2010 sends summaries with parameters
@@ -157,13 +159,14 @@ exports.meetingFileParse = ( meetingFile ) => {
         // get just the file name
         meetingFile = meetingFile.split('uploads/')[1];
 
-        //console.log('Organizer:', organizer, "Company Id", emailDomain)
+        //console.log('Organizer:', organizer, "Company Id", companyId)
         console.log("\n", '+++++++++++ done parsing ics file', "\n" );
 
         return resolve ( {
             'recipients' : flatRecipients,
             'sendgrid_recipients' : toArray,
             'organizer' : organizer,
+            'companyId' : companyId,
             'emailDomain' : emailDomain,
             'summary' : summary,
             'meeting_time_for_display' : meeting_time_for_display,
@@ -262,7 +265,10 @@ exports.inboundParse = ( req ) => {
      /* ===== default values ======= */
   
     var organizer = fromEmail
-    var emailDomain = fromEmail.replace(/.*@/, "").split('.')[0];
+    //var companyId = fromEmail.replace(/.*@/, "").split('.')[0];
+    var companyId = fromEmail.toLowerCase();
+    var emailDomain = fromEmail.split('@')[1].toLowerCase();
+
     var summary = "Parsed Direct" + " " + subject
     var meeting_time_for_display = moment().format("ddd, MMMM D [at] h:mma")
     var meeting_date_for_display = moment().format("ddd, MMMM D")
@@ -326,6 +332,7 @@ exports.inboundParse = ( req ) => {
             'recipients' : flatRecipients,
             'sendgrid_recipients' : toArray,
             'organizer' : organizer,
+            'companyId' : companyId,
             'emailDomain' : emailDomain,
             'summary' : summary,
             'meeting_time_for_display' : meeting_time_for_display,
@@ -383,7 +390,7 @@ exports.schedule_email = (meetingId, meetingInfo, meetingStart, msg, meeting, fr
 
     schedule.scheduleJob( meetingId, date, function( data ) {
 
-        thisModule.make_email_content(data.meetingInfo.emailDomain, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start_time, data.meetingInfo.meeting_timezone, function ( err, msg ) {
+        thisModule.make_email_content(data.meetingInfo.companyId, data.meetingInfo.organizer, data.meetingInfo.summary, data.meetingInfo.sendgrid_recipients, data.meetingInfo.meeting_start_time, data.meetingInfo.meeting_timezone, function ( err, msg ) {
 
           console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meetingInfo.summary, '---- from ----', data.meetingInfo.organizer, '----', 'for', '---', moment(data.meetingInfo.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 
@@ -491,7 +498,7 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
       dtstamp_time : meetingInfo.meeting_dtstamp,
       created_time : meetingInfo.meeting_created,
       sequence : meetingInfo.meeting_sequence,
-      email_domain : meetingInfo.emailDomain,
+      email_domain : meetingInfo.companyId,
       sendgrid_recipients: meetingInfo.sendgrid_recipients
     
     }).then(function ( meeting ) {
@@ -513,17 +520,18 @@ exports.make_email_content = (company_id, organizer, summary, toArray, start_dat
     var timezone = timezone || "America/New_York"
     
     var sender = organizer
-    var emailDomain = company_id
+    var companyId = company_id
     //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
     var meeting_date_for_display = moment(start_date).format("ddd, MMMM D")
     var meeting_time_for_display = moment(start_date).tz(timezone).format("ddd, MMMM D [at] h:mma")
 
-    userInfo.getInsightsFromId( emailDomain, function( err, results ) {
+    userInfo.getInsightsFromId( companyId, function( err, results ) {
 
       var email = JSON.parse(JSON.stringify(EmailContent.email));
+      var emailDomain = results.credentials.user.email_domain
 
-      if ( EmailContent['email_' + emailDomain] ) {
-        email = JSON.parse(JSON.stringify(EmailContent['email_' + emailDomain]));
+      if ( EmailContent['email_' + companyId] || EmailContent['email_' + emailDomain] ) {
+        email = JSON.parse(JSON.stringify(EmailContent['email_' + companyId]));
       }
 
       email.replacements.sender = sender
@@ -611,7 +619,7 @@ exports.reschedule = () => {
           var msg = null
 
           meeting.meeting_start_time = meeting.start_time
-          meeting.emailDomain = meeting.email_domain
+          meeting.companyId = meeting.email_domain
           thisModule.schedule_email(meetingId, meeting, meeting.start_time, msg, meeting, 'reschedule');
           
           cb(null);

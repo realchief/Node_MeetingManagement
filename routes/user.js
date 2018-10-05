@@ -438,12 +438,14 @@ router.get('/settings',  function (req, res) {
   
     let updatedUser = req.body;   
 
-    let updated_password = updatedUser.password;
-    let updated_confirm_password = updatedUser.confirm_password;
+    let updated_username = updatedUser.username;
     let updated_email = updatedUser.email;
     let updated_company_name = updatedUser.company_name;
-    let updated_username = updatedUser.username;
     let updated_company_id = updatedUser.company_id;
+    let updated_email_domain = updatedUser.email_domain;
+
+    let updated_password = updatedUser.password;
+    let updated_confirm_password = updatedUser.confirm_password;
 
     var toUpdate = {}
 
@@ -459,10 +461,11 @@ router.get('/settings',  function (req, res) {
         return
     }
 
-   
     toUpdate.username = updated_username;
     toUpdate.email = updated_email;
     toUpdate.company_name = updated_company_name;
+    toUpdate.company_id = updated_company_id;
+    toUpdate.email_domain = updated_email_domain;
 
     if ( updated_password !== "" ) {
         toUpdate.password = updated_password

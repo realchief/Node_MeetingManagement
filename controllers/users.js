@@ -34,7 +34,6 @@ var users = {
               user.company_id = 'jurassicpark'
               credentials.user = user
               cb( null, credentials )
-
               return
           }
         

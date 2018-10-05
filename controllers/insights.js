@@ -429,6 +429,15 @@ var insights = {
 			'all' : []
 		}
 
+		var phraseTypes = [ 'talkingPointsAndActionItem', 'talkingPoint', 'actionItem', 'metricActionItem', 'metricTalkingPoint', 'resource' ]
+
+		// set these up for non-found company_ids
+		_.forEach( phraseTypes, function( phraseType, index ) {
+			sentencesList['all'][phraseType] = []
+			sentencesList['platform'][phraseType] = []
+			sentencesList['asset'][phraseType] = []
+		})
+
 		var thisModule = this
 	
 		// SORT PLATFORM INSIGHTS BY percent change //
@@ -437,8 +446,6 @@ var insights = {
 		_.forEach( insightsList.data.platform_insights.metrics, function( metric, index ) {
 
 			var parentBucket = bucketList[utilities.getBucket(metric.name)].meta.shortLabel;
-			
-			var phraseTypes = [ 'talkingPointsAndActionItem', 'talkingPoint', 'actionItem', 'metricActionItem', 'metricTalkingPoint', 'resource' ]
 
 			var assetsForPlatformArray = {};
 
@@ -481,7 +488,6 @@ var insights = {
 					if ( typeof asset.insightsPhrases[0] !== 'undefined' ) {
 
 						var completePhrases = {}
-
 				
 						_.forEach( phraseTypes, function( phraseType, index ) {
 
@@ -493,7 +499,6 @@ var insights = {
 								sentencesList['all'][phraseType] = []
 								sentencesList['platform'][phraseType] = []
 								sentencesList['asset'][phraseType] = []
-								assetsForPlatformArray[phraseType] = []
 							}
 
 							var pointToUse = sentenceTypes[phraseType + 'ToUse']

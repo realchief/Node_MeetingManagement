@@ -79,7 +79,7 @@ router.post('/parse', cpUpload, function (req, res) {
   /* --- if we have inbound data from SendGrid --- */
   var getMeetingInfo = emails.inboundParse( req )
  
-  getMeetingInfo.then( function(meetingInfo) {
+  getMeetingInfo.then( function( meetingInfo ) {
 
     meeting.processMeetingRequest(meetingInfo, function(response){
     

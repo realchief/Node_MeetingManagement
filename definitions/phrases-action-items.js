@@ -231,7 +231,7 @@ module.exports = {
 
 			 {
 				type : "action",
-				phrase: "When you feel your content gaining some traction, be sure to make a note of what's working and why you think working -- so that you can do it again (and again and again). ",
+				phrase: "When you feel your content gaining some traction, be sure to make a note of what's working and why you think it's working -- so that you can do it again (and again and again). ",
 				tags: { level: "asset", source: "google_analytics,facebook,linkedin,twitter", sentiment: "positive", category: "replicate", type: "tip", dimension: "", metric: "" }
 			},
 

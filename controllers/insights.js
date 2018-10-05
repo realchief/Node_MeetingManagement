@@ -640,11 +640,11 @@ var insights = {
 		insightsList.data.all_platforms = sentencesList['platform']
 		insightsList.data.all_assets = sentencesList['asset']
 
-		//insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
-		//insightsList.data.talking_points = sentencesList['all']['talkingPoint'].slice(0,3)
+		insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
+		insightsList.data.talking_points = sentencesList['all']['talkingPoint'].slice(0,3)
 
-		insightsList.data.action_items = sentencesList['all']['talkingPointsAndActionItem'].slice(0,3)
-		insightsList.data.talking_points = sentencesList['all']['talkingPointsAndActionItem'].slice(3,6)
+		//insightsList.data.action_items = sentencesList['all']['talkingPointsAndActionItem'].slice(0,3)
+		//insightsList.data.talking_points = sentencesList['all']['talkingPointsAndActionItem'].slice(3,6)
 
 		/* return the object! */
 		return insightsList
@@ -805,6 +805,14 @@ var insights = {
 					/*if ( metricName == 'pageviews') {
 					console.log('FACTOR MADE>>', topAsset.meta.dataSource, metricName, topAsset)
 					}*/
+
+					if ( isFinite(topAsset.meta.valuePercentChange) ) {
+					} else {
+						if ( topAsset.meta.valuePercentChange == "Infinity" ) {
+							console.log('Infinite asset percentage change:', topAsset.meta.parentMetric, topAsset.meta.valuePercentChange, 'value:', topAsset.meta.value, 'field:', assetLink.field  )
+							status = "infinite"
+						}
+					}
 
 					tags.push('asset')
 					tags.push(dataSource)
@@ -1152,6 +1160,14 @@ var insights = {
 
 			break
 
+		}
+
+		if ( isFinite(totalPercentDelta) ) {
+		} else {
+			if ( totalPercentDelta == "Infinity" ) {
+				console.log('Infinite platform percentage change:', metric.name, currentTotal)
+				status = "infinite"
+			}
 		}
 
 		tags.push('platform')

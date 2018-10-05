@@ -104,6 +104,13 @@ module.exports = {
 				phrase: "Check the sources of this page to find where the change was.",
 				tags: { level: "asset", source: "", sentiment: "positive,negative,neutral", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
 
+			},
+
+			{
+				type : "point",
+				phrase: "Good work!",
+				tags: { level: "platform,asset", source: "google_analytics,facebook,linkedin,twitter", sentiment: "infinite", category: "", type: "", dimension: "", metric: "" }
+
 			}
 
 		]

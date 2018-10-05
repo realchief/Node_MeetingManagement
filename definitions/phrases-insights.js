@@ -86,6 +86,12 @@ module.exports = {
 				tags: { level: "platform", source: "facebook", dimension: "paid_reach", sentiment: "positive", type: "platform", category: "", metric: "paid_reach"}
 			}, 
 
+			{
+				type: 'insight',
+				phrase: "An infinite increase in paid reach! You reached {{value}} new users on Facebook through paid reach. You did not have any paid reach in the compared period",
+				tags: { level: "platform", source: "facebook", dimension: "paid_reach", sentiment: "infinite", type: "platform", category: "", metric: "paid_reach"}
+			}, 
+
 			 {
 				type: 'insight',
 				phrase: "Paid reach is down on Facebook, reaching only {{value}} users, from {{compared_value}}",

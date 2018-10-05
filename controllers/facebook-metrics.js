@@ -571,7 +571,7 @@ exports.listPostsTable = (current, compared, done) => {
                 engagement_rate : engagementRateRaw,
                 engagements : insightMetrics['engagements'],
                 //organic_reach : insightMetrics['organic_reach'], not implemented
-                //paid_reach: insightMetrics['paid_reach'], not implemented
+                //paid_reach: insightMetrics['paid_reach'], //not implemented
                 video_metrics : videoMetrics.join('')
             })
 

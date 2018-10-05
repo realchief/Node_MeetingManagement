@@ -85,7 +85,7 @@ router.get('/send/:company', function (req, res) {
           sender: results.credentials.user.email,
           summary: results.credentials.user.company_name + ' ' + 'Email',
           brand: results.credentials.user.company_name,
-          headline: "This is a headline from a real parsed endpoint.",
+          headline: "Here is your MeetBrief for this week.",
           interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
           interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
           interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,

@@ -269,7 +269,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "And just like that, they were gone; bounce rate was up, coming in at {{value}}%",
+				phrase: "And just like that, they were gone; bounce rate across the site was up {{percent_change}}, with a total of {{value}}%",
 				tags: { level: "platform", source: "google_analytics", dimension: "bounce_rate", sentiment: "negative", type: "platform", category: "", metric: "bounce_rate"}
 			},  
 

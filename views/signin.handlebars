@@ -7,8 +7,20 @@
     </head>
     <body>
         <div class="container">
+
+             {{#if sessionFlash.message}}
+                    {{#contains sessionFlash.type "info"}}
+                    <div class="flash-message">
+                        <p>{{{sessionFlash.message}}}</p>
+                    </div>
+                    {{/contains}}
+                {{/if}}
+
+
             <form action="/signin" method="post">
                 <div class="row">
+                    
+
                     <h1 style="text-align:center">Welcome to MeetBrief!</h1>
                  
                     <div class="col">

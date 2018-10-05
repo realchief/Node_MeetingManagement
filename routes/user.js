@@ -121,7 +121,11 @@ router.get('/signin', function(req, res, next) {
     
     } else {
     
-        res.render('signin', { title: 'Sign In', layout: false, errorMessage: req.flash('errMessage') });
+        res.render('signin', { 
+        	title: 'Sign In', 
+        	layout: false, 
+        	errorMessage: req.flash('errMessage') 
+        });
    
     }
 });
@@ -148,7 +152,12 @@ router.get('/signup', function(req, res, next) {
     
 
     } else {
-        res.render('signup', { title: 'Sign Up', layout: false });
+        
+        res.render('signup', { 
+        	title: 'Sign Up', 
+        	layout: false 
+        });
+        
     }
 });
 
@@ -406,45 +415,83 @@ router.get('/settings',  function (req, res) {
     let updated_company_id = updatedUser.company_id;
 
     if (!req.user) {
-      return res.redirect('/signin')
+
+        req.session.sessionFlash = {
+            type: 'info',
+            message: 'Please sign in first.'
+        }
+      
+        res.redirect('/signin')
+        return
+
     } else {        
-        res.render('profile', {
-            layout: false,
+    
+        res.render('fingertips', {
+            layout: 'profile.handlebars',
             user : req.user                     
         });
+    
     }
   });
 
   router.post('/profile', function(req, res) {  
   
     let updatedUser = req.body;   
+
     let updated_password = updatedUser.password;
     let updated_confirm_password = updatedUser.confirm_password;
     let updated_email = updatedUser.email;
     let updated_company_name = updatedUser.company_name;
     let updated_username = updatedUser.username;
     let updated_company_id = updatedUser.company_id;
-  
+
+    var toUpdate = {}
+
     if (updated_password != updated_confirm_password) {
-        console.log('Not matched');
-        res.render('profile', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
+        res.render( 'fingertips', { 
+            layout: 'profile.handlebars',
+            errorMessage: { 
+                password_match:'Password is not matched. Try again'
+            },
+            user: req.user
+        })
+
+        return
     }
-  
-    else {
-      if (req.user) {     
-          req.user.updateAttributes({
-              username: updated_username,
-              email: updated_email,
-              company_name: updated_company_name,
-              company_id: updated_company_id,
-              password: updated_password,        
-          }).then(function (updatedResult) {         
-            res.redirect('/profile');
-          })
-        } 
-      else res.redirect('signin');
-    }       
-  });
+
+   
+    toUpdate.username = updated_username;
+    toUpdate.email = updated_email;
+    toUpdate.company_name = updated_company_name;
+
+    if ( updated_password !== "" ) {
+        toUpdate.password = updated_password
+    }
+      
+  if (req.user) { 
+
+      req.user.updateAttributes(toUpdate).then(function (updatedResult) {   
+
+        req.session.sessionFlash = {
+                type: 'info',
+                message: 'Profile has been updated.'
+            }
+
+        res.redirect('/profile');
+      })
+   } 
+
+  else {
+    
+    req.session.sessionFlash = {
+        type: 'info',
+        message: 'Something happened wrong from profile settings.'
+    }
+
+    res.redirect('signin');
+ }
+      
+});
 
 
 module.exports = router

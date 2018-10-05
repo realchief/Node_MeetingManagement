@@ -499,6 +499,17 @@ module.exports = {
 				tags: { level: "platform", source: "", sentiment: "positive,negative", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
 			},
 
+			{
+				type : "action",
+				phrase: "You should probably take a look at this.",
+				tags: { level: "platform", source: "google_analytics,facebook,linkedin,twitter", sentiment: "negative", category: "", type: "resource", dimension: "", metric: "" }
+			},
+
+			{
+				type : "action",
+				phrase: "Something's going on here. Check this out.",
+				tags: { level: "platform", source: "google_analytics,facebook,linkedin,twitter", sentiment: "negative", category: "", type: "resource", dimension: "", metric: "" }
+			},
 
 		]
 

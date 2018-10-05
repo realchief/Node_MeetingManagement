@@ -508,6 +508,7 @@ var insights = {
 									point_tags : pointToUse.tags,
 									insight_tags : asset.insightsPhrases[0].tags,
 									bucket_tag : bucketTag,
+									insight_replacements : asset.insightsPhrases[0].replacements,
 									phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
 									}
 								
@@ -597,6 +598,7 @@ var insights = {
 							point_tags : pointToUse.tags,
 							insight_tags : metric.insightsPhrases[0].tags,
 							bucket_tag : bucketTag,
+							insight_replacements : metric.insightsPhrases[0].replacements,
 							phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag
 							}
 
@@ -641,7 +643,41 @@ var insights = {
 		insightsList.data.all_assets = sentencesList['asset']
 
 		insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
-		insightsList.data.talking_points = sentencesList['all']['talkingPoint'].slice(0,3)
+
+		
+		/* PREVENT DUPLICATE INSIGHTS AND ASSETS */
+
+		var slicedActionItems = insightsList.data.action_items.map(a => a.insight_phrase);
+		var uniqueTalkingPoints = []
+		_.forEach( sentencesList['all']['talkingPoint'], function( talkingPoint, index ) {
+
+			if (slicedActionItems.indexOf(talkingPoint.insight_phrase) < 0) {
+				uniqueTalkingPoints.push(talkingPoint)
+			}
+
+		})
+
+		var slicedAssetTitles = insightsList.data.action_items.map(a => {
+		
+			if ( a.insight_replacements.primary_dimension !== "nothing") {
+				return a.insight_replacements.primary_dimension
+			} else {
+				return 'no primary dimension'
+			}
+
+		})
+		
+		var uniqueTalkingPointsByAsset = []
+		_.forEach( uniqueTalkingPoints, function( talkingPoint, index ) {
+
+			if (slicedAssetTitles.indexOf(talkingPoint.insight_replacements.primary_dimension) < 0) {
+				uniqueTalkingPointsByAsset.push(talkingPoint)
+			}
+
+		})
+
+		
+		insightsList.data.talking_points = uniqueTalkingPointsByAsset.slice(0,3)
 
 		//insightsList.data.action_items = sentencesList['all']['talkingPointsAndActionItem'].slice(0,3)
 		//insightsList.data.talking_points = sentencesList['all']['talkingPointsAndActionItem'].slice(3,6)
@@ -1330,7 +1366,8 @@ var insights = {
 				replacedPhrases.push({
 					phrase: replacedPhrase,
 					id: insightsPhrase.id,
-					tags: insightsPhrase.all_tags
+					tags: insightsPhrase.all_tags,
+					replacements: replacements
 				})
 
 

@@ -423,6 +423,10 @@ exports.getInlineStyle = function(param, value) {
 						style = 'background: #80C659;'
 					break
 
+					case 'infinite' :
+						style = 'background: #80C659;'
+					break
+
 					case 'negative' :
 						style = 'background: #E87060;'
 					break

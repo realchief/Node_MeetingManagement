@@ -196,6 +196,10 @@ exports.wrapWithHTML = function(value, param, status) {
               style = 'background: #80C659;'
             break
 
+            case 'infinite' :
+              style = 'background: #80C659;'
+            break
+
             case 'negative' :
               style = 'background: #E87060;'
             break
@@ -216,6 +220,10 @@ exports.wrapWithHTML = function(value, param, status) {
             case 'positive' :
               style = 'color: #80C659;'
               statusPrefix = "+"
+            break
+
+            case 'infinite' :
+              style = 'background: #80C659;'
             break
 
             case 'negative' :

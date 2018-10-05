@@ -606,7 +606,9 @@ var insights = {
 
 						// assets and platform are reversed. //	
 				
-						sentencesList['all'][phraseType] = sentencesList['all'][phraseType].concat(assetsForPlatformArray[phraseType])
+						if ( assetsForPlatformArray[phraseType] ) {
+							sentencesList['all'][phraseType] = sentencesList['all'][phraseType].concat(assetsForPlatformArray[phraseType])
+						}
 
 					} else {
 
@@ -638,8 +640,11 @@ var insights = {
 		insightsList.data.all_platforms = sentencesList['platform']
 		insightsList.data.all_assets = sentencesList['asset']
 
-		insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
-		insightsList.data.talking_points = sentencesList['all']['talkingPoint'].slice(0,3)
+		//insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
+		//insightsList.data.talking_points = sentencesList['all']['talkingPoint'].slice(0,3)
+
+		insightsList.data.action_items = sentencesList['all']['talkingPointsAndActionItem'].slice(0,3)
+		insightsList.data.talking_points = sentencesList['all']['talkingPointsAndActionItem'].slice(3,6)
 
 		/* return the object! */
 		return insightsList

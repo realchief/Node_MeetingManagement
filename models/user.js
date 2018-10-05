@@ -2,6 +2,7 @@
 let bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
+    
     const User = sequelize.define('User', {
         username: {
             type: DataTypes.STRING
@@ -80,6 +81,7 @@ module.exports = (sequelize, DataTypes) => {
         models.User.belongsTo(models.Facebook);
         models.User.belongsTo(models.Google);
         models.User.belongsTo(models.Setting);
+        models.User.belongsTo(models.Role);
         models.User.hasMany(models.Meeting);
     };
 

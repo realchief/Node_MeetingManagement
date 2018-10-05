@@ -26,6 +26,7 @@ var users = {
       }).then( function ( user ) {
       
           if (!user) {
+              
               console.log('>>> Cant Find user', user)
               var credentials = {}
               var user = {}
@@ -35,6 +36,7 @@ var users = {
               credentials.user = user
               cb( null, credentials )
               return
+          
           }
         
         Async.parallel({

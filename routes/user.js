@@ -200,26 +200,47 @@ router.post('/signup', function(req, res) {
             else {
         
                 Model.User.create( newUser ).then(function (user) {
-                   
-                    req.login(user, function (err) {
-                       
-                        if ( ! err ) {
+              
+                    var whereClause = { 'role_name' : 'admin' }
 
-                           req.flash( 'info', 'Thank you for signing up for MeetBrief!')
-
-                           req.session.sessionFlash = {
-                                type: 'info',
-                                message: 'Thank you for signing up for Meetbrief! Choose your first source of information to get started.'
-                            }
-
-                           res.redirect('/data-sources');
+                    return Model.Role.findOne({
                         
-                        } else {
-                       
-                           res.redirect('signin');
-                       
+                        where : whereClause
+
+                    }).then( function( role ) {
+
+                        if ( !role ) {
+                            console.log('no role!!')
                         }
+
+                        return user.setRole( role ).then( function() {
+
+                             req.login( user, function (err) {
+                       
+                                if ( ! err ) {
+
+                                   req.flash( 'info', 'Thank you for signing up for MeetBrief!')
+
+                                   req.session.sessionFlash = {
+                                        type: 'info',
+                                        message: 'Thank you for signing up for Meetbrief! Choose your first source of information to get started.'
+                                    }
+
+                                   res.redirect('/data-sources');
+                                
+                                } else {
+                               
+                                   res.redirect('signin');
+                               
+                                }
+                            })
+
+                        })
+
+
                     })
+
+                    
 
                     // res.redirect('signin');
 
@@ -329,6 +350,7 @@ router.get('/settings',  function (req, res) {
                   user:req.user
                 });
             }
+            
         ], function (err, result) {
             if (err) {
                 req.flash('setting_error', err.error);

@@ -51,9 +51,10 @@ module.exports = function(passport) {
                     return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
                 }
                 
-                if (bcrypt.compareSync(password, user.password)) {
+                if ( bcrypt.compareSync(password, user.password) ) {
                     return done(null, user);
-                   } 
+                } 
+                
                 else {
                     return done(null, false, req.flash('errMessage', 'Username or password is incorrect'))
                 }

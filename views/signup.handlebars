@@ -9,27 +9,29 @@
             <form class="modal-content" action="/signup" method="post">
                 <div class="container">
                     <h1>Welcome to MeetBrief!</h1>
-                    <p>Let's get started. Confirm the information we have for your admin account.</p>
+                    <p>Let's get started.</p>
                     <hr>
                     
-                    <label for="username"><b>Administrator Name</b></label>
+                    <label for="username"><b>Your Name</b></label>
                     <input type="text" placeholder="Enter Name" name="username" required>
                     
-                    <label for="email"><b>Email Address</b></label>
+                    <label for="email"><b>Work Email Address</b></label>
                     <input type="email" placeholder="Enter Email" name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
 
                     {{#if errorMessage.email}}
                         <p class="alert">{{ errorMessage.email }}</p>
                     {{/if}}
+
+                    {{#if errorMessage.company_id}}
+                        <p class="alert">{{ errorMessage.company_id }}</p>
+                    {{/if}}
+                 
                  
                   
                     <label for="company_name"><b>Company Name</b></label>
                     <input type="text" placeholder="Company Name" name="company_name" required>        
 
-                    <label for="company_id"><b>Company ID</b></label>
-                    <input type="text" placeholder="Company ID" name="company_id" required>                       
-
-                    <label for="password"><b>Password</b></label>
+                    <label for="password"><b>Create Password</b></label>
                     <input type="password" placeholder="Enter Password" name="password" id="password" required> 
                      
 
@@ -48,9 +50,6 @@
                         {{/if}}
                     {{/if}}  
                      
-                    <label>
-                        <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
-                    </label>
                     
                     <div class="clearfix">
                         <a href="/signin" class="cancelbtn">Cancel</a>

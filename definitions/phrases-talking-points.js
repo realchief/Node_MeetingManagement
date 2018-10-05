@@ -90,6 +90,27 @@ module.exports = {
 				phrase: "Is the call-to-action clear?",
 				tags: { level: "asset,platform", source: "google_analytics,facebook,linkedin,twitter", sentiment: "negative", category: "discuss", type: "", dimension: "", metric: "" }
 
+			},
+
+			{
+				type : "point",
+				phrase: "Are all your sources performing as expected?",
+				tags: { level: "platform", source: "", sentiment: "positive,negative,neutral", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
+
+			},
+
+			{
+				type : "point",
+				phrase: "Check the sources of this page to find where the change was.",
+				tags: { level: "asset", source: "", sentiment: "positive,negative,neutral", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
+
+			},
+
+			{
+				type : "point",
+				phrase: "Good work!",
+				tags: { level: "platform,asset", source: "google_analytics,facebook,linkedin,twitter", sentiment: "infinite", category: "", type: "", dimension: "", metric: "" }
+
 			}
 
 		]

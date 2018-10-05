@@ -19,12 +19,12 @@ var numberOfSends = 0;
 
 const EmailContent = require('../components/EmailContent.js')
 
-router.get('/ical', function (req, res) {
+router.get('/forceicalparse/:calendarFile', function (req, res) {
 
   console.log('\n', emoji.get('eyes'), ' ical start ===============================', '\n')
 
   // add awesome pizza meeting
-  var getMeetingInfo = emails.meetingFileParse('./uploads/test/iCal-20180618-061247-1529327568024.ics') 
+  var getMeetingInfo = emails.meetingFileParse('./uploads/' + req.params.calendarFile) 
 
   getMeetingInfo.then( function(meetingInfo) {
 

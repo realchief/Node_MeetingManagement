@@ -710,9 +710,20 @@ exports.getAllMetrics = ( gAccount, dateWindow, cb ) => {
         } else {
 
             console.log("\n", emoji.get("popcorn"), '>>>>>> google API file cache.')
-            data = JSON.parse(data)
-            cb( null, data )
-        
+            
+            if ( !data ) { 
+            
+              console.log('no data!', filename )
+              cb( { errors : [ { message: 'no data in GA resources file' }] }, null )
+
+
+            } else {
+              
+              data = JSON.parse(data)
+              cb( null, data )
+            
+            }
+
         }
 
     })

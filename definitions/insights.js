@@ -32,11 +32,37 @@ module.exports = {
 				buckets: {}
 			},
 			usedPhrases : {
-				phrases : [],
-				tags : [],
-				ids: []
+				talkingPointsAndActionItems : {
+					phrases : [],
+					tags : [],
+					ids: []
+				},
+				talkingPoints : {
+					phrases : [],
+					tags : [],
+					ids: []
+				},
+				metricTalkingPoints : {
+					phrases : [],
+					tags : [],
+					ids: []
+				},
+				actionItems : {
+					phrases : [],
+					tags : [],
+					ids: []
+				},
+				metricActionItems : {
+					phrases : [],
+					tags : [],
+					ids: []
+				},
+				resources : {
+					phrases : [],
+					tags : [],
+					ids: []
+				}
 			}
-
 		}
 
 		console.log("\n", emoji.get("sparkles"), 'Made insights Template.');

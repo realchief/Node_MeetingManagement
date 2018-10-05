@@ -52,6 +52,45 @@ exports.email_generic  = {
 
 }
 
+exports.email_unilever  = { 
+  
+  to: 'martymix@gmail.com',
+  template: 'report',
+  
+  replacements : { 
+    sender: 'marty@loosegrip.net',
+    meeting_time_for_display: 'Tuesday, June 12th, 2018 at 9:34 am',
+    meeting_date_for_display: 'Tue, June 12',
+    summary: 'Sales Meeting',
+    subject: 'MeetBrief for',
+    headline: 'A jump in ecommerce revenue has led to an increase in your Demand Score.',
+    brand: 'Unilever',
+    interest_change: '2',
+    interest_score: '72',
+    interest_status: 'positive',
+    interest_chart: 'chart-1.png',
+    engagement_change: '-2',
+    engagement_score: '58',
+    engagement_status: 'positive',
+    engagement_chart: 'chart-2.png',
+    demand_change: '10',
+    demand_score: '74',
+    demand_status: 'positive',
+    demand_chart: 'chart-2.png',
+    "action_items": [
+   {phrase:"You made some money! Revenue has increased $209.74 for a total of $739.79, a 39.57% increase. <strong>Nice work! Whatever you're doing, keep doing it.</strong> <span class=\"bucket-with\" style=\"display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana; background: #80C659;\">#Demand</span>"},
+   {phrase: "Returning website users are down, from 4,970 to 4,554, a 8.37% drop. <strong>Take a look at the source of these new visitors, and see why things are not working.</strong> <span class=\"bucket-with\" style=\"display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana; background: #E87060;\">#Interest</span>"},
+   {phrase: "<a href=\"https://www.facebook.com/benandjerrysUS/videos/10155608360376461/\" target=\"blank\" >This Facebook post</a> is at the top of the charts, with the greatest number of post engagements at 3,460. <strong>Since this content is keeping your fans and followers engaged, continue to incorporate it in your social sharing.</strong> <span class=\"bucket-with\" style=\"display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana; background: #80C659;\">#Engagement</span>"}
+  ],
+  "talking_points": [
+    {phrase:"Average time spent on page is down site-wide 6 seconds from 1 minute, 12 seconds to 1 minute, 6 seconds. <strong>Have you guys considered creating a quiz for your content marketing program?</strong> <a href=\"http://meetbrief.com/2018/05/23/q-who-should-use-a-quiz-for-content-marketing/\" target=\"blank\" >Q: Who should use a quiz for content marketing?</a> <span class=\"bucket-with\" style=\"display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana; background: #E87060;\">#engagement</span>"},
+    {phrase:"On Facebook, your organic reach was down 212,869 users, for a total of 251,483 users, a change of 45.84%. <strong>What's going on here?</strong> <span class=\"bucket-with\" style=\"display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana; background: #E87060;\">#Interest</span>"},
+    {phrase:"Your work is paying off; you reached 1,265,224 more users on Facebook through paid reach, an increase of 6.83% - for a total of 19,783,674 users. <strong>Nice work! Whatever you're doing, keep doing it.</strong> <span class=\"bucket-with\" style=\"display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana; background: #80C659;\">#Demand</span>"}
+  ]
+  }
+
+}
+
 exports.processEmail = function( emailContent ) {
 
   var emailContent = JSON.parse(JSON.stringify(emailContent));
@@ -157,6 +196,10 @@ exports.wrapWithHTML = function(value, param, status) {
               style = 'background: #80C659;'
             break
 
+            case 'infinite' :
+              style = 'background: #80C659;'
+            break
+
             case 'negative' :
               style = 'background: #E87060;'
             break
@@ -177,6 +220,10 @@ exports.wrapWithHTML = function(value, param, status) {
             case 'positive' :
               style = 'color: #80C659;'
               statusPrefix = "+"
+            break
+
+            case 'infinite' :
+              style = 'background: #80C659;'
             break
 
             case 'negative' :

@@ -43,8 +43,6 @@ router.get('/testsched', function (req, res) {
 
 })
 
-
-
 router.get('/send/:company', function (req, res) {
 
   var to = 'martymix@gmail.com'
@@ -65,6 +63,10 @@ router.get('/send/:company', function (req, res) {
 
       var email = JSON.parse(JSON.stringify(EmailContent.email));
 
+      if ( EmailContent['email_' + req.params.company] ) {
+        email = JSON.parse(JSON.stringify(EmailContent['email_' + req.params.company]));
+      }
+
       //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
       //var timezone = "America/New_York"
       var theTimezone = null
@@ -83,7 +85,7 @@ router.get('/send/:company', function (req, res) {
           sender: results.credentials.user.email,
           summary: results.credentials.user.company_name + ' ' + 'Email',
           brand: results.credentials.user.company_name,
-          headline: "This is a headline from a real parsed endpoint.",
+          headline: "Here is your MeetBrief comparing this week to last week.",
           interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
           interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
           interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,
@@ -469,6 +471,32 @@ router.get('/phrasetestdb/', function (req, res) {
 
 })
 
+router.get('/meetingfiletest/:calendarFile',  function (req, res) {
+ // Resolve with the ICS information
+
+        var emails = require('../controllers/emails');
+        var meetingFile = './uploads/' + req.params.calendarFile
+
+        var icsInfo = emails.meetingFileParse(meetingFile) 
+        icsInfo.then( function(meetingInfo) {
+            res.send( meetingInfo )
+        } )
+
+})
+
+
+router.get('/seecalendar/:filename', function (req, res) {
+
+  var filePath = './uploads/';
+  var filename = req.params.filename
+
+  fs.readFile(filePath+filename, "utf8", function( err, data ) {
+
+    res.send(data)
+
+  })
+
+})
 
 router.get('/tokens/facebook/:company',  function (req, res) {
     

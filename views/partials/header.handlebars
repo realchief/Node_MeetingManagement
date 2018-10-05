@@ -6,12 +6,17 @@
 			<div class="cell logo">
 			
 				<div class="branding">
-					<p><i class="far fa-fw fa-hand-point-right fa-2x" style="vertical-align:middle;"></i> FingerTips</p>
+					<p><i class="far fa-fw fa-hand-point-right fa-2x" style="vertical-align:middle;"></i> <a href="/data-sources">MeetBrief</a></p>
 				</div>
 			
 			</div>
 
-			{{user.username}} {{user.email}} {{user.company_name}} id:{{user.company_id}}
+			<ul class="user-info">
+				<li>User: {{user.username}}</li>
+				<li>Email: {{user.email}}</li>
+				<li>Company: {{user.company_name}}</li>
+				<li>ID: {{user.company_id}}</li>
+			</ul>
 
 			<div class="cell navigation">
 		

@@ -6,6 +6,12 @@ module.exports = (sequelize, DataTypes) => {
         phrase: {
             type: DataTypes.STRING
         },
+        link: {
+            type: DataTypes.STRING
+        },
+        title: {
+            type: DataTypes.STRING
+        },
         tags_object: {
             type: DataTypes.JSONB
         },

@@ -9,19 +9,32 @@ var googleApi = require('../controllers/google-analytics-api');
 var colors = require('colors');
 var emoji = require('node-emoji');
 
-router.get('/facebook', passport.authenticate('facebook', {scope : ['email,read_insights,manage_pages']}));
+router.get('/facebook', passport.authenticate('facebook', {
+        scope : ['email,read_insights,manage_pages']
+    })
 
-router.get('/facebook/callback',
-    passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/signin'}));
+);
+
+router.get('/facebook/callback', passport.authenticate('facebook', { 
+        successRedirect: '/data-sources', 
+        failureRedirect: '/signin'
+    })
+);
 
     
 router.get('/google', passport.authenticate('google', {
-    scope : ['https://www.googleapis.com/auth/analytics.readonly', 'profile', 'email'],
-    accessType: 'offline', prompt: 'consent'
-}));
+        scope : ['https://www.googleapis.com/auth/analytics.readonly', 'profile', 'email'],
+        accessType: 'offline', 
+        prompt: 'consent'
+    })
+);
 
 router.get('/google/callback',
-    passport.authenticate('google', { successRedirect: '/', failureRedirect: '/signin'}));
+    passport.authenticate('google', { 
+        successRedirect: '/data-sources', 
+        failureRedirect: '/signin'
+    })
+);
 
 router.get('/facebook/unlink',  function (req, res) {
     if (!req.user) {
@@ -57,9 +70,21 @@ router.get('/facebook/unlink',  function (req, res) {
             }
         ], function (err, result) {
             if (err) {
+
                 req.flash('facebook_error', err.error);
+           
+            } else {
+
+                req.session.sessionFlash = {
+                    type: 'info',
+                    message: 'Facebook has been disconnected'
+                }
+
+                req.session.redirectTo = "/data-sources"
+                res.redirect('/data-sources');
+
             }
-            res.redirect('/');
+            
         })
     }
 });
@@ -90,9 +115,20 @@ router.get('/google/unlink',  function (req, res) {
             }
         ], function (err, result) {
             if (err) {
+        
                 req.flash('google_error', err.error);
+        
+            } else {
+
+                req.session.sessionFlash = {
+                    type: 'info',
+                    message: 'Google Analytics has been disconnected'
+                }
+
+                res.redirect('/data-sources');
+
             }
-            res.redirect('/');
+           
         })
     }
 });

@@ -18,7 +18,7 @@ exports.meetingFileParse = ( meetingFile ) => {
 
     return new Promise(function(resolve, reject) {
 
-        console.log( "\n", '+++++++++++ Parse ICS file', meetingFile, 'on', moment(), "\n" );
+        console.log( "\n", '+++++++++++ Parse ICS file', meetingFile, 'on', moment().format("ddd, MMMM D [at] h:mma"), "\n" );
 
         var ical_data = ical.parseFile(meetingFile)  
         var parseIcal = ical_data[Object.keys(ical_data)[0]]
@@ -26,15 +26,43 @@ exports.meetingFileParse = ( meetingFile ) => {
         var requestType = "request"
         var status = "none"
 
+        //console.log('ICAL DATA:', ical_data)
+
         if ( parseIcal.type == "VTIMEZONE") {
             // can be VEVENT or VTIMEZONE
-            console.log("**** FROM ICAL Object")
+            console.log("**** VTIMEZONE is the first value in the calendar", "Type:", parseIcal.type)
             parseIcal = ical_data[Object.keys(ical_data)[1]]
         }
 
         if ( parseIcal.status ) {
           status = parseIcal.status.toLowerCase();
+        } else {
+          status = "UNKNOWN"
         }
+
+        if ( !parseIcal.created ) {
+          parseIcal.created = new Date()
+        }
+
+        if ( !parseIcal.dtstamp ) {
+          parseIcal.dtstamp = new Date()
+        }
+
+        if ( !parseIcal['last-modified'] ) {
+          parseIcal['last-modified'] = new Date()
+        }
+
+        if ( !parseIcal.sequence ) {
+          parseIcal.sequence = 0
+        }
+
+        if ( !parseIcal.summary ) {
+          parseIcal.summary = "Your MeetBrief"
+        }
+
+       
+
+        // not pulling description or location
 
         //console.log( 'ics data:', parseIcal )
 
@@ -48,6 +76,15 @@ exports.meetingFileParse = ( meetingFile ) => {
         console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
        
         console.log( 'Status:', parseIcal.status)
+
+         if ( parseIcal.rrule ) {
+            console.log("\n", emoji.get('game_die'), 'RRULE', parseIcal.rrule.toText(), "\n" )
+            var allRecurring = parseIcal.rrule.all();
+            _.forEach( allRecurring, function( date, index ) {
+              if ( index > 5 ) return false;
+              console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
+            })
+        }
 
         /* =====  get calendar attendees */
 
@@ -99,7 +136,16 @@ exports.meetingFileParse = ( meetingFile ) => {
 
 
         var emailDomain = organizer.replace(/.*@/, "").split('.')[0];
+        
         var summary = parseIcal.summary
+
+        // Microsoft Exchange Server 2010 sends summaries with parameters
+        if ( summary.val ) {
+            summary = summary.val
+            console.log( 'Parsed Summary:', summary)
+
+        }
+        
         var sequence = parseIcal.sequence
         var meeting_time_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma")
         var meeting_date_for_display = moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("ddd, MMMM D")
@@ -163,6 +209,14 @@ exports.inboundParse = ( req ) => {
 
     if ( subject && subject.length > 200 ) {
       console.log('!!!!!!!!!!!!! ', 'subject is too long.')
+      requestType = "internal"
+      //resolve( { type : 'cancel'} );
+      return resolve();
+    }
+
+
+    if ( to.toLowerCase().indexOf('neil@meetbrief') >= 0 || to.toLowerCase().indexOf('marty@meetbrief') >= 0 || to.toLowerCase().indexOf('rachel@meetbrief') >= 0 || to.toLowerCase().indexOf('sarah@meetbrief') >= 0 || to.toLowerCase().indexOf('help@meetbrief') >= 0 || to.toLowerCase().indexOf('neil@getfingertips') >= 0 || to.toLowerCase().indexOf('marty@getfingertips') >= 0 || to.toLowerCase().indexOf('rachel@getfingertips') >= 0 || to.toLowerCase().indexOf('sarah@getfingertips') >= 0 || to.toLowerCase().indexOf('help@getfingertips') >= 0  ) {
+      console.log('!!!!!!!!!!!!! ', 'this is to a meetbrief team member.', 'Subject:', subject, 'To:', to)
       requestType = "internal"
       //resolve( { type : 'cancel'} );
       return resolve();
@@ -468,6 +522,10 @@ exports.make_email_content = (company_id, organizer, summary, toArray, start_dat
 
       var email = JSON.parse(JSON.stringify(EmailContent.email));
 
+      if ( EmailContent['email_' + emailDomain] ) {
+        email = JSON.parse(JSON.stringify(EmailContent['email_' + emailDomain]));
+      }
+
       email.replacements.sender = sender
       email.replacements.summary = summary
       email.replacements.meeting_time_for_display = meeting_time_for_display
@@ -481,7 +539,7 @@ exports.make_email_content = (company_id, organizer, summary, toArray, start_dat
           sender: organizer,
           summary: summary,
           brand: results.credentials.user.company_name,
-          headline: "This is a headline from a real parsed endpoint.",
+          headline: "Here is your MeetBrief comparing this week to last week.",
           interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
           interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,
           interest_status: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].mappingsStatus,

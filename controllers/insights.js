@@ -1,3 +1,5 @@
+require('dotenv').config({path: './variables.env'})
+
 var insightsDefinition = require('../definitions/insights');
 //var insightsList = insightsDefinition.get();
 
@@ -120,7 +122,12 @@ var insights = {
 		return new Promise(function(resolve, reject) {
 
 			var bucketList = thisModule.makeBucketList();
-			var getAllPhrases = thisModule.getPhrases();
+
+			// SET TO VAR
+			console.log(process.env.PHRASES_LOCATION)
+			var phrasesLocation = ( process.env.PHRASES_LOCATION == 'db' ) ? 'getPhrasesFromDb' : 'getPhrases';
+
+			var getAllPhrases = thisModule[phrasesLocation]();
 
 			var insightsList = thisModule.makeInsightsList();
 			var insightsData = insightsList.data
@@ -191,8 +198,6 @@ var insights = {
 								if ( assetInsights ) {
 									
 									_.forEach( assetInsights, function( asset, index ) {
-
-										//console.log('Individual Factor>>>>', asset.meta.parentMetric, factor)
 
 										var assetPhrase = ""
 										assetPhrase = thisModule.assetPhraser( asset )
@@ -352,7 +357,7 @@ var insights = {
 	},
 
 
-	getUniquePhrase : function( phraseSet ) {
+	getUniquePhrase : function( phraseSet, type, parent ) {
 
 		if ( !phraseSet) return
 
@@ -360,9 +365,9 @@ var insights = {
 
 		utilities.shuffle(phraseSet)
 
-		var usedIds = insightsList.data.usedPhrases.ids;
-		var usedPhrases = insightsList.data.usedPhrases.phrases;
-		var usedTags = insightsList.data.usedPhrases.tags;
+		var usedIds = insightsList.data.usedPhrases[type].ids;
+		var usedPhrases = insightsList.data.usedPhrases[type].phrases;
+		var usedTags = insightsList.data.usedPhrases[type].tags;
 
 		var uniquePhrase = {}
 		uniquePhrase.phrase = phraseSet[0].phrase
@@ -371,11 +376,12 @@ var insights = {
 
 		if (usedPhrases.indexOf(uniquePhrase.phrase) >= 0) {
 
+			// this phrase has been used //
 			for ( i = 0; i < phraseSet.length; i++ ) {
 
 				if (usedPhrases.indexOf(phraseSet[i].phrase) == -1) {
 
-					//console.log(">>> Got New Phrase", phraseSet[i] )
+					//console.log(">>> Unique Phrase after finding used", phraseSet[i].phrase, parent, type  )
 
 					uniquePhrase.phrase = phraseSet[i].phrase;
 					uniquePhrase.id = phraseSet[i].id;
@@ -387,9 +393,10 @@ var insights = {
 					break
 				} 
 
-				//console.log(">>> Found DUPE!", phraseSet[i] )
-
 				if ( i == phraseSet.length-1) {
+					
+					//console.log(">>> Found DUPE!", phraseSet[i].phrase, parent, type  )
+					
 					uniquePhrase.phrase = phraseSet[0].phrase //+ " (duplicate)"
 					uniquePhrase.id = phraseSet[0].id
 					uniquePhrase.tags = phraseSet[0].all_tags
@@ -399,6 +406,9 @@ var insights = {
 
 		} else {
 
+			// this is a new phrase //
+
+			//console.log(">>> Found Unique Phrase on first try", uniquePhrase.phrase, parent, type  )
 			usedPhrases.push(uniquePhrase.phrase)
 			usedIds.push(uniquePhrase.id)
 		
@@ -412,55 +422,28 @@ var insights = {
 	
 		var insightsList = this.insightsList
 		var bucketList = this.bucketList
-	
-		var factorList = []
-		var phraseList = []
-		var assetPhrases = []
-		var platformPhrases = []
+
+		var sentencesList = {
+			'platform' : [],
+			'asset' : [],
+			'all' : []
+		}
 
 		var thisModule = this
 	
+		// SORT PLATFORM INSIGHTS BY percent change //
 		thisModule.sort(insightsList.data.platform_insights.metrics, 'weightedPercentDelta' )
 
 		_.forEach( insightsList.data.platform_insights.metrics, function( metric, index ) {
 
 			var parentBucket = bucketList[utilities.getBucket(metric.name)].meta.shortLabel;
 			
-			//console.log("REORDERED PHRASE>>>", parentBucket, metric.talkingPointsPhrases )
-			
-			var pointToUse = thisModule.getUniquePhrase(metric.talkingPointsAndActionItemsPhrases)
-			var talkingPointToUse = thisModule.getUniquePhrase(metric.talkingPointsPhrases)
-			var actionItemToUse = thisModule.getUniquePhrase(metric.actionItemsPhrases)
+			var phraseTypes = [ 'talkingPointsAndActionItem', 'talkingPoint', 'actionItem', 'metricActionItem', 'metricTalkingPoint', 'resource' ]
 
-			console.log( 'Unique Action Item:', 'for platform:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
-			
-			console.log( 'Unique Talking Point:', 'for platform:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+			var assetsForPlatformArray = {};
 
-			var inlineStyle = utilities.getInlineStyle('status', metric.status);
+			/* GET ASSET LEVEL FIRST so we can potentially use the insight as a talking point */
 
-			if ( typeof metric.insightsPhrases[0] !== 'undefined') {
-				
-				var bucketTag = '<span class="bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
-				
-				var completePhrase = {
-					point_id : pointToUse.id,
-					insight_id : metric.insightsPhrases[0].id,
-					point_tags : pointToUse.tags,
-					insight_tags : metric.insightsPhrases[0].tags,
-					phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag
-				}
-
-				phraseList.push(completePhrase)
-				platformPhrases.push(completePhrase)		
-
-				// write newly used combined phrase back to the metric
-				metric.completePhrase = completePhrase
-
-			} else {
-
-				//console.log('UNDEFINED INSIGHTS PHRASE', metric)
-			}
-			var data = [];
 			_.forEach( metric.assetInsights, function( assetInsight, index ) {
 	
 				var asset = assetInsight.meta
@@ -469,47 +452,235 @@ var insights = {
 				
 				var bucketTag = '<span class="metric-asset bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
 				
-				if ( typeof asset.talkingPointsPhrases !== 'undefined') {
+				// we need to look at whether .insightsPhrases exists because we could have asset-links, but they have no actual values // 
+				if ( asset.insightsPhrases ) {
 					
-					var pointToUse = thisModule.getUniquePhrase(asset.talkingPointsAndActionItemsPhrases)
-					var talkingPointToUse = thisModule.getUniquePhrase(asset.talkingPointsPhrases)
-					var actionItemToUse = thisModule.getUniquePhrase(asset.actionItemsPhrases)
+					var parent = "Asset: " + asset.parentMetric 
+					
+					var sentenceTypes = {}
+					
+					sentenceTypes.talkingPointsAndActionItemToUse = thisModule.getUniquePhrase(asset.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
+					
+					sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(asset.talkingPointsPhrases, 'talkingPoints', parent )
+					
+					sentenceTypes.metricTalkingPointToUse = thisModule.getUniquePhrase(asset.metricTalkingPointsPhrases, 'metricTalkingPoints', parent )
 
-					console.log( 'Unique Action Item:', 'for asset:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
+					sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(asset.actionItemsPhrases, 'actionItems', parent )
 					
-					console.log( 'Unique Talking Point:', 'for asset:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+					sentenceTypes.metricActionItemToUse = thisModule.getUniquePhrase(asset.metricActionItemsPhrases, 'metricActionItems', parent )
 					
-					var completePhrase = {
-						point_id : pointToUse.id,
-						insight_id : metric.insightsPhrases[0].id,
-						point_tags : pointToUse.tags,
-						insight_tags : metric.insightsPhrases[0].tags,
-						phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
-					}
+					sentenceTypes.resourceToUse = thisModule.getUniquePhrase(asset.resourcesPhrases, 'resources', parent )
+
+					//console.log( 'Unique Action Item:', 'for asset:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
 					
-					phraseList.push(completePhrase)	
-					assetPhrases.push(completePhrase)			
+					//console.log( 'Unique Talking Point:', 'for asset:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+
+					//console.log( 'Unique Resource:', 'for asset:', metric.name, resourceToUse ? resourceToUse.phrase : 'undefined' )
+					
+					// make sure there is an insights phrase if we have an asset insight! //
+					if ( typeof asset.insightsPhrases[0] !== 'undefined' ) {
+
+						var completePhrases = {}
+
 				
+						_.forEach( phraseTypes, function( phraseType, index ) {
+
+							if ( typeof assetsForPlatformArray[phraseType] == 'undefined' ) {
+								assetsForPlatformArray[phraseType] = []
+							}
+
+							if ( typeof sentencesList['all'][phraseType] == 'undefined' ) {
+								sentencesList['all'][phraseType] = []
+								sentencesList['platform'][phraseType] = []
+								sentencesList['asset'][phraseType] = []
+								assetsForPlatformArray[phraseType] = []
+							}
+
+							var pointToUse = sentenceTypes[phraseType + 'ToUse']
+
+							if ( pointToUse ) {
+
+								completePhrases[phraseType] = {
+									point_id : pointToUse.id,
+									insight_phrase: asset.insightsPhrases[0].phrase,
+									point_phrase: pointToUse.phrase,
+									insight_id : asset.insightsPhrases[0].id,
+									point_tags : pointToUse.tags,
+									insight_tags : asset.insightsPhrases[0].tags,
+									bucket_tag : bucketTag,
+									insight_replacements : asset.insightsPhrases[0].replacements,
+									phrase : '<span class="metric-asset">' + asset.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag + '</span>'
+									}
+								
+								//sentencesList['all'][phraseType].push(completePhrases[phraseType])
+								sentencesList['asset'][phraseType].push(completePhrases[phraseType])	
+								
+								// this is just to combine assets in the "all" //
+								assetsForPlatformArray[phraseType].push(completePhrases[phraseType])
+
+
+							} else {
+
+								if ( phraseType !== 'metricActionItem' && phraseType !== "metricTalkingPoint" ) {
+									/*
+									console.log(phraseType + 'ToUse', 'has no phrases for asset insights', 'for:', metric.name, 'tags:', asset.tags.join(','))
+									*/
+								}
+							}
+
+						})
+
+						asset.completePhrases = completePhrases
+						
+					}		
+				
+				} else {
+
+					console.log('Undefined Asset Insight Phrase:', metric.name, ' Check for values where the metric_assets are set, and then check that there is an asset-level insight')
+
 				}
 
-				asset.completePhrase = completePhrase
-				//asset.completePhraseWithTalkingPoint = completePhraseWithTalkingPoint
-				//asset.completePhraseWithActionItem = completePhraseWithActionItem
-				//asset.completePhraseWithResource = completePhraseWithResource
-
 			})
+
+
+			// add id
+			var parent = "Platform: " + metric.name
+			var sentenceTypes = {}
+			
+			sentenceTypes.talkingPointsAndActionItemToUse = thisModule.getUniquePhrase(metric.talkingPointsAndActionItemsPhrases, 'talkingPointsAndActionItems', parent )
+			
+			sentenceTypes.talkingPointToUse = thisModule.getUniquePhrase(metric.talkingPointsPhrases, 'talkingPoints', parent )
+
+			sentenceTypes.metricTalkingPointToUse = thisModule.getUniquePhrase(metric.metricTalkingPointsPhrases, 'metricTalkingPoints', parent )
+			
+			sentenceTypes.actionItemToUse = thisModule.getUniquePhrase(metric.actionItemsPhrases, 'actionItems', parent )
+			
+			sentenceTypes.metricActionItemToUse = thisModule.getUniquePhrase(metric.metricActionItemsPhrases, 'metricActionItems', parent )
+			
+			sentenceTypes.resourceToUse = thisModule.getUniquePhrase(metric.resourcesPhrases, 'resources', parent )
+
+			//console.log( 'Unique Action Item:', 'for platform:', metric.name, actionItemToUse ? actionItemToUse.phrase : 'undefined' )
+			
+			//console.log( 'Unique Metric Action Item:', 'for platform:', metric.name, sentenceTypes.metricActionItemToUse ? sentenceTypes.metricActionItemToUse.phrase : 'undefined' )
+			
+			//console.log( 'Unique Metric Talking Point:', 'for platform:', metric.name, sentenceTypes.metricTalkingPointToUse ? sentenceTypes.metricTalkingPointToUse.phrase : 'undefined' )
+			
+			//console.log( 'Unique Talking Point:', 'for platform:', metric.name, talkingPointToUse ? talkingPointToUse.phrase : 'undefined' )
+
+			//console.log( 'Unique Resource:', 'for platform:', metric.name, sentenceTypes.resourceToUse ? resourceToUse.phrase : 'undefined' )
+
+			var inlineStyle = utilities.getInlineStyle('status', metric.status);
+
+			if ( typeof metric.insightsPhrases[0] !== 'undefined' ) {
+				
+				var bucketTag = '<span class="bucket-with" style="display: inline-block;color: #fff;border-radius: 4px;font-size: 11px;padding: 2px 6px;text-transform: uppercase;font-family: verdana;' + ' ' + inlineStyle + '">#' + parentBucket  + '</span>';
+
+
+				var completePhrases = {}
+
+				_.forEach( phraseTypes, function( phraseType, index ) {
+
+					if ( typeof sentencesList['all'][phraseType] == 'undefined' ) {
+						sentencesList['all'][phraseType] = []
+						sentencesList['platform'][phraseType] = []
+						sentencesList['asset'][phraseType] = []
+					}
+
+					var pointToUse = sentenceTypes[phraseType + 'ToUse']
+
+					if ( pointToUse ) {
+
+						completePhrases[phraseType] = {
+							point_id : pointToUse.id,
+							insight_phrase: metric.insightsPhrases[0].phrase,
+							point_phrase: pointToUse.phrase,
+							insight_id : metric.insightsPhrases[0].id,
+							point_tags : pointToUse.tags,
+							insight_tags : metric.insightsPhrases[0].tags,
+							bucket_tag : bucketTag,
+							insight_replacements : metric.insightsPhrases[0].replacements,
+							phrase : metric.insightsPhrases[0].phrase + '.' + ' ' + "<strong>" + pointToUse.phrase + "</strong>" + " " + bucketTag
+							}
+
+						sentencesList['all'][phraseType].push(completePhrases[phraseType])
+
+						sentencesList['platform'][phraseType].push(completePhrases[phraseType])
+
+						// assets and platform are reversed. //	
+				
+						if ( assetsForPlatformArray[phraseType] ) {
+							sentencesList['all'][phraseType] = sentencesList['all'][phraseType].concat(assetsForPlatformArray[phraseType])
+						}
+
+					} else {
+
+						if ( phraseType !== 'metricActionItem' && phraseType !== "metricTalkingPoint" ) {
+							console.log(phraseType + 'ToUse', 'has no phrases for platform insights', 'for:', metric.name, 'tags:', metric.tags.join(','))
+						}
+					}
+
+				} )
+
+		
+				metric.completePhrases = completePhrases
+		
+
+			} else {
+				//console.log('UNDEFINED PLATFORM INSIGHT PHRASE', metric.name)
+			}
+
+			
 		})
 
 
 		/* FOR EMAIL */
 
-		insightsList.data.asset_phrases = assetPhrases 
-		insightsList.data.platform_phrases = platformPhrases 
+		insightsList.data.asset_phrases = sentencesList['asset']['talkingPointsAndActionItem'] 
+		insightsList.data.platform_phrases = sentencesList['platform']['talkingPointsAndActionItem']  
 
-		insightsList.data.all_phrases = phraseList
+		insightsList.data.all_phrases = sentencesList['all']
+		insightsList.data.all_platforms = sentencesList['platform']
+		insightsList.data.all_assets = sentencesList['asset']
 
-		insightsList.data.action_items = phraseList.slice(0,3)
-		insightsList.data.talking_points = phraseList.slice(3,6)
+		insightsList.data.action_items = sentencesList['all']['actionItem'].slice(0,3)
+
+		
+		/* PREVENT DUPLICATE INSIGHTS AND ASSETS */
+
+		var slicedActionItems = insightsList.data.action_items.map(a => a.insight_phrase);
+		var uniqueTalkingPoints = []
+		_.forEach( sentencesList['all']['talkingPoint'], function( talkingPoint, index ) {
+
+			if (slicedActionItems.indexOf(talkingPoint.insight_phrase) < 0) {
+				uniqueTalkingPoints.push(talkingPoint)
+			}
+
+		})
+
+		var slicedAssetTitles = insightsList.data.action_items.map(a => {
+		
+			if ( a.insight_replacements.primary_dimension !== "nothing") {
+				return a.insight_replacements.primary_dimension
+			} else {
+				return 'no primary dimension'
+			}
+
+		})
+		
+		var uniqueTalkingPointsByAsset = []
+		_.forEach( uniqueTalkingPoints, function( talkingPoint, index ) {
+
+			if (slicedAssetTitles.indexOf(talkingPoint.insight_replacements.primary_dimension) < 0) {
+				uniqueTalkingPointsByAsset.push(talkingPoint)
+			}
+
+		})
+
+		
+		insightsList.data.talking_points = uniqueTalkingPointsByAsset.slice(0,3)
+
+		//insightsList.data.action_items = sentencesList['all']['talkingPointsAndActionItem'].slice(0,3)
+		//insightsList.data.talking_points = sentencesList['all']['talkingPointsAndActionItem'].slice(3,6)
 
 		/* return the object! */
 		return insightsList
@@ -594,6 +765,7 @@ var insights = {
 
 		// NEED TO GET RID OF THIS!!!
 		var status = "positive";
+		
 		var thisModule = this
 		var topAssets = [];
 		
@@ -670,6 +842,14 @@ var insights = {
 					console.log('FACTOR MADE>>', topAsset.meta.dataSource, metricName, topAsset)
 					}*/
 
+					if ( isFinite(topAsset.meta.valuePercentChange) ) {
+					} else {
+						if ( topAsset.meta.valuePercentChange == "Infinity" ) {
+							console.log('Infinite asset percentage change:', topAsset.meta.parentMetric, topAsset.meta.valuePercentChange, 'value:', topAsset.meta.value, 'field:', assetLink.field  )
+							status = "infinite"
+						}
+					}
+
 					tags.push('asset')
 					tags.push(dataSource)
 					tags.push(status)
@@ -705,6 +885,10 @@ var insights = {
 						
 								if ( topAsset.meta.title == "(not set)" ) {
 									topAsset.meta.title = pageInfo[0]['secondary_dimension']
+								}
+
+								if ( topAsset[assetLink.linkable] == "/") {
+									topAsset.meta.title = "the Home Page"
 								}
 
 							}
@@ -831,54 +1015,21 @@ var insights = {
 
 			}
 
-		/**
-		 *
-		 * ADD PHRASES TO THE ASSET LEVEL
-		 * 
-		*/
+			/**
+			 *
+			 * ADD PHRASES TO THE ASSET LEVEL
+			 * 
+			*/
 
-		// talking point = question
-		// action item = statement
+			var tags = asset.meta.tags
+			var insightsTags = tags // this tag set has all tags including the metric and sort type
+			var phrasesTags = tags.slice(0,3) // this tag has only the data source, the sentiment, and "asset" or "platform"
+			var actionTagsForMetric = [ 'asset', status, asset.meta.parentMetric ]
+			var talkingPointsTagsForMetric = [ 'asset', status, asset.meta.parentMetric ]
 
-		var tags = asset.meta.tags
-		var insightsTagsSearch = tags // this tag set has all tags including the metric and sort type
-		var phrasesTagsSearch = tags.slice(0,3) // this tag has only the data source, the sentiment, and "asset" or "platform"
-		
-		var insightsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allInsights, insightsTagsSearch) 
-	
-		if ( !insightsPhrases ) {
-			console.log( 'No insights phrases for asset: ', status, asset.meta.dataSource, asset.meta.parentMetric, sourcePhrase )
-		}
+			var parentInfo = status + ' ' + asset.meta.dataSource + ' ' + asset.meta.parentMetric + ' ' + sourcePhrase
 
-		var talkingPointsAndActionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPointsAndActionItems, phrasesTagsSearch) 
-
-		var talkingPointsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPoints, phrasesTagsSearch) 
-
-		if ( !talkingPointsPhrases ) {
-			console.log( 'No talking points for asset: ', status, asset.meta.dataSource, asset.meta.parentMetric, sourcePhrase )
-		}
-
-		var actionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allActionItems, phrasesTagsSearch )
-
-		if ( !actionItemsPhrases ) {
-			console.log( 'No action items for asset: ', status, asset.meta.dataSource, asset.meta.parentMetric, sourcePhrase )
-		}
-
-		var resourcesPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allResources, phrasesTagsSearch) 
-
-		if ( !resourcesPhrases ) {
-			console.log( 'No talking points for asset: ', status, asset.meta.dataSource, asset.meta.parentMetric, sourcePhrase )
-		}
-
-		if ( !talkingPointsPhrases && !actionItemsPhrases ) {
-			console.log( 'No action items or talking points for asset: ', status, asset.meta.dataSource, asset.meta.parentMetric, sourcePhrase )
-		}
-
-		var replacedPhrases = [];
-
-		if ( insightsPhrases ) {
-	
-			 var replacements = {
+			var replacements = {
 		       	value: formattedValue,
 		        //compared_value: comparedTotal,
 		        total_delta : Math.abs(valueDeltaChange).toLocaleString(),
@@ -886,30 +1037,26 @@ var insights = {
 		        primary_dimension : actionableItem
 		    };
 
-			_.forEach( insightsPhrases, function( insightsPhrase, index ) {
+			var allSentences = thisModule.getSentences( 'asset', { insightsTags: insightsTags, phrasesTags : phrasesTags, actionTagsForMetric : actionTagsForMetric, talkingPointsTagsForMetric : talkingPointsTagsForMetric }, replacements, parentInfo   )
 
-				var replacedPhrase = insightsPhrase.phrase.replace(/{{(\w+)}}/g, function (m, m1) {
-				  return replacements[m1] || m;  
-				});
+			//console.log( 'All sentences:', allSentences.insightsPhrases.length, 'asset', asset.meta.parentMetric)
 
-				replacedPhrases.push({
-					phrase: replacedPhrase,
-					id: insightsPhrase.id,
-					tags: insightsPhrase.all_tags
+			/*if ( asset.meta.parentMetric == "returning_users" ) {
+				console.log( parentInfo )
+				_.forEach( allSentences.talkingPointsPhrases, function( phrase, index) {
+					console.log("-", allSentences.insightsPhrases[0].phrase, phrase.phrase)
 				})
-
-			})
-
-
-		}
+			}*/
 
 
-			asset.meta.insightsPhrases = replacedPhrases
-			asset.meta.talkingPointsPhrases = talkingPointsPhrases
-			asset.meta.actionItemsPhrases = actionItemsPhrases
-			asset.meta.resourcesPhrases = resourcesPhrases
-			asset.meta.talkingPointsAndActionItemsPhrases = talkingPointsAndActionItemsPhrases
-		
+			asset.meta.insightsPhrases = allSentences.insightsPhrases
+			asset.meta.talkingPointsPhrases = allSentences.talkingPointsPhrases
+			asset.meta.metricTalkingPointsPhrases = allSentences.metricTalkingPointsPhrases
+			asset.meta.actionItemsPhrases = allSentences.actionItemsPhrases
+			asset.meta.metricActionItemsPhrases = allSentences.metricActionItemsPhrases
+			asset.meta.resourcesPhrases = allSentences.resourcesPhrases
+			asset.meta.talkingPointsAndActionItemsPhrases = allSentences.talkingPointsAndActionItemsPhrases
+				
 			/**
 			 *
 			 * MAKE INSIGHT OBJECT -- add to insight object
@@ -944,6 +1091,10 @@ var insights = {
 			return {
 				data : data
 			}
+
+		} else {
+
+			console.log('NO ASSET VALUES FOR', asset.meta.parentMetric, 'Check for values where the metric_assets are set.', 'asset.insightsPhrases will not be set')
 
 		}
 
@@ -1047,84 +1198,43 @@ var insights = {
 
 		}
 
+		if ( isFinite(totalPercentDelta) ) {
+		} else {
+			if ( totalPercentDelta == "Infinity" ) {
+				console.log('Infinite platform percentage change:', metric.name, currentTotal)
+				status = "infinite"
+			}
+		}
+
 		tags.push('platform')
 		tags.push(status)
 		//tags.push(metric.name)
 		tags.push(metric.dataSourcesUsed[0])		
 
-		/**
-		 *
-		 * ADD PHRASES TO THE PLATFORM LEVELT
-		 * 
-		*/
+		var insightsTags = tags.concat(metric.name) // "insightsTags" adds the metric to "tags"
+		var phrasesTags = tags // "tags" has only the data source, the sentiment, and "asset" or "platform"
+		var actionTagsForMetric = [ 'platform', status, metric.name ]
+		var talkingPointsTagsForMetric = [ 'platform', status, metric.name ]
 
-		// talking point = question
-		// action item = statement
+		var parentInfo = status + ' ' + metric.dataSourcesUsed[0] + ' ' + metric.name
 
-		var insightsTagsSearch = tags.concat(metric.name) // "insightsTagsSearch" adds the metric to "tags"
-		var phrasesTagsSearch = tags // "tags" has only the data source, the sentiment, and "asset" or "platform"
+		var replacements = {
+	       	value: currentTotal,
+	        compared_value: comparedTotal,
+	        total_delta : totalDelta,
+	        percent_change : Math.abs(totalPercentDelta).toFixed(2) + '%',
+	        primary_dimension : 'nothing'
+	    };
 
-		var insightsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allInsights, insightsTagsSearch) 
-	
-		if ( !insightsPhrases ) {
-			console.log( 'No insights phrases for platform: ', status, metric.dataSourcesUsed[0], metric.name )
-		}
+		var allSentences = thisModule.getSentences( 'platform', { insightsTags: insightsTags, phrasesTags : phrasesTags, actionTagsForMetric : actionTagsForMetric, talkingPointsTagsForMetric : talkingPointsTagsForMetric }, replacements, parentInfo  )
 
-		// var talkingPointsAndActionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPointsAndActionItems, insightsTagsSearch) || phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPointsAndActionItems, tags) 
-
-		var talkingPointsAndActionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPointsAndActionItems, phrasesTagsSearch) 
-
-		var talkingPointsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPoints, phrasesTagsSearch) 
-
-		if ( !talkingPointsPhrases ) {
-			console.log( 'No talking points for platform: ', status, metric.dataSourcesUsed[0], metric.name )
-		}
-
-		var actionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allActionItems, phrasesTagsSearch) 
-
-		if ( !actionItemsPhrases ) {
-			console.log( 'No action items for platform: ', status, metric.dataSourcesUsed[0], metric.name )
-		}
-
-		var resourcesPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allResources, phrasesTagsSearch) 
-
-		if ( !resourcesPhrases ) {
-			console.log( 'No resources for platform: ', status, metric.dataSourcesUsed[0], metric.name )
-		}
-
-		if ( !talkingPointsPhrases && !actionItemsPhrases ) {
-			console.log( 'No action items or talking points for platform: ', status, metric.dataSourcesUsed[0], metric.name )
-		}
-
-		var replacedPhrases = [];
-
-		if ( insightsPhrases ) {
-	
-			 var replacements = {
-		       	value: currentTotal,
-		        compared_value: comparedTotal,
-		        total_delta : totalDelta,
-		        percent_change : Math.abs(totalPercentDelta).toFixed(2) + '%',
-		        primary_dimension : 'nothing'
-		    };
-
-			_.forEach( insightsPhrases, function( insightsPhrase, index ) {
-
-				var replacedPhrase = insightsPhrase.phrase.replace(/{{(\w+)}}/g, function (m, m1) {
-				  return replacements[m1] || m;  
-				});
-
-				replacedPhrases.push({
-					phrase: replacedPhrase,
-					id: insightsPhrase.id,
-					tags: insightsPhrase.all_tags
-				})
-
-
-
+		
+		/*if ( metric.name == "returning_users" ) {
+			console.log( status, 'All sentences:', allSentences.talkingPointsPhrases.length, 'platform', metric.name)
+			_.forEach( allSentences.talkingPointsPhrases, function( phrase, index) {
+				console.log("-", phrase.phrase)
 			})
-
-		}
+		}*/
 
 		// Add status to platform metric for use in bucket insights lookups
 		metric.status = status;
@@ -1141,16 +1251,139 @@ var insights = {
 			metricScore : metricScore,
 			tags : tags,
 			rolledUpPercentDelta : rolledUpPercentDelta,
-			insightsPhrases : replacedPhrases,
-			talkingPointsPhrases: talkingPointsPhrases,
-			actionItemsPhrases: actionItemsPhrases,
-			resourcesPhrases: resourcesPhrases,
-			talkingPointsAndActionItemsPhrases : talkingPointsAndActionItemsPhrases
+
+			insightsPhrases : allSentences.insightsPhrases,
+			talkingPointsPhrases: allSentences.talkingPointsPhrases,
+			metricTalkingPointsPhrases : allSentences.metricTalkingPointsPhrases,
+			actionItemsPhrases: allSentences.actionItemsPhrases,
+			metricActionItemsPhrases : allSentences.metricActionItemsPhrases,
+			resourcesPhrases: allSentences.resourcesPhrases,
+			talkingPointsAndActionItemsPhrases : allSentences.talkingPointsAndActionItemsPhrases
 		}
 
 		return {
 			status : status,
 			data : data
+		}
+
+	},
+
+	getSentences : function( level, tags, replacements, parentInfo ) {
+
+		// insight = insight = language around the metric
+		// talking point = question
+		// action item = statement
+		// resource = resource
+		// collective of talking points and action item = phrases
+
+		var thisModule = this
+
+		var insightsTags = tags.insightsTags
+		var phrasesTags = tags.phrasesTags
+		var actionTagsForMetric = tags.actionTagsForMetric || tags.phrasesTags
+		var talkingPointsTagsForMetric = tags.talkingPointsTagsForMetric || tags.phrasesTags
+
+		/*if ( parentInfo.indexOf('returning_users') >= 0 && level == "asset" ) {
+			console.log(level, 'insights tags:', insightsTags, 'phrases tags:', phrasesTags, parentInfo)
+		}*/
+
+		var insightsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allInsights, insightsTags) 
+	
+		if ( !insightsPhrases ) {
+			//console.log( 'No insights phrases for', level, parentInfo )
+		}
+
+		var talkingPointsAndActionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPointsAndActionItems, phrasesTags) 
+
+		var talkingPointsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPoints, phrasesTags) 
+
+		if ( !talkingPointsPhrases ) {
+			//console.log( 'No talking points for', level, parentInfo )
+		}
+
+		/*if ( parentInfo.indexOf('returning_users') >= 0 && level == "asset" ) {
+			console.log(level, 'action item talking points phrases:')
+			_.forEach( talkingPointsPhrases, function( phrase, index) {
+				console.log("-", phrase.phrase)
+			})
+		}*/
+
+		var metricTalkingPointsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allTalkingPoints, talkingPointsTagsForMetric )
+
+		if ( !metricTalkingPointsPhrases ) {
+			
+			//console.log( 'No metric action items for', level, parentInfo, actionTagsForMetric.join(',') )
+		
+		} else {
+			
+			/*
+			console.log( 'metric talking points for', level, parentInfo, talkingPointsTagsForMetric.join(',') )
+			_.forEach ( metricTalkingPointsPhrases, function( phrase, index) {
+				console.log("-", phrase.phrase)
+			})
+			*/
+			
+		}
+
+		var actionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allActionItems, phrasesTags )
+
+		if ( !actionItemsPhrases ) {
+			//console.log( 'No action items for', level, parentInfo )
+		}
+
+		var metricActionItemsPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allActionItems, actionTagsForMetric )
+
+		if ( !metricActionItemsPhrases ) {
+			//console.log( 'No metric action items for', level, parentInfo, actionTagsForMetric.join(',') )
+		} else {
+			/*
+			console.log( 'metric action items for', level, parentInfo, actionTagsForMetric.join(',') )
+			_.forEach ( metricActionItemsPhrases, function( phrase, index) {
+				console.log("-", phrase.phrase)
+			})
+			*/
+		}
+
+		var resourcesPhrases = phraseMaker.matchingAllTagsFilter(thisModule.allPhrases.allResources, phrasesTags) 
+		if ( !resourcesPhrases ) {
+			//console.log( 'No resources for', level, parentInfo )
+		}
+
+		if ( !talkingPointsPhrases && !actionItemsPhrases ) {
+			//console.log( 'BOTH!! No action items or talking points for', parentInfo )
+		}
+
+		var replacedPhrases = [];
+
+		if ( insightsPhrases ) {
+	
+			_.forEach( insightsPhrases, function( insightsPhrase, index ) {
+
+				var replacedPhrase = insightsPhrase.phrase.replace(/{{(\w+)}}/g, function (m, m1) {
+				  return replacements[m1] || m;  
+				});
+
+				replacedPhrases.push({
+					phrase: replacedPhrase,
+					id: insightsPhrase.id,
+					tags: insightsPhrase.all_tags,
+					replacements: replacements
+				})
+
+
+
+			})
+
+		}
+
+		return {
+			insightsPhrases: replacedPhrases,
+			talkingPointsAndActionItemsPhrases: talkingPointsAndActionItemsPhrases,
+			talkingPointsPhrases: talkingPointsPhrases,
+			metricTalkingPointsPhrases : metricTalkingPointsPhrases,
+			actionItemsPhrases : actionItemsPhrases,
+			metricActionItemsPhrases : metricActionItemsPhrases,
+			resourcesPhrases : resourcesPhrases
 		}
 
 	},

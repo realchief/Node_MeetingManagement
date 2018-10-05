@@ -33,7 +33,7 @@ module.exports = {
 
 			 {
 				type : "action",
-				phrase: "Keep it moving Try to drive even more traffic by including a link in your next email newsletter.",
+				phrase: "Keep it moving. Try to drive even more traffic by including a link in your next email newsletter.",
 				tags: { level: "asset", source: "google_analytics,facebook,linkedin,twitter", sentiment: "positive,negative", category: "promote", type: "tip", dimension: "", metric: "" }
 			},
 
@@ -231,7 +231,7 @@ module.exports = {
 
 			 {
 				type : "action",
-				phrase: "When you feel your content gaining some traction, be sure to make a note of what's working and why you think working -- so that you can do it again (and again and again). ",
+				phrase: "When you feel your content gaining some traction, be sure to make a note of what's working and why you think it's working -- so that you can do it again (and again and again). ",
 				tags: { level: "asset", source: "google_analytics,facebook,linkedin,twitter", sentiment: "positive", category: "replicate", type: "tip", dimension: "", metric: "" }
 			},
 
@@ -485,6 +485,30 @@ module.exports = {
 				type : "action",
 				phrase: "These are our favorite tools to get the most out of your meeting notes: {link}",
 				tags: { level: "asset,platform", source: "", sentiment: "", category: "generic", type: "resource", dimension: "", metric: "" }
+			},
+
+			{
+				type : "action",
+				phrase: "Maybe it's time to promote a product on your home page?",
+				tags: { level: "platform", source: "", sentiment: "positive,negative", category: "", type: "", dimension: "revenue", metric: "revenue" }
+			},
+
+			{
+				type : "action",
+				phrase: "Lets see if we can leverage some of your engaging content on your home page.",
+				tags: { level: "platform", source: "", sentiment: "positive,negative", category: "", type: "", dimension: "pageviews", metric: "pageviews" }
+			},
+
+			{
+				type : "action",
+				phrase: "You should probably take a look at this.",
+				tags: { level: "platform", source: "google_analytics,facebook,linkedin,twitter", sentiment: "negative", category: "", type: "resource", dimension: "", metric: "" }
+			},
+
+			{
+				type : "action",
+				phrase: "Something's going on here. Check this out.",
+				tags: { level: "platform", source: "google_analytics,facebook,linkedin,twitter", sentiment: "negative", category: "", type: "resource", dimension: "", metric: "" }
 			},
 
 		]

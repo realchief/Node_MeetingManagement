@@ -86,6 +86,12 @@ module.exports = {
 				tags: { level: "platform", source: "facebook", dimension: "paid_reach", sentiment: "positive", type: "platform", category: "", metric: "paid_reach"}
 			}, 
 
+			{
+				type: 'insight',
+				phrase: "An infinite increase in paid reach! You reached {{value}} new users on Facebook through paid reach. You did not have any paid reach in the compared period",
+				tags: { level: "platform", source: "facebook", dimension: "paid_reach", sentiment: "infinite", type: "platform", category: "", metric: "paid_reach"}
+			}, 
+
 			 {
 				type: 'insight',
 				phrase: "Paid reach is down on Facebook, reaching only {{value}} users, from {{compared_value}}",
@@ -116,6 +122,13 @@ module.exports = {
 				tags: { level: "platform", source: "google_analytics", dimension: "returning_users", sentiment: "positive", type: "platform", category: "", metric: "returning_users"}
 			}, 
 
+			{
+				type: 'insight',
+				phrase: "Returning users are the same, {{value}} new users over both timeframes",
+				tags: { level: "platform", source: "google_analytics", dimension: "returning_users", sentiment: "neutral", type: "platform", category: "", metric: "returning_users"}
+			}, 
+
+
 			 {
 				type: 'insight',
 				phrase: "Returning website users are down, from {{compared_value}} to {{value}}, a {{percent_change}} drop",
@@ -124,7 +137,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "Conversions are up site-wide, with {{total_delta}} conversions, a {{percent_change}} increase",
+				phrase: "Conversions are up site-wide, with {{total_delta}} more conversions, a {{percent_change}} increase - with a total of {{value}} conversions.",
 				tags: { level: "platform", source: "google_analytics", dimension: "conversions", sentiment: "positive", type: "platform", category: "", metric: "conversions"}
 			}, 
 
@@ -256,7 +269,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "And just like that, they were gone; bounce rate was up, coming in at {{value}}",
+				phrase: "And just like that, they were gone; bounce rate across the site was up {{percent_change}}, with a total of {{value}}%",
 				tags: { level: "platform", source: "google_analytics", dimension: "bounce_rate", sentiment: "negative", type: "platform", category: "", metric: "bounce_rate"}
 			},  
 
@@ -337,7 +350,7 @@ module.exports = {
 
 			 {
 				type: 'insight',
-				phrase: "They keep coming back to {{primary_dimension}}; it had the most biggest change in returning visitors with {{value}} visitors",
+				phrase: "Quite a difference: {{primary_dimension}}; had the biggest change in returning visitors with {{value}} new visitors",
 				tags: { level: "asset", source: "google_analytics", dimension: "page", sentiment: "positive", type: "asset", category: "", metric: "returning_users", field: "sessions", sortType: "delta_change"  }
 			},
 

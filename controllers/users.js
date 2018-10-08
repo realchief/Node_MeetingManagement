@@ -252,6 +252,44 @@ var users = {
 
 
 
+  },
+
+  getUserSettings : function(userId, done) {
+    Model.User.findOne({
+      where: {
+        id: userId
+      }
+    }).then(function (user) {
+      if (!user) {
+        console.log("There is no user#", userId);
+      }
+      else {
+        Async.waterfall([
+          function ( cb ) {   
+      
+            user.getSetting().then(function (setting) {
+              if (setting) {
+                cb(null, setting)
+              }
+              else {
+                Model.Setting.create({
+                insights_time: '15 minutes',
+                insights_to: 'All attendees'    
+                }).then(function (setting) {
+                  user.setSetting(setting).then(function (){
+                    cb(null, setting)
+                  })
+                })
+              }
+            })
+           
+          }
+          
+        ], function (err, result) {
+          done(err, result);
+        })
+      }
+    })
   }
 
 }

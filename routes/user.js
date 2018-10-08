@@ -8,6 +8,7 @@ var colors = require('colors');
 var emoji = require('node-emoji')
 
 const moment = require("moment-timezone");
+var userInfo = require('../controllers/users')
 
 var utilities = require('../controllers/utilities')
 
@@ -322,7 +323,7 @@ router.get('/settings',  function (req, res) {
         return res.redirect('/signin')
     }
     else {          
-        utilities.getSetting(req.user.id, function (err, setting) {            
+        userInfo.getUserSettings(req.user.id, function (err, setting) {            
             if (err) {
                 req.flash('setting_error', err.error);
             } 
@@ -349,7 +350,7 @@ router.post('/settings', function(req, res) {
     if (!req.user) {
       return res.redirect('/signin')
     } else {
-        utilities.getSetting(req.user.id, function (err, setting) {
+        userInfo.getUserSettings(req.user.id, function (err, setting) {
             if (err) {
                 req.flash('setting_error', err.error);
             }

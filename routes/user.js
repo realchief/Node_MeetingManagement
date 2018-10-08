@@ -9,7 +9,7 @@ var emoji = require('node-emoji')
 
 const moment = require("moment-timezone");
 
-var userInfo = require('../controllers/users')
+var utilities = require('../controllers/utilities')
 
 router.get('/google/setprofile', function (req, res) {   
     
@@ -317,51 +317,28 @@ router.get('/getuser/:company', function (req, res) {
 
 
 router.get('/settings',  function (req, res) {
+
     if (!req.user) {
         return res.redirect('/signin')
     }
-    else {
-        Async.waterfall([
-            function ( cb ) {   
-  
-                req.user.getSetting().then(function (setting) {
-                    if (setting) {
-                        cb(null, setting)
-                    }
-                    else {
-                      Model.Setting.create({
-                        insights_time: '15 minutes',
-                        insights_to: 'All attendees'    
-                      }).then(function (setting) {
-                            req.user.setSetting(setting).then(function (){
-                              cb(null, setting)
-                            })
-                        })
-                    }
-                })
-           
-            }, function (setting, cb) {
-                
-                res.render('fingertips', {
-                  version: 'fingertips',
-                  layout: 'settings.handlebars',
-                  time: setting.insights_time,
-                  attendees: setting.insights_to,
-                  user:req.user
-                });
-            }
-            
-        ], function (err, result) {
+    else {          
+        utilities.getSetting(req.user.id, function (err, setting) {            
             if (err) {
                 req.flash('setting_error', err.error);
-            }
-            res.redirect('/settings');
-        })
+            } 
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'settings.handlebars',
+                time: setting.insights_time,
+                attendees: setting.insights_to,
+                user:req.user
+            });
+        });
     }
-  });
-  
-  
-  router.post('/settings', function(req, res) {  
+});
+
+
+router.post('/settings', function(req, res) {  
   
     let settings_param = req.body;   
     console.log('=======================settings param===================');
@@ -370,65 +347,29 @@ router.get('/settings',  function (req, res) {
     let selected_attendees = settings_param.attendees;
   
     if (!req.user) {
-    
       return res.redirect('/signin')
-    
     } else {
-       
-        Async.waterfall([
-       
-          function ( cb ) {   
-          
-              req.user.getSetting().then(function (setting) {
-                  if (setting) {
-                      cb(null, setting)
-                  }
-                  else {
-                    Model.Setting.create({
-                    
-                      insights_time: selected_times,
-                      insights_to: selected_attendees    
-                    
-                    }).then(function (setting) {
-                    
-                          req.user.setSetting(setting).then(function (){
-                            cb(null, setting)
-                          })
-                    })
-                  }
-              })
-          
-          }, function (setting, cb) {
-              
-              setting.updateAttributes({
-                
+        utilities.getSetting(req.user.id, function (err, setting) {
+            if (err) {
+                req.flash('setting_error', err.error);
+            }
+            setting.updateAttributes({
                 insights_time: selected_times,
                 insights_to: selected_attendees    
-
-              }).then(function (setting) {              
-                
+            }).then(function (setting) {              
                 req.session.sessionFlash = {
                     type: 'info',
                     message: 'Settings have been updated.'
                 }
-
+                console.log('==========Setting=======');
+                console.log(setting);
                 res.redirect('/settings');
-            
             });            
-          }
-      ], function (err, result) {
-          if (err) {
-              req.flash('setting_error', err.error);
-          }
-          res.redirect('/settings');
-      })
+        });
     }
-    
-           
-  });
-  
-  
-  router.get('/profile', function(req, res, next) {
+}); 
+
+router.get('/profile', function(req, res, next) {
 
     let updatedUser = req.body;   
     let updated_email = updatedUser.email;
@@ -442,19 +383,19 @@ router.get('/settings',  function (req, res) {
             type: 'info',
             message: 'Please sign in first.'
         }
-      
+        
         res.redirect('/signin')
         return
 
     } else {        
-    
+
         res.render('fingertips', {
             layout: 'profile.handlebars',
             user : req.user                     
         });
-    
+
     }
-  });
+});
 
   router.post('/profile', function(req, res) {  
   

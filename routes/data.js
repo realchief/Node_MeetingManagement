@@ -144,7 +144,7 @@ router.get('/data/combined/:company',  function (req, res) {
 
         } else {
 
-            console.log( "\n", emoji.get("moneybag"), 'Display insights', results.results.dataSourcesList.join(','), 'for user:', results.credentials.user.username, 'company id:', results.credentials.user.company_id )
+            console.log( "\n", emoji.get("moneybag"), 'Display insights', results.results.dataSourcesList.join(','), 'for user:', results.credentials.user.username, 'company id:', results.credentials.user.user_id )
 
             res.render('fingertips', {
                 version: 'fingertips',

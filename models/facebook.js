@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Facebook.associate = function(models) {
-        models.Facebook.hasOne(models.User);
+        models.Facebook.hasOne(models.Company);
     };
 
     return Facebook;

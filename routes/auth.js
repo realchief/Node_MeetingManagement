@@ -43,27 +43,37 @@ router.get('/facebook/unlink',  function (req, res) {
     else {
         Async.waterfall([
             function ( cb ) {
-                req.user.getFacebook().then(function ( fAccount) {
-                    if ( fAccount) {
-                        cb(null, fAccount)
+
+                req.user.getCompany().then( function ( company ){
+
+                    if ( company ) {
+
+                        company.getFacebook().then(function ( fAccount) {
+                            if ( fAccount) {
+                                cb(null, fAccount, company)
+                            }
+                            else {
+                                cb({error: 'This user is not connected with facebook account.'});
+                            }
+                        })
                     }
-                    else {
-                        cb({error: 'This user is not connected with facebook account.'});
-                    }
+
                 })
-            }, function ( fAccount, cb ) {
+
+
+            }, function ( fAccount, company, cb ) {
 
                 facebookApi.deauthorize( fAccount, function(result) {
 
                     console.log("\n", emoji.get("bomb"), '>>>>>> facebook app deauthorize response:', result)
 
-                    req.user.setFacebook(null).then(function () {
-                        cb(null, fAccount);
+                    company.setFacebook(null).then(function () {
+                        cb(null, fAccount, company);
                     })
 
                 })
 
-            }, function ( fAccount, cb) {
+            }, function ( fAccount, company, cb) {
                 fAccount.destroy().then(function () {
                     cb(null);
                 })
@@ -96,19 +106,28 @@ router.get('/google/unlink',  function (req, res) {
     else {
         Async.waterfall([
             function ( cb ) {
-                req.user.getGoogle().then(function (gAccount) {
-                    if (gAccount) {
-                        cb(null, gAccount)
-                    }
-                    else {
-                        cb({error: 'This user is not connected with google account.'});
+
+
+                req.user.getCompany().then( function ( company ){
+
+                    if ( company ) {
+
+                        company.getGoogle().then(function (gAccount) {
+                            if (gAccount) {
+                                cb(null, gAccount, company)
+                            }
+                            else {
+                                cb({error: 'This user is not connected with google account.'});
+                            }
+                        })
                     }
                 })
-            }, function (gAccount, cb) {
-                req.user.setGoogle(null).then(function () {
-                    cb(null, gAccount);
+
+            }, function (gAccount, company, cb) {
+                company.setGoogle(null).then(function () {
+                    cb(null, gAccount, company);
                 })
-            }, function (gAccount, cb) {
+            }, function (gAccount, company, cb) {
                 gAccount.destroy().then(function () {
                     cb(null);
                 })

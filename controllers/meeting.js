@@ -18,8 +18,8 @@ exports.processMeetingRequest = ( meetingInfo, cb ) => {
       return
     }
    
-    // LOOK UP USER FROM REQUEST COMPANY_ID
-    let whereClause = { 'company_id' : meetingInfo.companyId }
+    // LOOK UP USER FROM REQUEST user_id
+    let whereClause = { 'user_id' : meetingInfo.companyId }
     Model.User.findOne({
 
         where: whereClause

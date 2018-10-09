@@ -74,7 +74,7 @@ router.get('/send/:company', function (req, res) {
       var timezone = theTimezone || "America/New_York"
       var meeting_time_for_display = moment().tz(timezone).format("ddd, MMMM D [at] h:mma")
 
-      email.replacements.summary = "LooseGrip Email";
+      email.replacements.summary = "Your Team Email";
       email.replacements.meeting_time_for_display = meeting_time_for_display
       email.replacements.meeting_date_for_display = moment().format("ddd, MMMM D")
 
@@ -84,8 +84,8 @@ router.get('/send/:company', function (req, res) {
 
         var realReplacements = {
           sender: results.credentials.user.email,
-          summary: results.credentials.user.company_name + ' ' + 'Email',
-          brand: results.credentials.user.company_name,
+          summary: results.credentials.company.company_name + ' ' + 'Email',
+          brand: results.credentials.company.company_name,
           headline: "Here is your MeetBrief comparing this week to last week.",
           interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
           interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,

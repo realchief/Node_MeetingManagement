@@ -514,13 +514,13 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
 
 }
 
-exports.make_email_content = (company_id, organizer, summary, toArray, start_date, timezone, cb) => {
+exports.make_email_content = (user_id, organizer, summary, toArray, start_date, timezone, cb) => {
     
     const EmailContent = require('../components/EmailContent.js');
     var timezone = timezone || "America/New_York"
     
     var sender = organizer
-    var companyId = company_id
+    var companyId = user_id
     //var meeting_time_for_display = moment(start_date).format("ddd, MMMM D [at] h:mma")
     var meeting_date_for_display = moment(start_date).format("ddd, MMMM D")
     var meeting_time_for_display = moment(start_date).tz(timezone).format("ddd, MMMM D [at] h:mma")
@@ -546,7 +546,7 @@ exports.make_email_content = (company_id, organizer, summary, toArray, start_dat
         var realReplacements = {
           sender: organizer,
           summary: summary,
-          brand: results.credentials.user.company_name,
+          brand: results.credentials.user.company.company_name,
           headline: "Here is your MeetBrief comparing this week to last week.",
           interest_change: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].positiveMappingsCount - utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].negativeMappingsCount,
           interest_score: utilities.filter(bucket_insights.buckets, 'name', 'user_interest')[0].totalScore,

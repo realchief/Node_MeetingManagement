@@ -431,7 +431,7 @@ var insights = {
 
 		var phraseTypes = [ 'talkingPointsAndActionItem', 'talkingPoint', 'actionItem', 'metricActionItem', 'metricTalkingPoint', 'resource' ]
 
-		// set these up for non-found company_ids
+		// set these up for non-found user_ids
 		_.forEach( phraseTypes, function( phraseType, index ) {
 			sentencesList['all'][phraseType] = []
 			sentencesList['platform'][phraseType] = []

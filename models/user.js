@@ -10,10 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING
         },
-        company_name: {
-            type: DataTypes.STRING
-        },
-        company_id: {
+        user_id: {
             type: DataTypes.STRING
         },
         email_domain: {
@@ -29,10 +26,10 @@ module.exports = (sequelize, DataTypes) => {
 
     User.beforeCreate( (user, options) => {
         
-        //var company_id = user.email.replace(/.*@/, "").split('.')[0].toLowerCase();
+        //var user_id = user.email.replace(/.*@/, "").split('.')[0].toLowerCase();
         
-        var company_id = user.email.toLowerCase();
-        user.company_id = company_id
+        var user_id = user.email.toLowerCase();
+        user.user_id = user_id
     
         var email_domain = user.email.split('@')[1].toLowerCase();
         user.email_domain = email_domain
@@ -41,8 +38,8 @@ module.exports = (sequelize, DataTypes) => {
 
     User.beforeUpdate( (user, options) => {
 
-        if ( user.changed('company_id') ) {
-            console.log('USER CHANGED COMPANY ID')
+        if ( user.changed('user_id') ) {
+            console.log('USER CHANGED User ID')
         } else {
           
         }
@@ -53,9 +50,9 @@ module.exports = (sequelize, DataTypes) => {
            
         }
 
-         if ( user.company_id == "") {
-            var company_id = user.email.toLowerCase();
-            user.company_id = company_id
+         if ( user.user_id == "") {
+            var user_id = user.email.toLowerCase();
+            user.user_id = user_id
        }
 
        if ( user.email_domain == "") {
@@ -78,10 +75,9 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = function(models) {
-        models.User.belongsTo(models.Facebook);
-        models.User.belongsTo(models.Google);
-        models.User.belongsTo(models.Setting);
+       // models.User.belongsTo(models.Setting);
         models.User.belongsTo(models.Role);
+        models.User.belongsTo(models.Company);
         models.User.hasMany(models.Meeting);
     };
 

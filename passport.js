@@ -24,9 +24,21 @@ module.exports = function(passport) {
 
     passport.deserializeUser(function(id, done) {
     
-       // console.log('>>> deserializeUser')
+       
         Model.User.findById(id).then(function (user) {
-            done(null, user);
+
+            if ( user ) {
+
+                user.getCompany().then( function( company) {
+                    user.company = company
+                    done(null, user);
+                })
+
+            } else {
+
+                done( null, user)
+            }
+
         });
     
     });
@@ -73,8 +85,6 @@ module.exports = function(passport) {
     
     }, function(req, token, refreshToken, profile, done) {
     
-        // maybe look for req.params so we dont have to user the logged in user //
-
         process.nextTick(function() {
     
             Async.waterfall([
@@ -90,15 +100,27 @@ module.exports = function(passport) {
 
                     if ( req.user ) {
 
-                        req.user.getFacebook().then(function ( fAccount ) {
-                            cb( null, fAccount )
+                        req.user.getCompany().then( function ( company ){
+
+                            if ( company ) {
+                            
+                                company.getFacebook().then(function ( fAccount ) {
+                                
+                                    cb( null, fAccount, company )
+                                
+                                })
+
+                            } else {
+                                cb ( null, null, null ) 
+                            }
+
                         })
 
                     } else {
-                        cb ( null, null )
+                        cb ( null, null, null )
                     }
  
-                }, function (fbUser, cb) {
+                }, function ( fbUser, company, cb ) {
                     
                     if ( fbUser ) {
 
@@ -130,9 +152,9 @@ module.exports = function(passport) {
                                         account_token: currentAccount[0].account_token,
                                    
                                     }).then(function ( result ) {
-                                            console.log("\n", emoji.get("beer"), '>>> just updated the user and page access tokens for', req.user.company_name, 'to:', token, currentAccount[0].account_token)
+                                            console.log("\n", emoji.get("beer"), '>>> just updated the user and page access tokens for', req.user.company.company_name, 'to:', token, currentAccount[0].account_token)
 
-                                            cb( null, fbUser )
+                                            cb( null, fbUser, company )
 
                                     })
 
@@ -159,15 +181,17 @@ module.exports = function(passport) {
                             if (!fbUser) {
                                 cb(req.flash('error', 'can not create new facebook user'));
                             }
-                            else cb(null, fbUser);
+                            else cb(null, fbUser, company);
                         });
                     
                     }
 
-                }, function ( fbUser, cb ) {
+                }, function ( fbUser, company, cb ) {
                     
                     if (req.user) {
-                        cb(null, req.user, fbUser);
+                    
+                        cb(null, req.user, fbUser, company);
+                    
                     }
 
                     else {
@@ -188,23 +212,19 @@ module.exports = function(passport) {
 
                     }
                 
-                }, function ( user, fbUser, cb ) {
+                }, function ( user, fbUser, company, cb ) {
                   
-                    user.setFacebook(fbUser).then(function (user) {
-                        cb(null, user, fbUser);
+                    company.setFacebook(fbUser).then(function (user) {
+                        
+                        cb(null, req.user);
+                    
                     });
-                
-                }, function ( user, fbUser, cb ){
-
-                    let facebookApi = require('./controllers/facebook-api');
-                    facebookApi.extendToken(fbUser, null, function(result){
-                        cb( null, user, fbUser )
-                    }) 
                 
                 }
 
             ], function (err, user) {
                // console.log('err:', err);
+
                 return done(err, user);
             
             });
@@ -226,7 +246,7 @@ module.exports = function(passport) {
             Async.waterfall([
                 function ( cb ) {
                     
-                    Model.Google.findOne({
+                   /* Model.Google.findOne({
                         where: {
                             profile_id: profile.id
                         }
@@ -234,8 +254,32 @@ module.exports = function(passport) {
 
                         cb(null, goUser);
                     });
-                
-                }, function (goUser, cb) {
+                    */
+
+                    if ( req.user ) {
+
+                        req.user.getCompany().then( function ( company ){
+
+                            if ( company ) {
+                            
+                                company.getGoogle().then(function ( goUser ) {
+                                
+                                    cb( null, goUser, company )
+                                
+                                })
+
+                            } else {
+                                cb ( null, null, null ) 
+                            }
+
+                        })
+
+                    } else {
+                        cb ( null, null, null )
+                    }
+
+
+                }, function (goUser, company, cb) {
                   
                     //if (goUser) {
                     //    console.log('>>> found an existing google user')
@@ -257,16 +301,21 @@ module.exports = function(passport) {
                             if (!goUser) {
                                 cb(req.flash('error', 'can not create new google user'));
                             }
-                            else cb(null, goUser);
+                            else cb(null, goUser, company);
                         });
                     //}
                 
-                }, function (goUser, cb) {
+                }, function (goUser, company, cb) {
                   
                     if (req.user) {
-                        cb(null, req.user, goUser);
+                    
+                        cb(null, req.user, goUser, company);
                     }
+
                     else {
+                    
+                        // I DONT THINK WE EVER GET HERE //
+
                         goUser.getUser().then(function (user) {
                             if (user) cb(null, user, goUser);
                             else User.create({}).then(function(user) {
@@ -274,12 +323,17 @@ module.exports = function(passport) {
                                 else cb(null, user, goUser);
                             });
                         });
+                        
+                       // END NEVER GET HERE //
+
                     }
                 
-                }, function (user, goUser, cb) {
+                }, function (user, goUser, company, cb) {
                   
-                    user.setGoogle(goUser).then(function () {
+                    company.setGoogle(goUser).then(function () {
+                      
                         cb(null, user);
+                    
                     });
                 
                 }

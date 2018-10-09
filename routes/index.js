@@ -27,7 +27,7 @@ router.get('/',  function (req, res) {
     if (req.user) {
 
         //console.log('\n', emoji.get("smile"), '***** Results: ', results);
-        console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+        console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company.company_name);
 
         res.render('fingertips', {
             version: 'fingertips',
@@ -46,7 +46,7 @@ router.get('/data-sources',  function (req, res) {
 
     if (req.user) {
 
-        userInfo.getSummaries(req.user.company_id, function ( err, summaries ) {
+        userInfo.getSummaries(req.user.user_id, function ( err, summaries ) {
             
             if (err) {
                 console.log('***** Error: ', err);
@@ -54,7 +54,7 @@ router.get('/data-sources',  function (req, res) {
             }
 
             //console.log('\n', emoji.get("smile"), '***** Results: ', results);
-            //console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company_name);
+            //console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company.company_name);
 
             res.render('fingertips', {
                 version: 'fingertips',

@@ -855,43 +855,59 @@ exports.checkToken = (req, res, next) => {
     if (!req.user) {
         return next();
     }
-    req.user.getGoogle().then(function (gAccount) {
 
-        if ( gAccount ) {
-            console.log("\n", emoji.get("moneybag"), '>>>>>> google refresh token:', gAccount.refresh_token, 'seconds before expiry', moment().subtract(gAccount.expiry_date, "s").format("X"))
-        }
 
-        if (gAccount && moment().subtract(gAccount.expiry_date, "s").format("X") > -300) {
-            // subtract current time from stored expiry_date and see if less than 5 minutes (300s) remain
-            console.log('we passed the expiry_date and trying to update google access token')
+    req.user.getCompany().then( function( company ) {
 
-            oauth2Client.setCredentials({
-                access_token: gAccount.token,
-                refresh_token: gAccount.refresh_token
-            });
+      if ( !company ) {
+          console.log("\n", emoji.get("sparkles"), 'no related company found:')
+          next();
+          return;
+      }
 
-            oauth2Client.refreshAccessToken(function (err, tokens) {
 
-                if (err) {
-                    console.log('Refresh Token Error>>>', err)
-                    return next(err);
-                }
+      company.getGoogle().then(function ( gAccount ) {
 
-                console.log('trying to update google access token', tokens)
+          if ( gAccount ) {
+              console.log("\n", emoji.get("moneybag"), '>>>>>> google refresh token:', gAccount.refresh_token, 'seconds before expiry', moment().subtract(gAccount.expiry_date, "s").format("X"))
+          }
 
-                // google returns timestamp with milliseconds, so fix that //
-                var expiry_date = parseInt(tokens.expiry_date / 1000)
+          if (gAccount && moment().subtract(gAccount.expiry_date, "s").format("X") > -300) {
+              // subtract current time from stored expiry_date and see if less than 5 minutes (300s) remain
+              console.log('we passed the expiry_date and trying to update google access token')
 
-                gAccount.updateAttributes({
-                    token: tokens.access_token,
-                    expiry_date: expiry_date
-                }).then(function (result) {
-                    console.log('token updated!');
-                    next();
-                });
-            });
-        } else next();
-    });
+              oauth2Client.setCredentials({
+                  access_token: gAccount.token,
+                  refresh_token: gAccount.refresh_token
+              });
+
+              oauth2Client.refreshAccessToken(function (err, tokens) {
+
+                  if (err) {
+                      console.log('Refresh Token Error>>>', err)
+                      return next(err);
+                  }
+
+                  console.log('trying to update google access token', tokens)
+
+                  // google returns timestamp with milliseconds, so fix that //
+                  var expiry_date = parseInt(tokens.expiry_date / 1000)
+
+                  gAccount.updateAttributes({
+                      token: tokens.access_token,
+                      expiry_date: expiry_date
+                  }).then(function (result) {
+                      console.log('token updated!');
+                      next();
+                  });
+              });
+          } else next();
+      });
+
+
+    })
+
+
 };
 
 

@@ -485,11 +485,12 @@ exports.getAccountList = ( fAccount, done ) => {
 
 }
 
-exports.getAccountListOrSelectView = function (user, done) {
+exports.getAccountListOrSelectView = function ( user, done ) {
     
     var thisModule = this
 
     Async.waterfall([
+
         function ( cb ) {
             
             user.getFacebook().then(function ( fAccount) {
@@ -547,31 +548,42 @@ exports.checkToken = (req, res, next) => {
     if (!req.user) {
         return next();
     }
-    req.user.getFacebook().then(function ( fAccount) {
 
-        if ( fAccount ) {
-            // console.log("\n", emoji.get("moneybag"), '>>>>>> facebook check refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
-        }
+    req.user.getCompany().then( function( company ) {
 
-        if ( fAccount && moment().subtract( fAccount.expiry_date, "s").format("X") > 86400) {
+      if ( !company ) {
+          console.log("\n", emoji.get("sparkles"), 'no related company found:')
+          next();
+          return;
+      }
 
-            graph.extendAccessToken({
-                "access_token": fAccount.token,
-                "client_id": auth.facebookAuth.clientID,
-                "client_secret": auth.facebookAuth.clientSecret
-            }, function (err, facebookRes) {
+        company.getFacebook().then(function ( fAccount) {
 
-                console.log("\n", emoji.get("moneybag"), 'extended facebook access token', facebookRes)
+            if ( fAccount ) {
+                // console.log("\n", emoji.get("moneybag"), '>>>>>> facebook check refresh token:', fAccount.token, 'seconds since refresh', moment().subtract( fAccount.expiry_date, "s").format("X"))
+            }
 
-                fAccount.updateAttributes({
-                    token: facebookRes.access_token,
-                    expiry_date: moment().format('X')
-                }).then(function (result) {
-                    next();
+            if ( fAccount && moment().subtract( fAccount.expiry_date, "s").format("X") > 86400) {
+
+                graph.extendAccessToken({
+                    "access_token": fAccount.token,
+                    "client_id": auth.facebookAuth.clientID,
+                    "client_secret": auth.facebookAuth.clientSecret
+                }, function (err, facebookRes) {
+
+                    console.log("\n", emoji.get("moneybag"), 'we extended facebook access token', facebookRes)
+
+                    fAccount.updateAttributes({
+                        token: facebookRes.access_token,
+                        expiry_date: moment().format('X')
+                    }).then(function (result) {
+                        next();
+                    });
                 });
-            });
-        } else return next();
-    });
+            } else return next();
+        });
+    })
+
 };
 
 
@@ -585,10 +597,12 @@ exports.extendToken = (fAccount, res, cb ) => {
     if ( fAccount ) {
 
         graph.extendAccessToken({
+        
             "access_token": fAccount.token,
             "client_id": auth.facebookAuth.clientID,
             "client_secret": auth.facebookAuth.clientSecret
-        }, function (err, facebookRes) {
+        }
+        , function (err, facebookRes) {
 
             if ( facebookRes.error ) {
                 console.log("\n", emoji.get("moneybag"), 'ERROR - lets re-authenticate?')

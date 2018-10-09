@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Google.associate = function(models) {
-        models.Google.hasOne(models.User);
+        models.Google.hasOne(models.Company);
     };
 
     return Google;

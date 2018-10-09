@@ -15,9 +15,9 @@ var users = {
 
       let company = userId
       
-      let type = ( isNaN(Number(company)) ) ? 'company_id' : 'id'
+      let type = ( isNaN(Number(company)) ) ? 'user_id' : 'id'
 
-      let whereClause = ( type == "company_id" ) ? { 'company_id' : company } : { 'id' : company }
+      let whereClause = ( type == "user_id" ) ? { 'user_id' : company } : { 'id' : company }
 
       Model.User.findOne({
          
@@ -32,54 +32,75 @@ var users = {
               var user = {}
               credentials.accounts = Object.assign({}, null)
               user.username = 'Dennis Nedry'
-              user.company_id = 'jurassicpark'
+              user.user_id = 'jurassicpark'
               credentials.user = user
               cb( null, credentials )
               return
           
           }
-        
-        Async.parallel({
 
-          google_analytics : function ( cb ) {
+          user.getCompany().then( function( company ) {
 
-            user.getGoogle().then(function (gAccount) {
+            if (!company) {
               
-              if (gAccount) {
-                  //console.log( emoji.get("smile"), 'Google User>>>', "id", gAccount.id )
-              }
+              console.log('>>> Cant Find company', company)
+              var credentials = {}
+              credentials.accounts = Object.assign({}, null)
+              credentials.user = user
+              credentials.user.user_id = 'fluxcapacitor',
+              credentials.user.company_name = 'Hill Valley',
+              cb( null, credentials )
+              return
+          
+            }
 
-              cb( null, gAccount )
+            console.log( emoji.get("smile"), 'Found>>>', 'user id', user.user_id, 'tied to company:', company.company_name )
+
+             Async.parallel({
+
+                  google_analytics : function ( cb ) {
+
+                    company.getGoogle().then(function (gAccount) {
+                      
+                      if (gAccount) {
+                          //console.log( emoji.get("smile"), 'Google User>>>', "id", gAccount.id )
+                      }
+
+                      cb( null, gAccount )
+
+                    })
+
+                  },
+
+                  facebook : function( cb ) {
+
+                    company.getFacebook().then(function ( fAccount ) {
+                      
+                      if ( fAccount) {
+                         //console.log( emoji.get("smile"), 'Facebook User>>>', fAccount.id)
+                      }
+
+                      cb( null, fAccount )
+
+                    })
+
+                  },
+
+                }, function ( err, credentials ) {
+
+                    credentials.accounts = Object.assign({}, credentials)
+                    credentials.user = user
+                    credentials.user.company = company
+                    credentials.company = company
+
+                   // console.log( emoji.get("smile"), 'User from id results>>>', err, results )
+                    cb( err, credentials )
+                   
+                })
 
             })
 
-          },
-
-          facebook : function( cb ) {
-
-            user.getFacebook().then(function ( fAccount ) {
-              
-              if ( fAccount) {
-                 //console.log( emoji.get("smile"), 'Facebook User>>>', fAccount.id)
-              }
-
-              cb( null, fAccount )
-
-            })
-
-          },
-
-        }, function ( err, credentials ) {
-
-            credentials.accounts = Object.assign({}, credentials)
-            credentials.user = user
-
-           // console.log( emoji.get("smile"), 'User from id results>>>', err, results )
-            cb( err, credentials )
-           
-        })
-
-    })
+      })
 
   },
 
@@ -185,7 +206,7 @@ var users = {
           linkedAccounts[accountName] = ( cb ) => {
 
               var api = require('../controllers/' + accountName.replace('_', '-') + '-api')
-              api.getAccountListOrSelectView(credentials.user, function( err, results ) {
+              api.getAccountListOrSelectView(credentials.company, function( err, results ) {
                    if ( results.chosen_account ) { numberOfConnectedAccounts++ }
                    if ( results.account_list ) { numberOfAccountLists++ }
                    cb ( null, results )
@@ -225,11 +246,11 @@ var users = {
 
             } else {
 
-              //console.log( "\n", emoji.get("moneybag"), 'Got all metrics from linked accounts', ' for user:', credentials.user.username, 'company id:', credentials.user.company_id )
+              //console.log( "\n", emoji.get("moneybag"), 'Got all metrics from linked accounts', ' for user:', credentials.user.username, 'company id:', credentials.user.user_id )
 
               thisModule.getInsightsFromMetrics( metrics, function( err, results ) {
 
-                  console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', results.dataSourcesList.join(','), 'for user:', credentials.user.username, 'company id:', credentials.user.company_id )
+                  console.log( "\n", emoji.get("moneybag"), 'Combined insights made from', results.dataSourcesList.join(','), 'for user:', credentials.user.username, 'company id:', credentials.user.user_id )
 
                   var insightsInfo = {
                     results: results,
@@ -254,33 +275,55 @@ var users = {
 
   },
 
-  getUserSettings : function(userId, done) {
-    Model.User.findOne({
+  getCompanySettings : function(userId, done) {
+    
+    Model.Company.findOne({
+    
       where: {
         id: userId
       }
-    }).then(function (user) {
-      if (!user) {
+    
+    }).then(function ( company ) {
+    
+      if (!company) {
+    
         console.log("There is no user#", userId);
+    
       }
+    
       else {
+    
         Async.waterfall([
+    
           function ( cb ) {   
       
-            user.getSetting().then(function (setting) {
+            company.getSetting().then(function (setting) {
+    
               if (setting) {
+    
                 cb(null, setting)
+    
               }
+    
               else {
+    
                 Model.Setting.create({
-                insights_time: '15 minutes',
-                insights_to: 'All attendees'    
+    
+                  insights_time: '15 minutes',
+                  insights_to: 'All attendees'    
+        
                 }).then(function (setting) {
-                  user.setSetting(setting).then(function (){
+        
+                  company.setSetting( setting ).then(function (){
+                   
                     cb(null, setting)
+        
                   })
+        
                 })
+        
               }
+        
             })
            
           }

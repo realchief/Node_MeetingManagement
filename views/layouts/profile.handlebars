@@ -39,8 +39,8 @@
                         <p class="alert">{{ errorMessage.email }}</p>
                     {{/if}}
 
-                    {{#if errorMessage.company_id}}
-                        <p class="alert">{{ errorMessage.company_id }}</p>
+                    {{#if errorMessage.user_id}}
+                        <p class="alert">{{ errorMessage.user_id }}</p>
                     {{/if}}
                  
 
@@ -48,7 +48,7 @@
                             <br />
 
                              <label for="company_name"><b>Company Name</b></label>
-                             <input type="text" value="{{user.company_name}}" name="company_name" >
+                             <input type="text" value="{{user.company.company_name}}" name="company_name" >
 
                             
 
@@ -75,6 +75,10 @@
                     <button name="save" type="submit">Save</button>
 
 <br />
+
+                
+
+
                     <br />
                               <br />
                     <h4>Advanced Settings</h4>
@@ -82,7 +86,7 @@
                      <br />
 
                               <label for="email"><b>Email address you can schedule from</b></label>
-                    <input type="text" style="background: #e5e5e5;text-color:#333" value="{{user.company_id}}" name="company_id" >
+                    <input type="text" style="background: #e5e5e5;text-color:#333" value="{{user.user_id}}" name="user_id" >
 
                            
                              <br />

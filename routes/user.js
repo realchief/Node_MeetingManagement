@@ -362,6 +362,8 @@ router.get('/getuser/:user_id', function (req, res) {
 router.get('/settings',  function (req, res) {
 
     if (!req.user) {
+
+        req.session.redirectTo = "/settings"
         return res.redirect('/signin')
     }
     else {          

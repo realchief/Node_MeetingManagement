@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
         sequence: {
             type: DataTypes.STRING
         },
-        email_domain: {
+        user_id: {
             type: DataTypes.STRING
         },
         sendgrid_recipients: {

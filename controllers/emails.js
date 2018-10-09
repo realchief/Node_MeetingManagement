@@ -498,7 +498,7 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
       dtstamp_time : meetingInfo.meeting_dtstamp,
       created_time : meetingInfo.meeting_created,
       sequence : meetingInfo.meeting_sequence,
-      email_domain : meetingInfo.companyId,
+      user_id : meetingInfo.companyId,
       sendgrid_recipients: meetingInfo.sendgrid_recipients
     
     }).then(function ( meeting ) {
@@ -619,7 +619,7 @@ exports.reschedule = () => {
           var msg = null
 
           meeting.meeting_start_time = meeting.start_time
-          meeting.companyId = meeting.email_domain
+          meeting.companyId = meeting.user_id
           thisModule.schedule_email(meetingId, meeting, meeting.start_time, msg, meeting, 'reschedule');
           
           cb(null);

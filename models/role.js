@@ -4,9 +4,12 @@ module.exports = (sequelize, DataTypes) => {
         role_name: {
             type: DataTypes.STRING,
         },
-        role_type: {
+        role_label: {
             type: DataTypes.STRING,
-        }     
+        },
+        role_description: {
+            type: DataTypes.STRING,
+        }         
     });
 
     Role.associate = function(models) {

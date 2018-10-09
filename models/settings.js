@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         }     
     });
 
-    /*Setting.associate = function(models) {
-        models.Setting.hasOne(models.User);
-    };*/
+    Setting.associate = function(models) {
+        models.Setting.hasOne(models.Company);
+    };
 
     return Setting;
 };

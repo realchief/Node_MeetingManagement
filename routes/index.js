@@ -44,6 +44,19 @@ router.get('/',  function (req, res) {
 
 router.get('/data-sources',  function (req, res) {
 
+    var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/data-sources';
+    
+    if ( redirectTo !== "/data-sources") {
+
+        if ( res.locals.sessionFlash ) {
+            req.session.sessionFlash = res.locals.sessionFlash
+        } 
+        
+        delete req.session.redirectTo;
+        res.redirect(redirectTo);
+        return
+    }
+
     if (req.user) {
 
         userInfo.getSummaries(req.user.user_id, function ( err, summaries ) {

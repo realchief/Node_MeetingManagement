@@ -54,7 +54,7 @@ var users = {
           
             }
 
-            console.log( emoji.get("smile"), 'Found>>>', 'user id', user.user_id, 'tied to company:', company.company_name )
+            console.log( emoji.get("smile"), 'Linked Accounts Found>>>', 'user id', user.user_id, 'tied to company:', company.company_name )
 
              Async.parallel({
 

@@ -178,7 +178,7 @@ router.post('/signup', function(req, res) {
     // validation of signup form
 
     let newUser = req.body;   
-    let new_password = newUser.password;
+    let new_password = req.body.password;
     let new_confirm_password = req.body.confirm_password;
     
     let new_email = req.body.email;
@@ -231,11 +231,9 @@ router.post('/signup', function(req, res) {
 
                             Model.User.create( newUser ).then(function ( user ) {
                           
-                                var whereClause = { 'role_name' : 'admin' }
-
                                 return Model.Role.findOne({
                                     
-                                    where : whereClause
+                                    where : { 'role_name' : 'admin' }
 
                                 }).then( function( role ) {
 
@@ -281,7 +279,7 @@ router.post('/signup', function(req, res) {
 
                             }).catch(function (err) {
                                 console.log(err);
-                                res.render('signup', {errorMessage: { signout:'You can not logout', layout: false }});
+                                res.render('signup', {errorMessage: { signout:'You can not sign up', layout: false }});
                             });
 
                         })
@@ -310,15 +308,18 @@ router.get('/signout', function(req, res, next) {
 });
 
 
-router.get('/getuser/:company', function (req, res) {
+router.get('/getuser/:user_id', function (req, res) {
 
-  var userId = req.params.company ? req.params.company : req.user.id
+  var userId = req.params.user_id ? req.params.user_id : req.user.id
 
-  if ( req.params.company == "loggedin") {
+  if ( req.params.user_id == "loggedin") {
 
     if ( req.user ) {
+       
        userId = req.user.id
+    
     } else {
+    
         req.session.redirectTo = "/getuser/loggedin"
         res.redirect('/signin');
         return
@@ -438,6 +439,7 @@ router.get('/profile', function(req, res, next) {
             message: 'Please sign in first.'
         }
         
+        req.session.redirectTo = "/profile"
         res.redirect('/signin')
         return
 

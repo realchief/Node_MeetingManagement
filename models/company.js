@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         models.Company.belongsTo(models.Facebook);
         models.Company.belongsTo(models.Google);
         models.Company.belongsTo(models.Setting);
+        models.Company.hasMany(models.User);
     };
 
     return Company;

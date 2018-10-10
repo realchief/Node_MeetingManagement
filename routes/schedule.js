@@ -3,12 +3,15 @@ let router = express.Router();
 let passport = require('passport');
 let Model = require('../models');
 let Async = require('async');
+var _ = require('lodash');
 
 var colors = require('colors');
 var emoji = require('node-emoji')
 
 router.get('/schedule', function (req, res, next) {
+    
     if (req.user) {
+    
         req.user.getMeetings().then(function (meetings) {
             console.log('==========meeting==========');
             
@@ -17,9 +20,46 @@ router.get('/schedule', function (req, res, next) {
                 layout: false
             })
         });
+    
     }
+    
     else res.redirect('/signin');
 });
+
+
+router.get('/schedule-company', function (req, res, next) {
+    
+    if (req.user) {
+    
+        req.user.company.getUsers({attributes: ['id']}).then( function( members ){
+
+            var memberIds = []
+            _.forEach( members, function(member, index){
+                memberIds.push(member.id)
+            })
+            
+            var whereClause = { 'UserId' : memberIds }
+            Model.Meeting.findAll( { where : whereClause }).then( function( meetings ) {
+            
+                res.render('schdule_jobs', {
+                    meetings: meetings,
+                    layout: false
+                })
+
+            })
+
+        })
+
+
+    
+    }
+    
+    else {
+        req.session.redirectTo = "/schedule-company"
+        res.redirect('/signin');
+    }
+});
+
 
 router.get('/allschedule', function (req, res, next) {
     /*if (req.user) {*/

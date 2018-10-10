@@ -531,4 +531,222 @@ router.get('/profile', function(req, res, next) {
 });
 
 
+router.get('/team',  function (req, res) {
+
+    if (!req.user) {
+
+        req.session.redirectTo = "/team"
+        return res.redirect('/signin')
+    }
+    else {          
+
+        req.user.getCompany().then( function( company ) {
+
+            company.getUsers().then( function( team ) {
+                
+                res.render('fingertips', {
+                    version: 'fingertips',
+                    layout: 'team.handlebars',
+                    team : team,
+                    user:req.user
+                });
+
+            })
+
+        })
+
+    }
+});
+
+
+
+router.get('/team/add',  function (req, res) {
+
+    if (!req.user) {
+
+        req.session.redirectTo = "/team/add"
+        return res.redirect('/signin')
+    }
+    else {          
+
+        res.render('fingertips', {
+            version: 'fingertips',
+            layout: 'add-team-member.handlebars',
+            user: req.user
+        });
+
+    }
+});
+
+
+
+router.post('/team/add',  function (req, res) {
+
+    let newTeamMember = req.body;   
+
+    if (!req.user) {
+
+        req.session.redirectTo = "/team/add"
+        return res.redirect('/signin')
+    }
+
+    else {          
+
+        Model.User.create( newTeamMember ).then(function ( member ) {
+                          
+            return Model.Role.findOne({
+                
+                where : { 'role_name' : 'team_member' }
+
+            }).then( function( role ) {
+
+                if ( !role ) {
+                    console.log('no role!!')
+                }
+
+                return member.setRole( role ).then( function() {
+
+                    return member.setCompany( req.user.company ).then( function() {
+
+                       req.session.sessionFlash = {
+                            type: 'info',
+                            message: 'Team Member' + ' ' + member.username + ' ' + 'has been added.'
+                        }
+
+                       res.redirect('/team');
+
+                    })
+                })
+
+            })
+        
+        })
+
+    }
+
+});
+
+
+router.get('/team/edit/:id',  function (req, res) {
+
+    if (!req.user) {
+
+        req.session.redirectTo = "/team/"
+        return res.redirect('/signin')
+    }
+
+    else {          
+
+        var whereClause = { 'id' : req.params.id }
+
+        Model.User.findOne( { where: whereClause } ).then(function ( member ) {
+
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'edit-team-member.handlebars',
+                teamMember : member,
+                user: req.user
+            });
+
+        })
+
+    }
+});
+
+
+router.post('/team/edit/',  function (req, res) {
+
+    let memberInfo = req.body;
+    memberInfo.user_id = memberInfo.email
+
+    if (!req.user) {
+
+        req.session.redirectTo = "/team/"
+        return res.redirect('/signin')
+    }
+
+    else {          
+
+        var whereClause = { 'id' : memberInfo.id }
+
+        Model.User.findOne( { where: whereClause } ).then(function ( member ) {
+
+            member.updateAttributes(memberInfo).then( function( updatedResult ){
+           
+                req.session.sessionFlash = {
+                        type: 'info',
+                       message: 'Team Member' + ' ' + member.username + ' ' + 'has been updated.'
+                    }
+
+                res.redirect('/team/edit/' + updatedResult.id);
+
+              })
+         
+        })
+
+    }
+
+});
+
+router.get('/team/delete/:id',  function (req, res) {
+
+    if (!req.user) {
+
+        req.session.redirectTo = "/team/"
+        return res.redirect('/signin')
+    }
+
+    else {          
+
+        var whereClause = { 'id' : req.params.id }
+
+        Model.User.findOne( { where: whereClause } ).then(function ( member ) {
+
+            res.render('fingertips', {
+                version: 'fingertips',
+                layout: 'delete-team-member.handlebars',
+                teamMember : member,
+                user: req.user
+            });
+
+        })
+
+    }
+});
+
+router.post('/team/delete/',  function (req, res) {
+
+    let memberInfo = req.body;
+  
+    if (!req.user) {
+
+        req.session.redirectTo = "/team/"
+        return res.redirect('/signin')
+    }
+
+    else {          
+
+        var whereClause = { 'id' : memberInfo.id }
+
+        Model.User.findOne( { where: whereClause } ).then(function ( member ) {
+
+            member.destroy( member ).then( function( updatedResult ){
+           
+                req.session.sessionFlash = {
+                        type: 'info',
+                        message: 'Team Member' + ' ' + member.username + ' ' + 'has been deleted.'
+                    }
+
+                res.redirect('/team/');
+
+              })
+         
+        })
+
+    }
+
+});
+
+
+
 module.exports = router

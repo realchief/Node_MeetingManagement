@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
 
     Company.beforeCreate( (company, options) => {
         
+          var whitelisted_domains = company.creator_email.split('@')[1].toLowerCase();
+          company.whitelisted_domains = [ whitelisted_domains ]
+     
     });
 
     Company.beforeUpdate( (company, options) => {

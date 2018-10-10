@@ -185,8 +185,6 @@ router.post('/signup', function(req, res) {
     let company_name = req.body.company_name;
     newUser.creator_email = req.body.email;
     
-    let new_user_id = new_email.replace(/.*@/, "").split('.')[0].toLowerCase();
-     
     if (new_password != new_confirm_password) {
      
         res.render('signup', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );

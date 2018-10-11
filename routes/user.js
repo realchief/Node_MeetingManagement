@@ -12,6 +12,9 @@ var userInfo = require('../controllers/users')
 
 var utilities = require('../controllers/utilities')
 
+var Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
 router.get('/google/setprofile', function (req, res) {   
     
     if (req.user) {
@@ -227,7 +230,7 @@ router.post('/signup', function(req, res) {
 
                         Model.Company.create( newUser ).then( function ( company ) {
 
-                            Model.User.create( newUser ).then(function ( user ) {
+                            return Model.User.create( newUser ).then(function ( user ) {
                           
                                 return Model.Role.findOne({
                                     
@@ -280,7 +283,10 @@ router.post('/signup', function(req, res) {
                                 res.render('signup', {errorMessage: { signout:'You can not sign up', layout: false }});
                             });
 
-                        })
+                        }).catch(function(err) {
+                            // print the error details
+                            console.log('Company Create Error:', err);
+                        });
 
                     }
             
@@ -498,24 +504,55 @@ router.get('/profile', function(req, res, next) {
       
   if (req.user) { 
 
-      req.user.getCompany().then( function( company ){
+    // look for an existing user
+         Model.User.findOne({
+            
+            where: {
+                [Op.or]: [{'email': updated_email}]
 
-        company.updateAttributes(companyToUpdate).then( function( updatedResult ){
-
-             req.user.updateAttributes(toUpdate).then(function (updatedResult) {   
-
-                req.session.sessionFlash = {
-                        type: 'info',
-                        message: 'Profile has been updated.'
+                //, {'user_id': updated_user_id}
+            }
+        
+            }).then(function (user) {
+                
+                if ( user && ( req.user.email !== updated_email ) ) {
+            
+                    var errorMessage =  { 
+                        email:'Sorry, ' + updated_email + ' is already in use.'
                     }
+                    
 
-                res.redirect('/profile');
-              })
+                    res.render( 'fingertips', { 
+                        layout: 'profile.handlebars',
+                        errorMessage: errorMessage,
+                        user: req.user
+                    })
+            
+                }
+            
+                else {
+
+
+                  req.user.getCompany().then( function( company ){
+
+                    company.updateAttributes(companyToUpdate).then( function( updatedResult ){
+
+                         req.user.updateAttributes(toUpdate).then(function (updatedResult) {   
+
+                            req.session.sessionFlash = {
+                                    type: 'info',
+                                    message: 'Profile has been updated.'
+                                }
+
+                            res.redirect('/profile');
+                          })
+
+                    })
+                   })
+
+                }
 
         })
-
-    })
-
     } 
 
   else {
@@ -590,37 +627,74 @@ router.post('/team/add',  function (req, res) {
         return res.redirect('/signin')
     }
 
-    else {          
+    else {    
 
-        Model.User.create( newTeamMember ).then(function ( member ) {
-                          
-            return Model.Role.findOne({
+
+        // look for an existing user
+         Model.User.findOne({
+            
+            where: {
+                'email': newTeamMember.email
+            }
+        
+            }).then(function (user) {
                 
-                where : { 'role_name' : 'team_member' }
+                if (user) {
+            
+                    var errorMessage =  { 
+                       email:'Sorry, ' + newTeamMember.email + ' is already in use.'
+                    }
+                    
 
-            }).then( function( role ) {
-
-                if ( !role ) {
-                    console.log('no role!!')
+                    res.render('fingertips', {
+                        version: 'fingertips',
+                        layout: 'add-team-member.handlebars',
+                        errorMessage : errorMessage,
+                        newTeamMember : newTeamMember,
+                        user: req.user
+                    });
+            
                 }
+            
+                else {
 
-                return member.setRole( role ).then( function() {
+                Model.User.create( newTeamMember ).then(function ( member ) {
+                          
+                    return Model.Role.findOne({
+                        
+                        where : { 'role_name' : 'team_member' }
 
-                    return member.setCompany( req.user.company ).then( function() {
+                    }).then( function( role ) {
 
-                       req.session.sessionFlash = {
-                            type: 'info',
-                            message: 'Team Member' + ' ' + member.username + ' ' + 'has been added.'
+                        if ( !role ) {
+                            console.log('no role!!')
                         }
 
-                       res.redirect('/team');
+                        return member.setRole( role ).then( function() {
+
+                            return member.setCompany( req.user.company ).then( function() {
+
+                               req.session.sessionFlash = {
+                                    type: 'info',
+                                    message: 'Team Member' + ' ' + member.username + ' ' + 'has been added.'
+                                }
+
+                               res.redirect('/team');
+
+                            })
+                        })
 
                     })
+                
                 })
 
-            })
-        
+            }
+
+
         })
+
+
+        
 
     }
 
@@ -667,22 +741,58 @@ router.post('/team/edit/',  function (req, res) {
 
     else {          
 
-        var whereClause = { 'id' : memberInfo.id }
 
-        Model.User.findOne( { where: whereClause } ).then(function ( member ) {
 
-            member.updateAttributes(memberInfo).then( function( updatedResult ){
-           
-                req.session.sessionFlash = {
-                        type: 'info',
-                       message: 'Team Member' + ' ' + member.username + ' ' + 'has been updated.'
+        // look for an existing user
+         Model.User.findOne({
+            
+            where: {
+                'email': memberInfo.email
+            }
+        
+            }).then(function (user) {
+                
+                if (user && ( user.email !== memberInfo.current_email) ) {
+            
+                    var errorMessage =  { 
+                       email:'Sorry, ' + memberInfo.email + ' is already in use.'
                     }
+                    
+                    memberInfo.email = memberInfo.current_email
 
-                res.redirect('/team/edit/' + updatedResult.id);
+                    res.render('fingertips', {
+                        version: 'fingertips',
+                        layout: 'edit-team-member.handlebars',
+                        errorMessage : errorMessage,
+                        teamMember : memberInfo,
+                        user: req.user
+                    });
+            
+                }
+            
+                else {
 
-              })
-         
-        })
+
+                    var whereClause = { 'id' : memberInfo.id }
+
+                    Model.User.findOne( { where: whereClause } ).then(function ( member ) {
+
+                        member.updateAttributes(memberInfo).then( function( updatedResult ){
+                       
+                            req.session.sessionFlash = {
+                                    type: 'info',
+                                   message: 'Team Member' + ' ' + member.username + ' ' + 'has been updated.'
+                                }
+
+                            res.redirect('/team/edit/' + updatedResult.id);
+
+                          })
+                     
+                    })
+
+                }
+
+            })
 
     }
 

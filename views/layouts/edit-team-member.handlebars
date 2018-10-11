@@ -41,6 +41,7 @@
 
 
                     <input type="text" value="{{teamMember.id}}" name="id" hidden required>
+                    <input type="text" value="{{teamMember.email}}" name="current_email" hidden required>
 
                         </div>
 
@@ -49,6 +50,7 @@
                             <button name="save" type="submit">Save</button>
                             <br /><br />
                              <p><a href="/team/delete/{{teamMember.id}}">Delete {{teamMember.username}}</a></p>
+                             <p><a href="/team/">Cancel</a></p>
                         </div>	
 
 

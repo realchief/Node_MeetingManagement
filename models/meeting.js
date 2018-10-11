@@ -27,6 +27,9 @@ module.exports = (sequelize, DataTypes) => {
         is_sent: {
             type: DataTypes.BOOLEAN
         },
+        is_recurring: {
+            type: DataTypes.BOOLEAN
+        },        
         meeting_id: {
             type: DataTypes.STRING
         },

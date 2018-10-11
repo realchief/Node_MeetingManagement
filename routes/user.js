@@ -542,12 +542,12 @@ router.get('/team',  function (req, res) {
 
         req.user.getCompany().then( function( company ) {
 
-            company.getUsers().then( function( team ) {
+            company.getUsers().then( function( members ) {
                 
                 res.render('fingertips', {
                     version: 'fingertips',
                     layout: 'team.handlebars',
-                    team : team,
+                    members : members,
                     user:req.user
                 });
 

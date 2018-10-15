@@ -1,0 +1,28 @@
+<div class="row">
+
+	{{ toJSON moreInfo }}
+
+</div>
+
+<div class="google-selected-accounts">
+	
+	{{#if linkedAccounts.google_analytics }}		
+
+	<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>	
+	<h2 class="label fb-account">Connected as: {{linkedAccounts.google_analytics.email}}</h2>		
+	<h2 class="select-view-google-text label ga-account">
+		To Account: {{linkedAccounts.google_analytics.account_name}} : {{linkedAccounts.google_analytics.property_name}} - {{linkedAccounts.google_analytics.view_name}}
+	</h2>
+	{{toJSON linkedAccounts.google_analytics}}
+	{{/if}}
+
+	{{#if linkedAccounts.facebook }}			
+	<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>	
+	<h2 class="label fb-account">Connected as: {{linkedAccounts.facebook.email}}</h2>
+	<h2 class="select-view-facebook-text label fb-account">
+		To Account: {{linkedAccounts.facebook.account_name}}
+	</h2>
+	{{toJSON linkedAccounts.facebook}}
+	{{/if}}
+
+</div>

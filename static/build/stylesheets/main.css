@@ -1,3 +1,6 @@
+/* ==========================================================================
+Variables and things
+========================================================================== */
 /*! normalize.css v7.0.0 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -6,6 +9,9 @@
  * 2. Prevent adjustments of font size after orientation changes in
  *    IE on Windows Phone and in iOS.
  */
+* {
+  box-sizing: border-box; }
+
 html {
   line-height: 1.15;
   /* 1 */
@@ -389,6 +395,51 @@ template {
 [hidden] {
   display: none; }
 
+/* ==========================================================================
+Layout
+========================================================================== */
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background: aliceblue; }
+
+.navigation {
+  background: #32343F;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 50px 20px 50px 20px;
+  min-height: 100%;
+  width: 200px;
+  z-index: 50; }
+
+.main {
+  margin-left: 200px;
+  padding: 20px; }
+
+/*
+
+
+header {
+	position: fixed;
+	top: 0;
+	width: 1200px;
+	padding: 10px;
+	background: #e5e5e5;
+	z-index: 1;
+}
+
+header .flex-wrapper {
+	display: flex;
+}
+
+header .cell.logo {
+	margin-right: auto;
+}
+
+*/
 /* Forms
    ========================================================================== */
 * {
@@ -522,6 +573,46 @@ input.error {
     .internal-form .bottom-container a {
       background-color: #4CAF50;
       display: block; }
+
+.navigation ul.list {
+  margin: 0 0 10px 0;
+  padding: 0; }
+
+.navigation ul.list li {
+  list-style-type: none;
+  margin: 0;
+  padding: 0; }
+
+.navigation ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+.navigation ul li {
+  margin: 0;
+  padding: 0;
+  display: inline-block; }
+
+.navigation ul li a {
+  color: #444;
+  text-decoration: none; }
+
+.navigation ul li a.button {
+  background: #60b99a;
+  padding: 5px 12px;
+  font-size: 13px;
+  text-decoration: none;
+  display: block;
+  color: #fff; }
+
+.navigation ul li a.button:hover {
+  background: #4ea788; }
+
+.navigation ul li a.current {
+  background: #27785c; }
+
+.navigation p {
+  margin: 0; }
 
 /* ==========================================================================
 Schedule

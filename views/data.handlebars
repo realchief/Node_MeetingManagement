@@ -1,0 +1,289 @@
+						
+{{#if googleAccount }}		
+
+	<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>	
+	<h2 class="label fb-account">Connected as: {{googleAccount.email}}</h2>		
+	<h2 class="select-view-google-text label ga-account">
+		To Account: {{googleAccount.account_name}} : {{googleAccount.property_name}} - {{googleAccount.view_name}}
+	</h2>
+
+	<div class="row">
+
+	<h2>Metrics Table</h2>
+
+	{{{ metricsTable }}}
+
+	</div>
+
+	{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}
+
+	{{#each metrics.responses }}
+
+		<h4>{{@key}}</h4>
+
+		<p>{{toJSON this.data.reports}}</p>
+
+	{{/each}}
+
+
+	<h2>Data Source</h2>
+
+	{{ toJSON dataSource }}
+
+{{/if}}
+
+
+{{#if facebookAccount }}			
+
+	<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>	
+	<h2 class="label fb-account">Connected as: {{facebookAccount.email}}</h2>
+	<h2 class="select-view-facebook-text label fb-account">
+		To Account: {{facebookAccount.account_name}}
+	</h2>
+
+	<div class="row">
+
+	<h2>Metrics Table</h2>
+
+	{{{ metricsTable }}}
+
+	</div>
+
+	<div class="row">
+
+	<h2>Posts Table</h2>
+
+	{{{ postsTable }}}
+
+	</div>
+
+	<h5>{{ dateRange.currentFromDate }} - {{ dateRange.currentToDate }} compared to  {{ dateRange.comparedFromDate }} - {{ dateRange.comparedToDate }}</h5>
+
+	<h3>{{metrics.current.timeWindow}}</h3>
+
+	{{#each metrics.current.responses}}
+
+		<h4>{{@key}}</h4>
+
+		<p>{{toJSON this}}</p>
+
+	{{/each}}
+
+
+	<h3>{{metrics.compared.timeWindow}}</h3>
+
+	{{#each metrics.compared.responses}}
+
+		<h4>{{@key}}</h4>
+
+		<p>{{toJSON this}}</p>
+
+	{{/each}}
+
+	<h2>Data Source</h2>
+
+	{{ toJSON dataSource }}
+
+{{/if}}
+
+{{!--
+{{#if platform}}
+
+<h2>Platform</h2>
+	
+	{{ toJSON platform }}
+
+
+{{/if}}	
+--}}
+
+{{#if insights}}
+
+<div class="row insights-listing">
+
+{{toJSON credentials}}
+
+<h2>Insights</h2>
+
+	<h3>
+	{{#each insights.data.bucket_insights.buckets}}
+		{{this.scorePhrase}} 
+	{{/each}}
+	</h3>
+
+	<ul class="lines">
+	{{#each insights.data.all_phrases.talkingPointsAndActionItem}}
+
+	<li>
+	{{{this.insight_phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Asset Phrases</h4>
+
+	<ul class="lines">
+	{{#each insights.data.asset_phrases}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Platform Phrases</h4>
+
+	<ul class="lines">
+	{{#each insights.data.platform_phrases}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Platform Talking Points</h4>
+
+	<ul class="lines">
+	{{#each insights.data.all_platforms.talkingPoint}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	
+	<h4>Platform Action Items</h4>
+
+	<ul class="lines">
+	{{#each insights.data.all_platforms.actionItem}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Platform Metric Action Items</h4>
+
+	<ul class="lines">
+	{{#each insights.data.all_platforms.metricActionItem}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Platform Metric Talking Points</h4>
+
+	<ul class="lines">
+	{{#each insights.data.all_platforms.metricTalkingPoint}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Asset Talking Points</h4>
+
+	<ul class="lines">
+	{{#each insights.data.all_assets.talkingPoint}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Asset Metric Talking Points</h4>
+
+	<ul class="lines">
+	{{#each insights.data.all_assets.metricTalkingPoint}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	
+	<h4>Asset Action Items</h4>
+
+	<ul class="lines">
+	{{#each insights.data.all_assets.actionItem}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	<h4>Action Items - Email</h4>
+
+	<ul class="lines">
+	{{#each insights.data.action_items}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+
+	<h4>Talking Points - Email</h4>
+	<ul class="lines">
+	{{#each insights.data.talking_points}}
+
+	<li>
+	{{{this.phrase}}}
+	</li>
+
+	{{/each}}
+	</ul>
+
+	<hr />
+
+	
+{{/if}}
+
+</div>
+					
+					
+
+			

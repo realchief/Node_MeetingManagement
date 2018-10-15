@@ -31,7 +31,7 @@ router.get('/',  function (req, res) {
 
         res.render('fingertips', {
             version: 'fingertips',
-            layout: 'fingertips.handlebars',
+            layout: 'main',
             user : req.user,
         });
 
@@ -69,9 +69,8 @@ router.get('/data-sources',  function (req, res) {
             //console.log('\n', emoji.get("smile"), '***** Results: ', results);
             //console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company.company_name);
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'data-sources.handlebars',
+            res.render('data-sources', {
+                layout: 'main',
                 user : req.user,
                 summaries : summaries.accounts,
                 numConnections: summaries.numberOfConnectedAccounts,
@@ -81,15 +80,6 @@ router.get('/data-sources',  function (req, res) {
         });
     }
     else res.redirect('/signin');
-});
-
-router.get('/frontend', function(req, res, next) {
-            
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'frontend.handlebars'
-            });
-        
 });
 
 module.exports = router

@@ -46,9 +46,8 @@ router.get('/data/google/:company',  function (req, res) {
 
             } else {
 
-                res.render('fingertips', {
-                    version: 'fingertips',
-                    layout: 'data.handlebars',
+                res.render('data', {
+                    layout: 'main',
                     accountResults: credentials,
                     user: credentials.user,
                     googleAccount: credentials.accounts.google_analytics,
@@ -97,9 +96,8 @@ router.get('/data/facebook/:company',  function (req, res) {
         var facebookMetrics = require('../controllers/facebook-metrics')
         facebookMetrics.process(credentials.accounts.facebook, function( err, results ) {
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'data.handlebars',
+            res.render('data', {
+                layout: 'main',
                 accountResults: credentials,
                 user: credentials.user,
                 googleAccount: null,
@@ -146,9 +144,8 @@ router.get('/data/combined/:company',  function (req, res) {
 
             console.log( "\n", emoji.get("moneybag"), 'Display insights', results.results.dataSourcesList.join(','), 'for user:', results.credentials.user.username, 'company id:', results.credentials.user.user_id )
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'data.handlebars',
+            res.render('data', {
+                layout: 'main',
                 accountResults: results.credentials,
                 user: results.credentials.user,
                 platform : results.results.platforms,

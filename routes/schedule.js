@@ -15,9 +15,9 @@ router.get('/schedule', function (req, res, next) {
         req.user.getMeetings().then(function (meetings) {
             console.log('==========meeting==========');
             
-           res.render('fingertips', {
+           res.render('schedule', {
                meetings: meetings,
-              layout: 'schedule.handlebars',
+              layout: 'main',
               user: req.user
             })
 
@@ -46,9 +46,9 @@ router.get('/schedule-company', function (req, res, next) {
             var whereClause = { 'UserId' : memberIds }
             Model.Meeting.findAll( { where : whereClause }).then( function( meetings ) {
             
-                res.render('fingertips', {
+                res.render('schedule', {
                     meetings: meetings,
-                    layout: 'schedule.handlebars',
+                    layout: 'main',
                     user: req.user
                 })
 
@@ -78,9 +78,9 @@ router.get('/allschedule', function (req, res, next) {
         
         }).then(function (meetings) {
             
-            res.render('fingertips', {
+            res.render('schedule', {
                     meetings: meetings,
-                    layout: 'schedule.handlebars'
+                    layout: 'fingertips'
                 })
         
         });

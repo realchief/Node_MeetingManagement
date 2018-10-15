@@ -1,0 +1,23 @@
+<a href="/"><img src="/assets/images/logo.png" class="logo" /></a>
+
+
+{{#if user}}
+<ul class="user-info">
+	<li>User: <a href="/settings">{{user.username}}</a></li>
+	<li>Login: {{user.email}}</li>
+	<li>Company:  <a href="/team/">{{user.company.company_name}}</a></li>
+	<li>Id: <a href="/profile/">{{user.user_id}}</a></li>
+</ul>
+
+<div class="cell">
+
+	<ul>
+		<li class=""><a class="jump button" href="/signout">Sign out</a></li>
+		<li class=""><a class="jump button" href="/data/combined/{{user.user_id}}">Insights</a></li>
+		<li class=""><a class="jump button" href="/send/{{user.user_id}}">Sample Email</a></li>
+		<li class=""><a class="jump button" href="/data/google/{{user.user_id}}">Google Data</a></li>
+		<li class=""><a class="jump button" href="/data/facebook/{{user.user_id}}">Facebook Data</a></li>
+	</ul>
+
+</div>
+{{/if}}

@@ -1,0 +1,44 @@
+{{#if sessionFlash.message}}
+    {{#contains sessionFlash.type "info"}}
+    <div class="flash-message">
+        <p>{{{sessionFlash.message}}}</p>
+    </div>
+    {{/contains}}
+{{/if}}
+
+<div class="inline-form">
+<div class="row clearfix">
+
+      <form method="POST" action="/team/add/" class="form">
+          <div class="col first" style="text-align:center;">
+             
+              <h2 class="with-line">Add Team Member</h2>
+             
+               <label for="username"><b>Name</b></label>
+               <input type="text" value="{{newTeamMember.username}}" name="username" required>
+
+               <br />
+               <br />
+               
+                <label for="email"><b>Email Address</b></label>
+      <input type="email" value="{{newTeamMember.email}}" name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
+
+      {{#if errorMessage.email}}
+          <p class="alert">{{ errorMessage.email }}</p>
+      {{/if}}
+
+
+          </div>
+
+          
+          <div class="col last actions">
+              <button name="save" type="submit">Add Team Member</button>
+               <p><a href="/team/">Cancel</a></p>
+          </div>	
+
+
+
+      </form>	
+</div>
+</div>
+			

@@ -1,0 +1,54 @@
+/* ==========================================================================
+Layout
+========================================================================== */ 
+
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background: aliceblue;
+
+}
+
+.navigation {
+	background: #32343F;
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 50px 20px 50px 20px; 
+	min-height: 100%;
+	width: 200px;
+	z-index: 50;
+}
+
+
+.main {
+	margin-left: 200px;
+	padding: 20px;
+	
+}
+
+
+
+/*
+
+
+header {
+	position: fixed;
+	top: 0;
+	width: 1200px;
+	padding: 10px;
+	background: #e5e5e5;
+	z-index: 1;
+}
+
+header .flex-wrapper {
+	display: flex;
+}
+
+header .cell.logo {
+	margin-right: auto;
+}
+
+*/

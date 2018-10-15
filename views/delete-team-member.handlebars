@@ -1,0 +1,27 @@
+
+{{#if sessionFlash.message}}
+    {{#contains sessionFlash.type "info"}}
+    <div class="flash-message">
+        <p>{{{sessionFlash.message}}}</p>
+    </div>
+    {{/contains}}
+{{/if}}
+
+
+<div class="row clearfix">
+
+    <form method="POST" action="/team/delete/" class="form">
+        <div class="col first" style="text-align:center;">
+           
+            <h2 class="with-line">Delete Team Member</h2>
+           
+            <p>You are about to delete {{teamMember.username}} from your company, {{user.company.company_name}}</p>
+
+            <button name="save" type="submit">Yes, Delete this Team Member</button>
+
+        <input type="text" value="{{teamMember.id}}" name="id" hidden required>
+
+        </div>
+
+    </form>	
+</div>

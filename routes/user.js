@@ -136,9 +136,9 @@ router.get('/signin', function(req, res, next) {
     
     } else {
     
-        res.render('fingertips', { 
+        res.render('signin', { 
         	title: 'Sign In', 
-        	layout: 'signin.handlebars', 
+        	layout: 'main', 
         	errorMessage: req.flash('errMessage') 
         });
    
@@ -168,9 +168,9 @@ router.get('/signup', function(req, res, next) {
 
     } else {
         
-        res.render('fingertips', { 
+        res.render('signup', { 
             title: 'Sign Up', 
-            layout: 'signup.handlebars', 
+            layout: 'main', 
         });
         
     }
@@ -190,11 +190,11 @@ router.post('/signup', function(req, res) {
     
     if (new_password != new_confirm_password) {
      
-        res.render('fingertips', {
+        res.render('signup', {
             errorMessage: { 
                 password_match: 'Your passwords do not match. Please try again!'
             }, 
-            layout: 'signup.handlebars'
+            layout: 'main'
         } );
 
     }
@@ -211,11 +211,11 @@ router.post('/signup', function(req, res) {
             
             if (user) {
         
-                res.render('fingertips', {
+                res.render('signup', {
                     errorMessage: { 
                         email:'Sorry, this email address already exists.'
                     }, 
-                    layout: 'signup.handlebars'
+                    layout: 'main.handlebars'
                 } );
         
             }
@@ -233,11 +233,11 @@ router.post('/signup', function(req, res) {
 
                     if ( company ) {
         
-                        res.render('fingertips', {
+                        res.render('signup', {
                             errorMessage: { 
                                 company_name:'Sorry, this company name has already been used.'
                             }, 
-                            layout: 'signup.handlebars'
+                            layout: 'main.handlebars'
                         } );
 
                 
@@ -297,11 +297,11 @@ router.post('/signup', function(req, res) {
 
                             }).catch(function (err) {
                           
-                                res.render('fingertips', {
+                                res.render('signup', {
                                     errorMessage: { 
                                         signout:' You can not sign up'
                                     }, 
-                                    layout: 'signup.handlebars'
+                                    layout: 'main.handlebars'
                                 } );
 
                             });
@@ -372,9 +372,9 @@ router.get('/getuser/:user_id', function (req, res) {
     moreInfo.momentUTCOffsetFromMountain = moment().tz("America/Denver").utcOffset()
     moreInfo.momentUTCOffsetFromPacific = moment().tz("America/Los_Angeles").utcOffset()
 
-    res.render('fingertips', {
+    res.render('accounts', {
         version: 'fingertips',
-        layout: 'accounts.handlebars',
+        layout: 'main',
         user: credentials.user,
         linkedAccounts: credentials.accounts,
         moreInfo: moreInfo
@@ -398,9 +398,8 @@ router.get('/settings',  function (req, res) {
             if (err) {
                 req.flash('setting_error', err.error);
             } 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'settings.handlebars',
+            res.render('settings', {
+                layout: 'main',
                 time: setting.insights_time,
                 attendees: setting.insights_to,
                 user:req.user
@@ -474,8 +473,8 @@ router.get('/profile', function(req, res, next) {
 
     } else {        
 
-        res.render('fingertips', {
-            layout: 'profile.handlebars',
+        res.render('profile', {
+            layout: 'main',
             user : req.user                     
         });
 
@@ -500,8 +499,8 @@ router.get('/profile', function(req, res, next) {
 
     if (updated_password != updated_confirm_password) {
         
-        res.render( 'fingertips', { 
-            layout: 'profile.handlebars',
+        res.render( 'profile', { 
+            layout: 'main',
             errorMessage: { 
                 password_match:'Your passwords do not match. Please try again!'
             },
@@ -545,8 +544,8 @@ router.get('/profile', function(req, res, next) {
                     }
                     
 
-                    res.render( 'fingertips', { 
-                        layout: 'profile.handlebars',
+                    res.render( 'profile', { 
+                        layout: 'main',
                         errorMessage: errorMessage,
                         user: req.user
                     })
@@ -601,11 +600,10 @@ router.get('/team',  function (req, res) {
 
             company.getUsers().then( function( members ) {
                 
-                res.render('fingertips', {
-                    version: 'fingertips',
-                    layout: 'team.handlebars',
+                res.render('team', {
+                    layout: 'main',
                     members : members,
-                    user:req.user
+                    user: req.user
                 });
 
             })
@@ -626,9 +624,9 @@ router.get('/team/add',  function (req, res) {
     }
     else {          
 
-        res.render('fingertips', {
+        res.render('add-team-member', {
             version: 'fingertips',
-            layout: 'add-team-member.handlebars',
+            layout: 'main',
             user: req.user
         });
 
@@ -666,9 +664,8 @@ router.post('/team/add',  function (req, res) {
                     }
                     
 
-                    res.render('fingertips', {
-                        version: 'fingertips',
-                        layout: 'add-team-member.handlebars',
+                    res.render('add-team-member', {
+                            layout: 'main',
                         errorMessage : errorMessage,
                         newTeamMember : newTeamMember,
                         user: req.user
@@ -735,9 +732,8 @@ router.get('/team/edit/:id',  function (req, res) {
 
         Model.User.findOne( { where: whereClause } ).then(function ( member ) {
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'edit-team-member.handlebars',
+            res.render('edit-team-member', {
+                layout: 'main',
                 teamMember : member,
                 user: req.user
             });
@@ -780,9 +776,8 @@ router.post('/team/edit/',  function (req, res) {
                     
                     memberInfo.email = memberInfo.current_email
 
-                    res.render('fingertips', {
-                        version: 'fingertips',
-                        layout: 'edit-team-member.handlebars',
+                    res.render('edit-team-member', {
+                            layout: 'main',
                         errorMessage : errorMessage,
                         teamMember : memberInfo,
                         user: req.user
@@ -832,9 +827,8 @@ router.get('/team/delete/:id',  function (req, res) {
 
         Model.User.findOne( { where: whereClause } ).then(function ( member ) {
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'delete-team-member.handlebars',
+            res.render('delete-team-member', {
+                layout: 'main',
                 teamMember : member,
                 user: req.user
             });

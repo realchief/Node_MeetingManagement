@@ -1,14 +1,4 @@
-{{> head }}
-
-<body class="inline-form">
-
-	<div class="app-container">
-
-		<div class="section header clearfix">
-			{{> header }}
-		</div>
-		<div class="below-header"><div class="below-header-inside">
-			<div class="container">
+<div class="inline-form">
 
                 {{#if sessionFlash.message}}
                     {{#contains sessionFlash.type "info"}}
@@ -99,19 +89,4 @@
 
 
 				</div>
-			</div>
-			<div class="section gutter footer">
-				{{> footer }}
-			</div>
-		</div>
-	</div>	
-</div>
-
-<div class="test"></div>
-	
-	{{> scripts }}
-
-
-</body>
-
-</html>
+			

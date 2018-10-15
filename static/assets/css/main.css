@@ -293,73 +293,7 @@ Interaction Rules
 Header
 ========================================================================== */
 
-ul.list {
-	margin: 0 0 10px 0;
-	padding: 0;
-}
 
-ul.list li {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-
-header {
-	position: fixed;
-	top: 0;
-	width: 1200px;
-	padding: 10px;
-	background: #e5e5e5;
-	z-index: 1;
-}
-
-header .flex-wrapper {
-	display: flex;
-}
-
-header .cell.logo {
-	margin-right: auto;
-}
-
-header ul {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-header ul li {
-	margin: 0;
-	padding: 0;
-	display: inline-block;
-}
-
-header ul li a {
-	color: #444;
-	text-decoration: none;
-}
-
-header ul li a.button {
-	background: #60b99a;
-	padding: 5px 12px;
-	font-size: 13px;
-	text-decoration: none;
-	display: block;
-	color: #fff;
-}
-
-header ul li a.button:hover {
-	background: #4ea788;
-}
-
-header ul li a.current {
-	background: #27785c;
-}
-
-
-
-header p {
-	margin: 0;
-}
 
 .hide {
 	display: none;
@@ -1124,24 +1058,6 @@ span.metric-asset {
 	padding-left: 10px;
 	display: block;
 }
-
-ul.user-info {
-	font-size: 14px;
-	padding: 8px 10px 5px 10px;
-	margin-right: 20px;
-	border: 1px solid #b4b4b4;
-	background: #d0d0d0;
-	margin: 0 20px 0 0;
-}
-
-ul.user-info li {
-	margin: 0 10px 0 0;
-}
-
-ul.user-info li:last-child {
-	margin-right: 0;
-}
-
 
 .flash-message p {
 	margin: 0;

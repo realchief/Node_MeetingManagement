@@ -1,14 +1,12 @@
-{{> head }}
+<div class="internal-form">
 
-    <body class="internal-form">
-
-         {{#if sessionFlash.message}}
-                    {{#contains sessionFlash.type "info"}}
-                    <div class="flash-message">
-                        <p>{{{sessionFlash.message}}}</p>
-                    </div>
-                    {{/contains}}
-                {{/if}}
+{{#if sessionFlash.message}}
+        {{#contains sessionFlash.type "info"}}
+        <div class="flash-message">
+            <p>{{{sessionFlash.message}}}</p>
+        </div>
+        {{/contains}}
+    {{/if}}
 
 
 
@@ -33,14 +31,11 @@
            
             </form>
         </div>
+
         <div class="bottom-container" style="margin-top: 20px">
             <div class="row">
                 <a href="/signup" style="color:white" class="btn">Sign up</a>
             </div>
         </div>
-    
 
-{{> scripts }}
-
-    </body>
-</html>
+</div>

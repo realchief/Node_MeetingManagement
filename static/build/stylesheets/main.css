@@ -440,6 +440,17 @@ header .cell.logo {
 }
 
 */
+ul.list {
+  list-style-type: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0; }
+
+ul.list li {
+  list-style-type: none;
+  margin: 0;
+  padding: 5px 0; }
+
 /* Forms
    ========================================================================== */
 * {
@@ -453,7 +464,6 @@ input,
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 4px;
   margin: 5px 0;
   opacity: 0.85;
   display: inline-block;
@@ -464,17 +474,17 @@ input,
 
 /* style the submit button */
 input[type=submit] {
-  background-color: #4CAF50;
+  background-color: #DB6668;
   color: white;
   cursor: pointer; }
   input[type=submit]:hover {
-    background-color: #45a049; }
+    background-color: #B63436; }
   input[type=submit]:focus {
-    background-color: #4CAF50; }
+    background-color: #DB6668; }
 
 /* Set a style for all buttons */
 button, .btn {
-  background-color: #4CAF50;
+  background-color: #DB6668;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -510,21 +520,25 @@ input.error {
   padding: 10px 10px;
   border-radius: 2px; }
 
+.inline-form input[type='radio'] {
+  width: auto; }
+
 .internal-form {
   font-family: Arial, Helvetica, sans-serif;
   width: 50%;
   margin: auto;
-  margin-top: 100px;
+  margin-top: 20px;
   /* Float cancel and signup buttons and add an equal width */ }
   .internal-form .container {
     position: relative;
     border-radius: 5px;
-    background-color: #f2f2f2;
+    background-color: #ffffff;
     padding: 20px 20px 20px 20px; }
   .internal-form input[type="text"],
   .internal-form input[type="password"],
   .internal-form input[type="email"] {
     background: #fff;
+    border: 1px solid #828594;
     margin-bottom: 10px; }
   .internal-form button {
     width: 100%; }
@@ -549,9 +563,9 @@ input.error {
       background-color: #ddd;
       outline: none; }
   .internal-form input[type=submit]:hover {
-    background-color: #45a049; }
+    background-color: #B63436; }
   .internal-form input[type=submit]:focus {
-    background-color: #4CAF50; }
+    background-color: #DB6668; }
   .internal-form .cancelbtn:hover {
     opacity: 1; }
   .internal-form .cancelbtn {
@@ -571,48 +585,59 @@ input.error {
   .internal-form .bottom-container {
     text-align: center; }
     .internal-form .bottom-container a {
-      background-color: #4CAF50;
+      background-color: #DB6668;
       display: block; }
 
-.navigation ul.list {
-  margin: 0 0 10px 0;
-  padding: 0; }
-
-.navigation ul.list li {
-  list-style-type: none;
-  margin: 0;
-  padding: 0; }
-
-.navigation ul {
-  margin: 0;
-  padding: 0;
-  list-style: none; }
-
-.navigation ul li {
-  margin: 0;
-  padding: 0;
-  display: inline-block; }
-
-.navigation ul li a {
-  color: #444;
-  text-decoration: none; }
-
-.navigation ul li a.button {
-  background: #60b99a;
-  padding: 5px 12px;
-  font-size: 13px;
-  text-decoration: none;
-  display: block;
-  color: #fff; }
-
-.navigation ul li a.button:hover {
-  background: #4ea788; }
-
-.navigation ul li a.current {
-  background: #27785c; }
-
-.navigation p {
-  margin: 0; }
+.navigation {
+  color: #B7CBE5; }
+  .navigation a {
+    color: #B7CBE5;
+    text-decoration: none; }
+  .navigation .cell {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 5px; }
+  .navigation ul.items li {
+    padding: 5px 0;
+    display: block; }
+  .navigation ul.user-info li {
+    padding: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%; }
+  .navigation span.label {
+    margin-left: 0;
+    text-align: left;
+    display: block; }
+  .navigation ul.list {
+    margin: 0 0 10px 0;
+    padding: 0; }
+  .navigation ul.list li {
+    list-style-type: none;
+    margin: 0;
+    padding: 0; }
+  .navigation ul {
+    margin: 0;
+    padding: 0;
+    list-style: none; }
+  .navigation ul li {
+    margin: 0;
+    padding: 0;
+    display: inline-block; }
+  .navigation .button {
+    background: #60b99a;
+    padding: 5px 12px;
+    font-size: 13px;
+    text-decoration: none;
+    display: block;
+    color: #fff; }
+  .navigation .button:hover {
+    background: #4ea788; }
+  .navigation a.current {
+    background: #27785c; }
+  .navigation p {
+    margin: 0; }
 
 /* ==========================================================================
 Schedule
@@ -656,5 +681,5 @@ ul.schedule li {
   background-color: #f5f5f5; }
 
 .tb-schedule th {
-  background-color: #4CAF50;
+  background-color: #DB6668;
   color: white; }

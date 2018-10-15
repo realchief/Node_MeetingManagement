@@ -1,56 +1,84 @@
 
 .navigation {
 
-ul.list {
-	margin: 0 0 10px 0;
-	padding: 0;
-}
+	color: #B7CBE5;
 
-ul.list li {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
+	a {
+		color: #B7CBE5;
+		text-decoration: none;
+	}
 
+	.cell {
+		margin-top: 10px;
+		margin-bottom: 20px;
+		padding: 5px;
+	}
 
- ul {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
+	ul.items li {
+		padding: 5px 0;
+		display: block;
+	}
 
- ul li {
-	margin: 0;
-	padding: 0;
-	display: inline-block;
-}
+	ul.user-info li {
+		padding: 5px 0;
+		white-space: nowrap;
+	  	overflow: hidden;
+	  	text-overflow: ellipsis;
+	  	width: 100%;
 
- ul li a {
-	color: #444;
-	text-decoration: none;
-}
+	}
 
- ul li a.button {
-	background: #60b99a;
-	padding: 5px 12px;
-	font-size: 13px;
-	text-decoration: none;
-	display: block;
-	color: #fff;
-}
+	 span.label {
+		margin-left: 0;
+		text-align: left;
+		display: block;
+	}
 
- ul li a.button:hover {
-	background: #4ea788;
-}
+	ul.list {
+		margin: 0 0 10px 0;
+		padding: 0;
+	}
 
- ul li a.current {
-	background: #27785c;
-}
+	ul.list li {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+	}
 
 
+	 ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
 
- p {
-	margin: 0;
-}
+	 ul li {
+		margin: 0;
+		padding: 0;
+		display: inline-block;
+	}
+
+	
+	 .button {
+		background: #60b99a;
+		padding: 5px 12px;
+		font-size: 13px;
+		text-decoration: none;
+		display: block;
+		color: #fff;
+	}
+
+	 .button:hover {
+		background: #4ea788;
+	}
+
+	 a.current {
+		background: #27785c;
+	}
+
+
+	 p {
+		margin: 0;
+	}
 
 }

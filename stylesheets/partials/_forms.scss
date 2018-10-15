@@ -14,7 +14,6 @@ input,
     width: 100%;
     padding: 12px;
     border: none;
-    border-radius: 4px;
     margin: 5px 0;
     opacity: 0.85;
     display: inline-block;
@@ -28,23 +27,23 @@ input,
 
 input[type=submit] {
 
-    background-color: #4CAF50;
+    background-color: #DB6668;
     color: white;
     cursor: pointer;
 
     &:hover {
-        background-color: #45a049;
+        background-color: #B63436;
     }
 
     &:focus {
-        background-color: #4CAF50;
+        background-color: #DB6668;
     }
 }
 
 
 /* Set a style for all buttons */
 button, .btn {
-    background-color: #4CAF50;
+    background-color: #DB6668;
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -89,6 +88,10 @@ input.error {
         border-radius: 2px;
     }
 
+    input[type='radio'] {
+        width: auto;
+    }
+
 }
 
 .internal-form {
@@ -96,12 +99,12 @@ input.error {
     font-family: Arial, Helvetica, sans-serif;
     width: 50%;
     margin: auto;
-    margin-top: 100px;
+    margin-top: 20px;
 
     .container {
         position: relative;
         border-radius: 5px;
-        background-color: #f2f2f2;
+        background-color: #ffffff;
         padding: 20px 20px 20px 20px;
     }
 
@@ -109,6 +112,7 @@ input.error {
     input[type="password"],
     input[type="email"] {
     	background: #fff;
+        border: 1px solid #828594;
         margin-bottom: 10px;
     }
 
@@ -147,11 +151,11 @@ input.error {
     input[type=submit] {
 
         &:hover {
-            background-color: #45a049;
+            background-color: #B63436;
         }
 
         &:focus {
-            background-color: #4CAF50;
+            background-color: #DB6668;
         }
     }
 
@@ -186,7 +190,7 @@ input.error {
         text-align: center;
     
         a {
-            background-color: #4CAF50;
+            background-color: #DB6668;
             display: block;
         }
     }

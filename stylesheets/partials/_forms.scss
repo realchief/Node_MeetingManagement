@@ -1,0 +1,198 @@
+/* Forms
+   ========================================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+input[type='radio'] {
+	width: auto;
+}
+
+input,
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    margin: 5px 0;
+    opacity: 0.85;
+    display: inline-block;
+    font-size: 17px;
+    line-height: 20px;
+    text-decoration: none;
+    /* remove underline from anchors */
+}
+
+/* style the submit button */
+
+input[type=submit] {
+
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #45a049;
+    }
+
+    &:focus {
+        background-color: #4CAF50;
+    }
+}
+
+
+/* Set a style for all buttons */
+button, .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 50%;
+    opacity: 0.9;
+}
+
+button:hover {
+    opacity:1;
+}
+
+p.alert {
+    font-size: 14px;
+    font-style: italic;
+    color: #e44;
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+
+input.error {
+    margin-bottom: 5px;
+    border: solid 1px #e44;
+}
+
+.actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.inline-form {
+
+    label {
+        display: inline-block;
+    }
+
+    input {
+        width: 300px;
+        border: 1px solid #ccc;
+        padding: 10px 10px;
+        border-radius: 2px;
+    }
+
+}
+
+.internal-form {
+    
+    font-family: Arial, Helvetica, sans-serif;
+    width: 50%;
+    margin: auto;
+    margin-top: 100px;
+
+    .container {
+        position: relative;
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 20px 20px 20px 20px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+    	background: #fff;
+        margin-bottom: 10px;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    label {
+        margin-top: 10px;
+        display: inline-block;
+    }
+
+    .actions {
+        margin-top: 20px;
+    }
+
+    input, 
+    .btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 2px;
+        margin: 5px 0;
+        display: inline-block;
+        font-size: 17px;
+        line-height: 20px;
+        text-decoration: none;
+
+        &:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+    }
+
+    input[type=submit] {
+
+        &:hover {
+            background-color: #45a049;
+        }
+
+        &:focus {
+            background-color: #4CAF50;
+        }
+    }
+
+
+    .cancelbtn:hover {
+        opacity:1;
+    }
+
+    .cancelbtn {
+        padding: 14px 20px;           
+        background-color: #666666;
+        color: white;           
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        opacity: 0.9;             
+    }     
+
+    
+
+    /* Float cancel and signup buttons and add an equal width */
+    .cancelbtn, .signupbtn {
+        float: left;
+        width: 50%;
+        font-size: 14px;  
+        margin: 0;
+        text-align: center;        
+    }
+
+    .bottom-container {
+      
+        text-align: center;
+    
+        a {
+            background-color: #4CAF50;
+            display: block;
+        }
+    }
+
+
+
+
+
+}

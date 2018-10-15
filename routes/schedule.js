@@ -15,15 +15,20 @@ router.get('/schedule', function (req, res, next) {
         req.user.getMeetings().then(function (meetings) {
             console.log('==========meeting==========');
             
-            res.render('schdule_jobs', {
-                meetings: meetings,
-                layout: false
+           res.render('fingertips', {
+               meetings: meetings,
+              layout: 'schedule.handlebars',
+              user: req.user
             })
+
         });
     
     }
     
-    else res.redirect('/signin');
+    else {
+        req.session.redirectTo = "schedule"
+        res.redirect('/signin');
+    }
 });
 
 
@@ -41,9 +46,10 @@ router.get('/schedule-company', function (req, res, next) {
             var whereClause = { 'UserId' : memberIds }
             Model.Meeting.findAll( { where : whereClause }).then( function( meetings ) {
             
-                res.render('schdule_jobs', {
+                res.render('fingertips', {
                     meetings: meetings,
-                    layout: false
+                    layout: 'schedule.handlebars',
+                    user: req.user
                 })
 
             })
@@ -72,10 +78,10 @@ router.get('/allschedule', function (req, res, next) {
         
         }).then(function (meetings) {
             
-            res.render('schdule_jobs', {
-                meetings: meetings,
-                layout: false
-            })
+            res.render('fingertips', {
+                    meetings: meetings,
+                    layout: 'schedule.handlebars'
+                })
         
         });
    /* }

@@ -1,7 +1,18 @@
 {{> head }}
-	
-	<body>		
-		<div class='tb-schedule'>
+
+<body class="home">
+
+	<div class="app-container">
+
+		<div class="section header clearfix">
+			{{> header }}
+		</div>
+
+		<div class="below-header"><div class="below-header-inside">
+
+			<div class="container">		
+
+				<div class='tb-schedule'>
 
 			<style type="text/css">
 				ul.schedule li span {
@@ -49,11 +60,19 @@
 				</ul>
 		</div>
 
-		<div class="section gutter footer">
-			{{> footer }}
-		</div>
+			</div>
+			<div class="section gutter footer">
+				{{> footer }}
+			</div>
 
-		{{> scripts }}
-		
-	</body>
+		</div>
+	</div>	
+
+</div>
+
+	
+	{{> scripts }}
+
+</body>
+
 </html>

@@ -136,9 +136,9 @@ router.get('/signin', function(req, res, next) {
     
     } else {
     
-        res.render('signin', { 
+        res.render('fingertips', { 
         	title: 'Sign In', 
-        	layout: false, 
+        	layout: 'signin.handlebars', 
         	errorMessage: req.flash('errMessage') 
         });
    
@@ -168,9 +168,9 @@ router.get('/signup', function(req, res, next) {
 
     } else {
         
-        res.render('signup', { 
-        	title: 'Sign Up', 
-        	layout: false 
+        res.render('fingertips', { 
+            title: 'Sign Up', 
+            layout: 'signup.handlebars', 
         });
         
     }
@@ -190,7 +190,13 @@ router.post('/signup', function(req, res) {
     
     if (new_password != new_confirm_password) {
      
-        res.render('signup', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
+        res.render('fingertips', {
+            errorMessage: { 
+                password_match: 'Your passwords do not match. Please try again!'
+            }, 
+            layout: 'signup.handlebars'
+        } );
+
     }
 
     else {
@@ -205,7 +211,12 @@ router.post('/signup', function(req, res) {
             
             if (user) {
         
-                res.render('signup', {errorMessage: { email:'Duplicated User, This email was already used. Use other email.'}, layout: false} );
+                res.render('fingertips', {
+                    errorMessage: { 
+                        email:'Sorry, this email address already exists.'
+                    }, 
+                    layout: 'signup.handlebars'
+                } );
         
             }
         
@@ -220,9 +231,15 @@ router.post('/signup', function(req, res) {
                 
                 }).then( function( company ) {
 
-                    if (user) {
+                    if ( company ) {
         
-                        res.render('signup', {errorMessage: { email:'Company Name has already been used.'}, layout: false} );
+                        res.render('fingertips', {
+                            errorMessage: { 
+                                company_name:'Sorry, this company name has already been used.'
+                            }, 
+                            layout: 'signup.handlebars'
+                        } );
+
                 
                     }
 
@@ -279,8 +296,14 @@ router.post('/signup', function(req, res) {
                                 // res.redirect('signin');
 
                             }).catch(function (err) {
-                                console.log(err);
-                                res.render('signup', {errorMessage: { signout:'You can not sign up', layout: false }});
+                          
+                                res.render('fingertips', {
+                                    errorMessage: { 
+                                        signout:' You can not sign up'
+                                    }, 
+                                    layout: 'signup.handlebars'
+                                } );
+
                             });
 
                         }).catch(function(err) {
@@ -480,7 +503,7 @@ router.get('/profile', function(req, res, next) {
         res.render( 'fingertips', { 
             layout: 'profile.handlebars',
             errorMessage: { 
-                password_match:'Password is not matched. Try again'
+                password_match:'Your passwords do not match. Please try again!'
             },
             user: req.user
         })
@@ -557,10 +580,7 @@ router.get('/profile', function(req, res, next) {
 
   else {
     
-    req.session.sessionFlash = {
-        type: 'info',
-        message: 'Something happened wrong from profile settings.'
-    }
+    req.session.redirectTo = '/profile'
 
     res.redirect('signin');
  }

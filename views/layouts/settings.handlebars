@@ -22,13 +22,13 @@
 				<div class="row clearfix">
 
                     <form method="POST" action="/settings" class="form">
-                        <div class="col first" style="text-align:center;">
+                       
+                            <div style="text-align:center;">
                             <h2 class="with-line">Current Settings</h2>
                             <p>{{time}}</p>
                             <p>{{attendees}}</p>
-                        </div>
-
-                        <div class="col second">
+                            </div>
+                            
                             <h2 class="with-line">When should we send your MeetBrief insights?</h2>
                             <div class="when-settings" style="text-align:center;">
                                 <select id="time" name="time">
@@ -38,19 +38,16 @@
                                     <option value="2 hours" {{isSelected time "2 hours"}}>2 hours</option>
                                 </select>
                             </div>
-                        </div>	
-
-                        <div class="col third">
-
+                    
+                    
                             <h2 class="with-line">Who should we email insights to?</h2>                            
                             <div class="who-settings" style="text-align:center;">
                                 <input type="radio" name="attendees" value="All attendees" {{isChecked attendees 'All attendees'}}>All attendees<br>
                                 <input type="radio" name="attendees" value="Internal attendees" {{isChecked attendees 'Internal attendees'}}>Internal attendees<br>
                                 <input type="radio" name="attendees" value="Just me" {{isChecked attendees 'Just me'}}>Just me<br>
                             </div>
-                        </div>
-
-                        <div class="col last" style="text-align: right;">
+                    
+                        <div class="col last actions" >
                             <button name="save" type="submit">Save</button>
                         </div>	
 

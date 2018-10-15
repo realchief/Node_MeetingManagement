@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
-        <link rel="stylesheet" href="/assets/css/signin.css" />     
-    </head>
-    <body>
-        <div class="container">
+{{> head }}
 
-             {{#if sessionFlash.message}}
+    <body class="internal-form">
+
+         {{#if sessionFlash.message}}
                     {{#contains sessionFlash.type "info"}}
                     <div class="flash-message">
                         <p>{{{sessionFlash.message}}}</p>
@@ -17,21 +11,26 @@
                 {{/if}}
 
 
+
+        <div class="container">
+
+            
             <form action="/signin" method="post">
-                <div class="row">
+              
                     
 
                     <h1 style="text-align:center">Welcome to MeetBrief!</h1>
                  
-                    <div class="col">
                         {{#if errorMessage}}
                             <p class="alert">{{ errorMessage }}</p>
                         {{/if}}
                         <input type="email" name="email" placeholder="Email Address" required>
                         <input type="password" name="password" placeholder="Password" required>
                         <input type="submit" value="Login">
-                    </div>
-                </div>
+               
+
+
+           
             </form>
         </div>
         <div class="bottom-container" style="margin-top: 20px">

@@ -451,6 +451,18 @@ ul.list li {
   margin: 0;
   padding: 5px 0; }
 
+ul.user-info li {
+  padding: 5px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; }
+
+span.label {
+  margin-left: 0;
+  text-align: left;
+  display: block; }
+
 /* Forms
    ========================================================================== */
 * {
@@ -597,26 +609,6 @@ input.error {
     margin-top: 10px;
     margin-bottom: 20px;
     padding: 5px; }
-  .navigation ul.items li {
-    padding: 5px 0;
-    display: block; }
-  .navigation ul.user-info li {
-    padding: 5px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%; }
-  .navigation span.label {
-    margin-left: 0;
-    text-align: left;
-    display: block; }
-  .navigation ul.list {
-    margin: 0 0 10px 0;
-    padding: 0; }
-  .navigation ul.list li {
-    list-style-type: none;
-    margin: 0;
-    padding: 0; }
   .navigation ul {
     margin: 0;
     padding: 0;
@@ -625,6 +617,11 @@ input.error {
     margin: 0;
     padding: 0;
     display: inline-block; }
+  .navigation ul.items li {
+    padding: 5px 0;
+    display: block; }
+  .navigation ul.list {
+    margin: 0 0 10px 0; }
   .navigation .button {
     background: #60b99a;
     padding: 5px 12px;

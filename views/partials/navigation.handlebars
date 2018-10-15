@@ -4,18 +4,6 @@
 {{#if user}}
 
 <div class="cell">
-<ul class="user-info">
-	<li><span class="label">User:</span> <a href="/settings">{{user.username}}</a></li>
-	<li><span class="label">Login:</span> {{user.email}}</li>
-	<li><span class="label">Company:</span>  <a href="/team/">{{user.company.company_name}}</a></li>
-	<li><span class="label">Id:</span> <a href="/profile/">{{user.user_id}}</a></li>
-</ul>
-</div>
-
-
-
-
-<div class="cell">
 
 	<ul class="items">
 
@@ -112,3 +100,5 @@
 </div>
 
 {{/if}}
+
+{{> user-info }}

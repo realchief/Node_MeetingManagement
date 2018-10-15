@@ -1185,46 +1185,6 @@ ul.user-info li:last-child {
 	text-decoration: none;
 }
 
-/* ==========================================================================
-Schedule
-========================================================================== */ 
-
-
-.tb-schedule {
-    overflow-x: auto;
-    width: 80%;
-    margin: 100px auto;
-}
-
-.tb-schedule table,
-.tb-schedule th, 
-.tb-schedule td {
-    border: 1px solid black;
-}
-
-.tb-schedule table {
-    width: 100%;
-}
-
-.tb-schedule th {
-    height: 50px;
-}
-
-.tb-schedule th, 
-.tb-schedule td {
-    padding: 12px;
-    text-align: left;
-}
-
-.tb-schedule tr:hover {
-    background-color: #f5f5f5;
-}
-
-.tb-schedule th {
-    background-color: #4CAF50;
-    color: white;
-}
-
 
 
 

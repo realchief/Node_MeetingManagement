@@ -104,9 +104,12 @@ label {
 
     input {
         width: 300px;
-        border: 1px solid #ccc;
         padding: 10px 10px;
         border-radius: 2px;
+    }
+
+    input[type='radio'] {
+        width: auto;
     }
 
 }

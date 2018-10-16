@@ -419,7 +419,7 @@ body {
 
 .menu {
   background: #32343F;
-  padding: 20px 20px 20px 20px;
+  padding: 20px;
   min-height: 100%;
   width: 200px;
   margin-left: -200px;
@@ -693,7 +693,7 @@ h4 {
   margin: 10px 0 0 0;
   padding: 0px 12px; }
 
-.label {
+.content .label {
   font-size: 16px;
   padding: 0; }
 
@@ -872,48 +872,92 @@ label {
 
 .inline-form input {
   width: 300px;
-  border: 1px solid #ccc;
   padding: 10px 10px;
   border-radius: 2px; }
+
+.inline-form input[type='radio'] {
+  width: auto; }
 
 /* ==========================================================================
 Menu
 ========================================================================== */
+.logo {
+  text-align: center;
+  padding-top: 10px; }
+  .logo img {
+    max-width: 125px;
+    height: auto; }
+
 .menu {
   color: #B7CBE5; }
   .menu a {
     color: #B7CBE5;
     text-decoration: none; }
   .menu .cell {
-    margin-top: 10px;
-    margin-bottom: 20px;
-    padding: 5px; }
-  .menu ul {
-    margin: 0;
-    padding: 0;
-    list-style: none; }
-  .menu ul li {
-    margin: 0;
-    padding: 0;
-    display: inline-block; }
-  .menu ul.items li {
-    padding: 5px 0;
-    display: block; }
-  .menu ul.list {
-    margin: 0 0 10px 0; }
-  .menu .button {
-    background: #60b99a;
-    padding: 5px 12px;
-    font-size: 13px;
-    text-decoration: none;
-    display: block;
-    color: #fff; }
-  .menu .button:hover {
-    background: #4ea788; }
-  .menu a.current {
-    background: #27785c; }
-  .menu p {
+    margin-bottom: 20px; }
+  .menu .company-name {
+    color: #fff;
     margin: 0; }
+  .menu .current {
+    color: #ffffff; }
+    .menu .current a {
+      color: #ffffff; }
+  .menu .admin-cell {
+    margin-top: 30px;
+    border-top: 1px solid #5B5E6F;
+    padding-top: 20px; }
+
+.admin-items {
+  font-size: 13px; }
+  .admin-items li {
+    margin: 0;
+    padding: 3px 0; }
+
+.profile-items li {
+  padding: 8px 0; }
+
+.user-items {
+  font-size: 13px; }
+  .user-items li {
+    margin: 0;
+    padding: 5px 0; }
+  .user-items .label {
+    text-transform: uppercase;
+    margin-bottom: 3px; }
+
+.menu-items {
+  margin-left: -20px;
+  margin-right: -20px; }
+  .menu-items li {
+    display: block;
+    margin: 0 0 1px 0;
+    padding: 0;
+    width: 100%;
+    vertical-align: middle; }
+    .menu-items li.current {
+      background: #585D78; }
+      .menu-items li.current span.icon {
+        left: 15px; }
+      .menu-items li.current svg g {
+        fill: #ffffff; }
+      .menu-items li.current a {
+        color: #fff;
+        padding-left: 55px;
+        border-left: 5px solid #D39B46; }
+  .menu-items a {
+    display: block;
+    position: relative;
+    vertical-align: middle;
+    padding: 15px 20px 15px 60px;
+    width: 100%; }
+    .menu-items a:hover {
+      background: #585D78; }
+  .menu-items span.icon {
+    position: absolute;
+    left: 20px;
+    top: 10px; }
+  .menu-items span {
+    display: inline-block; }
 
 /* ==========================================================================
 Schedule

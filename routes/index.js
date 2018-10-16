@@ -30,8 +30,8 @@ router.get('/',  function (req, res) {
         console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company.company_name);
 
         res.render('fingertips', {
-            version: 'fingertips',
             layout: 'main',
+            page: 'home',
             user : req.user,
         });
 
@@ -71,6 +71,7 @@ router.get('/data-sources',  function (req, res) {
 
             res.render('data-sources', {
                 layout: 'main',
+                page: 'data-sources',
                 user : req.user,
                 summaries : summaries.accounts,
                 numConnections: summaries.numberOfConnectedAccounts,

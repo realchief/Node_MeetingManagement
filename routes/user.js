@@ -400,6 +400,7 @@ router.get('/settings',  function (req, res) {
             } 
             res.render('settings', {
                 layout: 'main',
+                page: 'settings',
                 time: setting.insights_time,
                 attendees: setting.insights_to,
                 user:req.user
@@ -475,6 +476,7 @@ router.get('/profile', function(req, res, next) {
 
         res.render('profile', {
             layout: 'main',
+            page: 'profile',
             user : req.user                     
         });
 
@@ -501,6 +503,7 @@ router.get('/profile', function(req, res, next) {
         
         res.render( 'profile', { 
             layout: 'main',
+            page: 'profile',
             errorMessage: { 
                 password_match:'Your passwords do not match. Please try again!'
             },
@@ -546,6 +549,7 @@ router.get('/profile', function(req, res, next) {
 
                     res.render( 'profile', { 
                         layout: 'main',
+                        page: 'profile',
                         errorMessage: errorMessage,
                         user: req.user
                     })
@@ -602,6 +606,7 @@ router.get('/team',  function (req, res) {
                 
                 res.render('team', {
                     layout: 'main',
+                    page: 'team',
                     members : members,
                     user: req.user
                 });
@@ -627,6 +632,7 @@ router.get('/team/add',  function (req, res) {
         res.render('add-team-member', {
             version: 'fingertips',
             layout: 'main',
+            page: 'team',
             user: req.user
         });
 
@@ -665,7 +671,8 @@ router.post('/team/add',  function (req, res) {
                     
 
                     res.render('add-team-member', {
-                            layout: 'main',
+                        layout: 'main',
+                        page: 'team',
                         errorMessage : errorMessage,
                         newTeamMember : newTeamMember,
                         user: req.user
@@ -734,6 +741,7 @@ router.get('/team/edit/:id',  function (req, res) {
 
             res.render('edit-team-member', {
                 layout: 'main',
+                page: 'team',
                 teamMember : member,
                 user: req.user
             });
@@ -777,7 +785,8 @@ router.post('/team/edit/',  function (req, res) {
                     memberInfo.email = memberInfo.current_email
 
                     res.render('edit-team-member', {
-                            layout: 'main',
+                        layout: 'main',
+                        page: 'team',
                         errorMessage : errorMessage,
                         teamMember : memberInfo,
                         user: req.user
@@ -829,6 +838,7 @@ router.get('/team/delete/:id',  function (req, res) {
 
             res.render('delete-team-member', {
                 layout: 'main',
+                page: 'team',
                 teamMember : member,
                 user: req.user
             });

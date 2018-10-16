@@ -85,20 +85,23 @@ exports.meetingFileParse = ( meetingFile ) => {
             console.log("\n", emoji.get('game_die'), 'RRULE', parseIcal.rrule.toText(), "\n" )
             var allRecurring = parseIcal.rrule.all();
             var untilDate = parseIcal.rrule.options.until           
-            console.log('==========Until Date=======')
-            console.log('Until Date:', untilDate)
-            console.log('==========All Recurring=======')
-            console.log('All Recurring:', allRecurring)
-            if ( untilDate == 'null') {
+            
+            var limited_allRecurring = []
+            if ( untilDate == null) {
+
               _.forEach( allRecurring, function( date, index ) {
-                if ( index > 6 ) return false;
-                console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
-                allRecurring.push(date)
+                if ( index < 6 ) {
+                  console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
+                  limited_allRecurring.push(date)
+                }
               })
+            }
+            else {
+              limited_allRecurring = allRecurring
             }
             isRecurring = true
         }
-
+      
         /* =====  get calendar attendees */
 
         // toArray is the array to pass to the sendgrid Send endpoint //
@@ -195,7 +198,7 @@ exports.meetingFileParse = ( meetingFile ) => {
             'request_type' : requestType,
             'status' : status,
             'file_name' : meetingFile,
-            'all_recurring_data': allRecurring,
+            'all_recurring_data': limited_allRecurring,
             'untilDate': untilDate,
             'recurring_status': isRecurring
         } )

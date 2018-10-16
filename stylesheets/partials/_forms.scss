@@ -6,6 +6,39 @@ Forms
     box-sizing: border-box;
 }
 
+/* ==========================================================================
+Containers
+========================================================================== */ 
+
+.input-group {
+    margin-bottom: 10px;
+    display: block;
+}
+
+
+p.alert {
+    font-size: 14px;
+    font-style: italic;
+    color: #e44;
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+
+
+.form-header {
+    margin-bottom: 30px;
+}
+
+.actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+/* ==========================================================================
+Inputs
+========================================================================== */ 
+
 input {
     width: 100%;
     padding: 12px;
@@ -58,23 +91,10 @@ input[type=submit], button, .btn {
     }
 }
 
-p.alert {
-    font-size: 14px;
-    font-style: italic;
-    color: #e44;
-    margin-top: 0px;
-    margin-bottom: 20px;
+label {
+    font-weight: normal;
 }
 
-input.error {
-    margin-bottom: 5px;
-    border: solid 1px #e44;
-}
-
-.actions {
-    text-align: center;
-    margin-top: 30px;
-}
 
 .inline-form {
 
@@ -87,40 +107,6 @@ input.error {
         border: 1px solid #ccc;
         padding: 10px 10px;
         border-radius: 2px;
-    }
-
-}
-
-.internal-form {
-    
-    font-family: Arial, Helvetica, sans-serif;
-    margin: auto;
-    margin-top: 20px;
-    
-  
-    .cancelbtn {
-        padding: 14px 20px;           
-        background-color: #666666;
-        color: white;           
-        border: none;
-        cursor: pointer;
-        text-decoration: none;
-        opacity: 0.9;             
-    
-        &:hover {
-            opacity:1;
-        }
-
-    }     
-
-    
-    /* Float cancel and signup buttons and add an equal width */
-    .cancelbtn, .signupbtn {
-        float: left;
-        width: 50%;
-        font-size: 14px;  
-        margin: 0;
-        text-align: center;        
     }
 
 }

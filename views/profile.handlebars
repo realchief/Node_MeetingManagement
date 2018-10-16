@@ -16,77 +16,69 @@
                         
             <h2 class="with-line">Manage Profile</h2>
            
+            <div class="input-group">
              <label for="username"><b>Your Name</b></label>
-
              <input type="text" value="{{user.username}}" name="username" required>
-
-             <br />
-             <br />
-             
+         </div>
+           
+            <div class="input-group">  
               <label for="email"><b>Login Email Address</b></label>
     <input type="email" value="{{user.email}}" name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
 
-
-
     {{#if errorMessage.email}}
-       <br /><br />{{ errorMessage.email }}
+       <p class="alert">{{ errorMessage.email }}</p>
     {{/if}}
 
+        </div>
   
-             <br />
-            <br />
-
+            <div class="input-group">
              <label for="company_name"><b>Company Name</b></label>
              <input type="text" value="{{user.company.company_name}}" name="company_name" >
-
+         </div>
             
-
-            <br />
-             <br />
-
+         <div class="input-group">
               <label for="password"><b>Update Password</b></label>
     <input type="password" placeholder="Enter New Password" name="password" id="password" {{#if errorMessage.password_match}} class="error" {{/if}} > 
      
         {{#if errorMessage.password_match}}
-        <br /><br />{{ errorMessage.password_match }}
+        <p class="alert">{{ errorMessage.password_match }}</p>
         {{/if}}
-   
-             <br />
-    <br />
+    </div>
 
+    <div class="input-group">
     <label for="psw-repeat"><b>Repeat Password</b></label>
     <input type="password" placeholder="Repeat New Password" name="confirm_password" id="confirm_password" {{#if errorMessage.password_match}} class="error" {{/if}} >
-    
-    <br /><br />
+    </div>
+   
+
+    <div class="actions">
     <button name="save" type="submit">Save</button>
+    <p><a href="/data-sources/">Cancel</a></p>
+    </div>
 
-<br />
+</div>
+
+<div class="card">
 
 
-
-
-    <br />
-              <br />
-    <h4>Advanced Settings</h4>
+    <h2 class="with-line">Advanced Settings</h2>
   
-     <br />
 
+    <div class="input-group">
               <label for="email"><b>Email address you can schedule from</b></label>
-    <input type="text" style="background: #e5e5e5;text-color:#333" value="{{user.user_id}}" name="user_id" >
-
+    <input type="text" value="{{user.user_id}}" name="user_id" >
+</div>
            
-             <br />
-
-             <br />
+            <div class="input-group">
 
               <label for="email"><b>Company-wide domain allowed to schedule from</b></label>
-    <input type="text" style="background: #e5e5e5;text-color:#333" value="{{user.email_domain}}" name="email_domain" >
-
+    <input type="text" value="{{user.email_domain}}" name="email_domain" >
+        </div>
     
     
     </form>	
 
-<p><a href="/data-sources/">Cancel</a></p>
+
 
 </div>
 

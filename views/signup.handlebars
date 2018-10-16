@@ -1,51 +1,71 @@
-<div class="internal-form">
+<div class="form">
 
     <div class="card">
             <form class="modal-content" action="/signup" method="post">
                 <div class="container">
                     
-                    <div class="user-message">
+                    <div class="form-header">
 
                         <h1>Welcome to MeetBrief!</h1>
                         <p>Let's get started.</p>
 
                     </div>
                     
-                    <label for="username"><b>Your Name</b></label>
-                    <input type="text" placeholder="Enter Name" name="username" required>
-                    
-                    <label for="email"><b>Work Email Address</b></label>
-                    <input type="email" placeholder="Enter Email" name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
+                    <div class="input-group">
+                        <label for="username"><b>Your Name</b></label>
+                        <input type="text" placeholder="Enter Name" name="username" required>
+                    </div>
 
-                    {{#if errorMessage.email}}
-                        <p class="alert">{{ errorMessage.email }}</p>
-                    {{/if}}
+                    <div class="input-group">
 
-                    <label for="company_name"><b>Company Name</b></label>
-                    <input type="text" placeholder="Company Name" name="company_name" {{#if errorMessage.company_name}} class="error" {{/if}} required>        
+                        <label for="email"><b>Work Email Address</b></label>
+                        <input type="email" placeholder="Enter Email" name="email" {{#if errorMessage.email}} class="error" {{/if}} required>
 
-                    {{#if errorMessage.company_name}}
-                        <p class="alert">{{ errorMessage.company_name }}</p>
-                    {{/if}}
-
-                    <label for="password"><b>Create Password</b></label>
-                    <input type="password" placeholder="Enter Password" name="password" id="password" {{#if errorMessage.password_match}} class="error" {{/if}} required> 
-                     
-                    {{#if errorMessage}}
-                        {{#if errorMessage.password_match}}
-                        <p class="alert">{{ errorMessage.password_match }}</p>
+                        {{#if errorMessage.email}}
+                            <p class="alert">{{ errorMessage.email }}</p>
                         {{/if}}
-                    {{/if}}                        
+                    
+                    </div>
 
-                    <label for="psw-repeat"><b>Repeat Password</b></label>
-                    <input type="password" placeholder="Repeat Password" name="confirm_password" id="confirm_password" {{#if errorMessage.password_match}} class="error" {{/if}} required>
+                    <div class="input-group">
+                        
+                        <label for="company_name"><b>Company Name</b></label>
+                        <input type="text" placeholder="Company Name" name="company_name" {{#if errorMessage.company_name}} class="error" {{/if}} required>        
+
+                        {{#if errorMessage.company_name}}
+                            <p class="alert">{{ errorMessage.company_name }}</p>
+                        {{/if}}
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label for="password"><b>Create Password</b></label>
+                        <input type="password" placeholder="Enter Password" name="password" id="password" {{#if errorMessage.password_match}} class="error" {{/if}} required> 
+                         
+                        {{#if errorMessage}}
+                            {{#if errorMessage.password_match}}
+                            <p class="alert">{{ errorMessage.password_match }}</p>
+                            {{/if}}
+                        {{/if}}                        
+
+                    </div>
+
+                    <div class="input-group">
+                    
+                        <label for="psw-repeat"><b>Repeat Password</b></label>
+                        <input type="password" placeholder="Repeat Password" name="confirm_password" id="confirm_password" {{#if errorMessage.password_match}} class="error" {{/if}} required>
+
+                    </div>
                     
                      
                     
                     <div class="clearfix actions">
-                        <a href="/signin" class="cancelbtn">Cancel</a>
-                        <button type="submit" class="signupbtn">Sign Up</button>
+                        <button type="submit">Sign Up</button>
+
+                        <p><a href="/signin" class="cancel">Cancel</a></p>
                     </div>
+    
                 </div>
             </form>
 

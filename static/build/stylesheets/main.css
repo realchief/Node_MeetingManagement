@@ -865,7 +865,8 @@ input[type=submit], button, .btn {
     background-color: #DB6668; }
 
 label {
-  font-weight: normal; }
+  font-weight: normal;
+  text-align: left; }
 
 .inline-form label {
   display: inline-block; }
@@ -885,8 +886,9 @@ Menu
   text-align: center;
   padding-top: 10px; }
   .logo img {
-    max-width: 125px;
-    height: auto; }
+    max-width: 115px;
+    height: auto;
+    margin-left: -10px; }
 
 .menu {
   color: #B7CBE5; }

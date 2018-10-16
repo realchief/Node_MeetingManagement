@@ -80,7 +80,7 @@ router.get('/allschedule', function (req, res, next) {
             
             res.render('schedule', {
                     meetings: meetings,
-                    layout: 'fingertips'
+                    layout: 'main'
                 })
         
         });

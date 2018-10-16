@@ -22,6 +22,8 @@ exports.meetingFileParse = ( meetingFile ) => {
 
         var ical_data = ical.parseFile(meetingFile)  
         var parseIcal = ical_data[Object.keys(ical_data)[0]]
+        console.log('============parseIcal==============')
+        console.log(parseIcal)
         var insightType = "default"
         var requestType = "request"
         var status = "none"
@@ -74,16 +76,27 @@ exports.meetingFileParse = ( meetingFile ) => {
         console.log( 'Last Modified:',  moment(JSON.stringify(parseIcal['last-modified']),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
         console.log( 'Sequence:',  parseIcal.sequence )
         console.log( 'Start:', moment(JSON.stringify(parseIcal.start),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
-       
+        console.log( 'End:', moment(JSON.stringify(parseIcal.end),'YYYYMMDDTHHmmssZ').format("dddd, MMMM Do YYYY, h:mma") )
         console.log( 'Status:', parseIcal.status)
 
-         if ( parseIcal.rrule ) {
+        var isRecurring = false
+
+        if ( parseIcal.rrule ) {
             console.log("\n", emoji.get('game_die'), 'RRULE', parseIcal.rrule.toText(), "\n" )
             var allRecurring = parseIcal.rrule.all();
-            _.forEach( allRecurring, function( date, index ) {
-              if ( index > 5 ) return false;
-              console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
-            })
+            var untilDate = parseIcal.rrule.options.until           
+            console.log('==========Until Date=======')
+            console.log('Until Date:', untilDate)
+            console.log('==========All Recurring=======')
+            console.log('All Recurring:', allRecurring)
+            if ( untilDate == 'null') {
+              _.forEach( allRecurring, function( date, index ) {
+                if ( index > 6 ) return false;
+                console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
+                allRecurring.push(date)
+              })
+            }
+            isRecurring = true
         }
 
         /* =====  get calendar attendees */
@@ -181,7 +194,10 @@ exports.meetingFileParse = ( meetingFile ) => {
             'insight_type' : insightType,
             'request_type' : requestType,
             'status' : status,
-            'file_name' : meetingFile
+            'file_name' : meetingFile,
+            'all_recurring_data': allRecurring,
+            'untilDate': untilDate,
+            'recurring_status': isRecurring
         } )
 
     })

@@ -44,20 +44,20 @@ router.get('/ical', function (req, res) {
   console.log('\n', emoji.get('eyes'), ' ical start ===============================', '\n')
 
   // add awesome pizza meeting
-  // var getMeetingInfo = emails.meetingFileParse('./uploads/invite_not_recurring.ics') 
-  var getMeetingInfo = emails.meetingFileParse('./uploads/monthly-recurring-ends.ics')
+  var getMeetingInfo = emails.meetingFileParse('./uploads/invite_weekly_no_enddate.ics') 
+  // var getMeetingInfo = emails.meetingFileParse('./uploads/invite_onetime.ics') 
+  // var getMeetingInfo = emails.meetingFileParse('./uploads/invite_recurring_enddate.ics')
+
   console.log('=========getMeetingInfo===========')
   console.log(getMeetingInfo)
 
-  // getMeetingInfo.then( function(meetingInfo) {
-
-  //   meeting.processMeetingRequest(meetingInfo, function(response) {
-
-  //       res.send(response);
-    
-  //   })
-
-  // } )
+  getMeetingInfo.then( function(meetingInfo) {
+    meeting.processMeetingRequest(meetingInfo, function(response) {
+        console.log('=====response of processMeetingRequest=====')
+        // console.log(response)
+        // res.send(response);
+    })
+  } )
 
 })
 

@@ -9,11 +9,17 @@ module.exports = (sequelize, DataTypes) => {
         end_time: {
             type: DataTypes.DATE
         },
+        // start_date: {
+        //     type: DataTypes.STRING
+        // },
+        // end_date: {
+        //     type: DataTypes.STRING
+        // },
         start_date: {
-            type: DataTypes.STRING
+            type: DataTypes.ARRAY(DataTypes.STRING)
         },
         end_date: {
-            type: DataTypes.STRING
+            type: DataTypes.ARRAY(DataTypes.STRING)
         },
         organizer: {
             type: DataTypes.STRING

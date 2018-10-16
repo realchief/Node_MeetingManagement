@@ -394,7 +394,6 @@ exports.schedule_email = (meetingId, meetingInfo, meetingStart, msg, meeting, fr
 
           console.log('\n', emoji.get('rocket'), ' made and sent scheduled email ---', data.meetingInfo.summary, '---- from ----', data.meetingInfo.organizer, '----', 'for', '---', moment(data.meetingInfo.start_time).format("ddd, MMMM D [at] h:mma"), '----', 'sent at', '-----', moment().format("ddd, MMMM D [at] h:mma"))
 
-
           sgMail.setApiKey(process.env.SENDGRID_API_KEY);
           sgMail.send( msg );           
 

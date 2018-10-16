@@ -48,6 +48,7 @@ router.get('/data/google/:company',  function (req, res) {
 
                 res.render('data', {
                     layout: 'main',
+                    extraClass: 'full-width',
                     accountResults: credentials,
                     user: credentials.user,
                     googleAccount: credentials.accounts.google_analytics,
@@ -98,6 +99,7 @@ router.get('/data/facebook/:company',  function (req, res) {
 
             res.render('data', {
                 layout: 'main',
+                extraClass: 'full-width',
                 accountResults: credentials,
                 user: credentials.user,
                 googleAccount: null,

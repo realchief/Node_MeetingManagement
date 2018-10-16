@@ -16,8 +16,9 @@
 	   
 		<p>You are about to delete {{teamMember.username}} from your company, {{user.company.company_name}}</p>
 
-		<button name="save" type="submit">Yes, Delete this Team Member</button>
-
+		<div class="actions">
+			<button name="save" type="submit">Yes, Delete this Team Member</button>
+		</div>
 	<input type="text" value="{{teamMember.id}}" name="id" hidden required>
 
 	</div>

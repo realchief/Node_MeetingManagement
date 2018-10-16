@@ -436,6 +436,10 @@ body {
   margin: 0 auto;
   padding: 20px; }
 
+.full-width .content {
+  max-width: 100%;
+  width: 100%; }
+
 .divider {
   clear: both;
   margin-bottom: 30px; }
@@ -505,7 +509,8 @@ p:last-child {
   padding: 40px;
   border: 1px solid #ccc;
   border-bottom-width: 2px;
-  background: #fff; }
+  background: #fff;
+  text-align: center; }
   .card:after {
     content: "";
     display: table;
@@ -714,6 +719,9 @@ h5.ga-user {
 
 .ga-view {
   font-size: 14px; }
+
+.connector {
+  margin-bottom: 40px; }
 
 .connectors {
   text-align: left; }
@@ -950,36 +958,42 @@ ul.schedule li {
 /* ==========================================================================
 Messages
 ========================================================================== */
-.flash-message p {
+.flash-message p, .note-message p, .persistent-message p {
   margin: 0; }
 
 .flash-message {
   background: #c4f5e3;
   box-sizing: border-box;
-  padding: 10px 20px;
+  padding: 20px 20px;
   text-align: center;
   max-width: 100%;
   display: block;
-  margin: 0 auto 10px auto; }
+  margin: 0 auto 10px auto;
+  border: 1px solid #ccc;
+  border-bottom-width: 2px; }
 
 .note-message {
   background: #88d8ff;
   box-sizing: border-box;
-  padding: 10px 20px;
+  padding: 20px 20px;
   text-align: center;
   max-width: 100%;
   display: block;
-  margin: 0 auto 10px auto; }
+  margin: 0 auto 10px auto;
+  border: 1px solid #ccc;
+  border-bottom-width: 2px; }
 
 .persistent-message {
   background: #585d78;
   box-sizing: border-box;
   color: #fff;
-  padding: 10px 20px;
+  padding: 20px 20px;
   text-align: center;
   max-width: 100%;
   display: block;
-  margin: 0 auto 10px auto; }
+  margin: 0 auto 10px auto;
+  border: 1px solid #ccc;
+  border-bottom-width: 2px; }
 
 /* Uncomment and set these variables to customize the grid. */
 .container-flexbox-fluid {

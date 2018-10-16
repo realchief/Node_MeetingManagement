@@ -1,0 +1,42 @@
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+ul {
+	list-style-type: none;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0;
+}
+
+ul li {
+	list-style-type: none;
+	margin: 0;
+	padding: 5px 0;
+}
+
+ul.list {
+	list-style-type: none;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0;
+}
+
+ul.list li {
+	list-style-type: none;
+	margin: 0;
+	padding: 5px 0;
+}
+
+
+ul.user-info li {
+	padding: 5px 0;
+	white-space: nowrap;
+  	overflow: hidden;
+  	text-overflow: ellipsis;
+  	width: 100%;
+}
+
+ul.views-list {
+	margin: 0;
+}

@@ -1,3 +1,5 @@
+
+<div class="card">
 						
 {{#if googleAccount }}		
 
@@ -7,7 +9,7 @@
 		To Account: {{googleAccount.account_name}} : {{googleAccount.property_name}} - {{googleAccount.view_name}}
 	</h2>
 
-	<div class="row">
+	<div class="divider">
 
 	<h2>Metrics Table</h2>
 
@@ -41,7 +43,7 @@
 		To Account: {{facebookAccount.account_name}}
 	</h2>
 
-	<div class="row">
+	<div class="divider">
 
 	<h2>Metrics Table</h2>
 
@@ -49,7 +51,7 @@
 
 	</div>
 
-	<div class="row">
+	<div class="divider">
 
 	<h2>Posts Table</h2>
 
@@ -98,8 +100,6 @@
 --}}
 
 {{#if insights}}
-
-<div class="row insights-listing">
 
 {{toJSON credentials}}
 

@@ -9,33 +9,25 @@
     {{/if}}
 
 
-
-        <div class="container">
-
+<div class="card">
             
-            <form action="/signin" method="post">
-              
-                    
+    <form action="/signin" method="post">
 
-                    <h1 style="text-align:center">Welcome to MeetBrief!</h1>
-                 
-                        {{#if errorMessage}}
-                            <p class="alert">{{ errorMessage }}</p>
-                        {{/if}}
-                        <input type="email" name="email" placeholder="Email Address" required>
-                        <input type="password" name="password" placeholder="Password" required>
-                        <input type="submit" value="Login">
-               
+       <h1>Welcome to MeetBrief!</h1>
+         
+        {{#if errorMessage}}
+            <p class="alert">{{ errorMessage }}</p>
+        {{/if}}
+        <input type="email" name="email" placeholder="Email Address" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="submit" value="Login">
+       
+    </form>
 
+     <div class="sign-up">
+            <a href="/signup" class="btn">Sign up</a>
+     </div>
 
-           
-            </form>
-        </div>
-
-        <div class="bottom-container" style="margin-top: 20px">
-            <div class="row">
-                <a href="/signup" style="color:white" class="btn">Sign up</a>
-            </div>
-        </div>
+</div>
 
 </div>

@@ -1,0 +1,129 @@
+/* ==========================================================================
+Temporary
+========================================================================== */ 
+
+h3 {
+	font-weight: normal;
+	margin-bottom: 0;
+}
+
+h4 {
+	margin: 10px 0 0 0;
+	padding: 0px 12px;
+
+}
+
+.label {
+	font-size: 16px;
+	padding: 0;
+}
+
+h5.label {
+	font-size: 12px;
+	margin-top: 10px;
+}
+
+h4.ga-account {
+	font-size: 14px;
+	border-top: 1px solid #e5e5e5;
+	padding-top: 20px;
+	display: inline-block;
+}
+
+h5.ga-property {
+	font-size: 12px;
+	margin-top: 12px;
+	margin-bottom: 5px;
+}
+
+h5.ga-user {
+	font-size: 15px;
+	margin-bottom: 5px;
+	margin-top: 20px;
+}
+
+.ga-view {
+	font-size: 14px;
+}
+
+.connectors {
+	text-align: left;
+}
+
+.connectors-list {
+	padding: 0;
+	text-align: center;
+}
+
+.connectors-list li {
+	display: inline-block;
+	margin: 0 10px 0 0;
+	border: 1px solid #e5e5e5;
+	padding: 10px 15px;
+	cursor: pointer;
+	background: #e5e5e5;
+	border-radius: 5px;
+	text-align: center;
+	list-style: none;
+}
+.google-accounts {
+	text-align: center;
+}
+
+.google-accounts li{
+	list-style: none;
+}
+
+.facebook-accounts {
+	text-align: center;
+}
+
+.facebook-accounts li{
+	list-style: none;
+}
+
+.connectors-list li:hover {
+	background: #d9d9d9;
+}
+
+.fb-account, .ga-view {
+	cursor: pointer;
+}
+
+h2 {
+	text-align: center;
+}
+
+h2.with-line {
+ overflow: hidden;
+ text-align: center;
+}
+h2.with-line:before,
+h2.with-line:after {
+ background-color: #e5e5e5;
+ content: "";
+ display: inline-block;
+ height: 1px;
+ position: relative;
+ vertical-align: middle;
+ width: 50%;
+}
+h2.with-line:before {
+ right: 0.5em;
+ margin-left: -50%;
+}
+h2.with-line:after {
+ left: 0.5em;
+ margin-right: -50%;
+}
+
+h3 {
+	text-align: center;
+	margin-top: 0;
+}
+
+h4 {
+	margin: 10px 0 0 0;
+	padding: 0px 12px;
+
+}

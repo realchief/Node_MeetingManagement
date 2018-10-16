@@ -7,28 +7,56 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
-  background: aliceblue;
-
+  background: #F3F4F8;
 }
 
-.navigation {
-	background: #32343F;
-	position: absolute;
-	top: 0;
+.app-container {
+	position: relative;
+	padding-left: $menu-width;
 	left: 0;
-	padding: 50px 20px 50px 20px; 
-	min-height: 100%;
-	width: 200px;
-	z-index: 50;
 }
 
+.section {
+	text-align: center;
+	padding: 0;
+}
+
+
+.menu {
+	background: #32343F;
+	padding: 20px 20px 20px 20px; 
+	min-height: 100%;
+	width: $menu-width;
+	margin-left: -$menu-width;
+	z-index: 50;
+	height: 100%;
+	overflow: auto;
+
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	overflow: auto;
+
+}
 
 .main {
-	margin-left: 200px;
-	padding: 20px;
-	
 }
 
+
+.content {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+
+.cell {
+}
+
+.divider {
+	clear: both;
+	margin-bottom: 30px;
+}
 
 
 /*

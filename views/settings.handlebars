@@ -10,18 +10,20 @@
 
 
 <div class="inline-form">
-<div class="row clearfix">
+
+    <div class="card">
+
 
     <form method="POST" action="/settings" class="form">
        
-            <div style="text-align:center;">
+            <div>
             <h2 class="with-line">Current Settings</h2>
             <p>{{time}}</p>
             <p>{{attendees}}</p>
             </div>
             
             <h2 class="with-line">When should we send your MeetBrief insights?</h2>
-            <div class="when-settings" style="text-align:center;">
+            <div class="when-settings">
                 <select id="time" name="time">
                     <option value="15 minutes" {{isSelected time "15 minutes"}}>15 minutes</option>
                     <option value="30 minutes" {{isSelected time "30 minutes"}}>30 minutes</option>
@@ -32,7 +34,7 @@
     
     
             <h2 class="with-line">Who should we email insights to?</h2>                            
-            <div class="who-settings" style="text-align:center;">
+            <div class="who-settings">
                 <input type="radio" name="attendees" value="All attendees" {{isChecked attendees 'All attendees'}}>All attendees<br>
                 <input type="radio" name="attendees" value="Internal attendees" {{isChecked attendees 'Internal attendees'}}>Internal attendees<br>
                 <input type="radio" name="attendees" value="Just me" {{isChecked attendees 'Just me'}}>Just me<br>
@@ -43,5 +45,7 @@
         </div>	
 
     </form>	
-</div>
+
+    </div>
+
  </div>

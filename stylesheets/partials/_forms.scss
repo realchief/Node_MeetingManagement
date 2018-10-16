@@ -1,16 +1,12 @@
-/* Forms
-   ========================================================================== */
+/* ==========================================================================
+Forms
+========================================================================== */ 
 
 * {
     box-sizing: border-box;
 }
 
-input[type='radio'] {
-	width: auto;
-}
-
-input,
-.btn {
+input {
     width: 100%;
     padding: 12px;
     border: none;
@@ -20,17 +16,39 @@ input,
     font-size: 17px;
     line-height: 20px;
     text-decoration: none;
+
+    &:focus {
+        background-color: #DB6668;
+        outline: none;
+    }
     /* remove underline from anchors */
 }
 
-/* style the submit button */
+input[type='radio'] {
+    width: auto;
+}
 
-input[type=submit] {
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    background: #fff;
+    border: 1px solid #828594;
+    margin-bottom: 10px;
+}
 
+/* Set a style for all buttons */
+input[type=submit], button, .btn {
     background-color: #DB6668;
     color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
     cursor: pointer;
-
+    width: 100%;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+   
     &:hover {
         background-color: #B63436;
     }
@@ -38,23 +56,6 @@ input[type=submit] {
     &:focus {
         background-color: #DB6668;
     }
-}
-
-
-/* Set a style for all buttons */
-button, .btn {
-    background-color: #DB6668;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 50%;
-    opacity: 0.9;
-}
-
-button:hover {
-    opacity:1;
 }
 
 p.alert {
@@ -88,82 +89,15 @@ input.error {
         border-radius: 2px;
     }
 
-    input[type='radio'] {
-        width: auto;
-    }
-
 }
 
 .internal-form {
     
     font-family: Arial, Helvetica, sans-serif;
-    width: 50%;
     margin: auto;
     margin-top: 20px;
-
-    .container {
-        position: relative;
-        border-radius: 5px;
-        background-color: #ffffff;
-        padding: 20px 20px 20px 20px;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
-    	background: #fff;
-        border: 1px solid #828594;
-        margin-bottom: 10px;
-    }
-
-    button {
-        width: 100%;
-    }
-
-    label {
-        margin-top: 10px;
-        display: inline-block;
-    }
-
-    .actions {
-        margin-top: 20px;
-    }
-
-    input, 
-    .btn {
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: 2px;
-        margin: 5px 0;
-        display: inline-block;
-        font-size: 17px;
-        line-height: 20px;
-        text-decoration: none;
-
-        &:focus {
-            background-color: #ddd;
-            outline: none;
-        }
-
-    }
-
-    input[type=submit] {
-
-        &:hover {
-            background-color: #B63436;
-        }
-
-        &:focus {
-            background-color: #DB6668;
-        }
-    }
-
-
-    .cancelbtn:hover {
-        opacity:1;
-    }
-
+    
+  
     .cancelbtn {
         padding: 14px 20px;           
         background-color: #666666;
@@ -172,10 +106,14 @@ input.error {
         cursor: pointer;
         text-decoration: none;
         opacity: 0.9;             
+    
+        &:hover {
+            opacity:1;
+        }
+
     }     
 
     
-
     /* Float cancel and signup buttons and add an equal width */
     .cancelbtn, .signupbtn {
         float: left;
@@ -184,19 +122,5 @@ input.error {
         margin: 0;
         text-align: center;        
     }
-
-    .bottom-container {
-      
-        text-align: center;
-    
-        a {
-            background-color: #DB6668;
-            display: block;
-        }
-    }
-
-
-
-
 
 }

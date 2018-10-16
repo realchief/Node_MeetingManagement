@@ -8,7 +8,16 @@
 @import "partials/layout";
 @import "partials/common";
 
+// elements
+@import "partials/tables";
+@import "partials/lists";
+@import "partials/temporary";
+
 // components
 @import "partials/forms";
-@import "partials/navigation";
+@import "partials/menu";
 @import "partials/schedule";
+@import "partials/messages";
+
+// vendor
+@import "vendor/flexboxgrid";

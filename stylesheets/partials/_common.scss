@@ -1,28 +1,144 @@
-ul.list {
-	list-style-type: none;
-	margin-left: 0;
-	margin-right: 0;
-	padding: 0;
+/* ==========================================================================
+Common and Defaults
+========================================================================== */ 
+
+body {
+	color: #4A4A4A;
+	font-family: 'proxima-soft', Arial, Verdana, Tahoma, sans-serif;
 }
 
-ul.list li {
-	list-style-type: none;
-	margin: 0;
-	padding: 5px 0;
+/*body.in-results,
+body.no-vertical-center {
+	background: #f9f9f9;
+}*/
+
+button, input, optgroup, select, textarea {
+   font-family: 'proxima-soft', Arial, Verdana, Tahoma, sans-serif;
 }
 
-
-ul.user-info li {
-	padding: 5px 0;
-	white-space: nowrap;
-  	overflow: hidden;
-  	text-overflow: ellipsis;
-  	width: 100%;
-
+textarea, input, button { 
+		outline: none; 
 }
+
+textarea { 
+	border: 1px solid #e5e5e5; 
+	padding: 10px;
+}
+
+h3 {
+	font-weight: normal;
+	margin-bottom: 0;
+}
+
+:focus {
+  outline-color: transparent;
+  outline-style: none;
+}
+
 
  span.label {
 	margin-left: 0;
 	text-align: left;
 	display: block;
+}
+
+
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+.card {
+    padding: 40px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    background: #fff;
+
+    &:after {
+		content: "";
+	  	display: table;
+	 	clear: both;
+	}
+
+}
+
+.card + .card {
+    margin-top: 1.5em;
+}
+
+.tighter-card {
+    padding: 20px;
+}
+
+
+
+
+/* ==========================================================================
+   Helpers
+   ========================================================================== */
+
+.clearfix:after {
+	content: "";
+  display: table;
+  clear: both;
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-middle {
+  vertical-align: middle;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.floated-right {
+    float: right;
+    margin-left: 40px;
+    margin-bottom: 40px;
+}
+
+.floated-left {
+    float: left;
+    margin-right: 40px;
+    margin-bottom: 40px;
+}
+
+.relative {
+  position: relative;
+}
+
+.row.no-inside-margin > div {
+  margin-bottom: 0;
+} 
+
+.row.smaller-inside-margin > div {
+  margin-bottom: .5rem;
+} 
+
+.covered {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.vertically-align {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }

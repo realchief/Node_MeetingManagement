@@ -26,7 +26,7 @@ exports.meetingFileParse = ( meetingFile ) => {
         var requestType = "request"
         var status = "none"
 
-        //console.log('ICAL DATA:', ical_data)
+        console.log('ICAL DATA:', ical_data)
 
         if ( parseIcal.type == "VTIMEZONE") {
             // can be VEVENT or VTIMEZONE

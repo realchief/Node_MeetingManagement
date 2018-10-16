@@ -39,6 +39,28 @@ router.get('/forceicalparse/:calendarFile', function (req, res) {
   
 })
 
+router.get('/ical', function (req, res) {
+
+  console.log('\n', emoji.get('eyes'), ' ical start ===============================', '\n')
+
+  // add awesome pizza meeting
+  // var getMeetingInfo = emails.meetingFileParse('./uploads/invite_not_recurring.ics') 
+  var getMeetingInfo = emails.meetingFileParse('./uploads/monthly-recurring-ends.ics')
+  console.log('=========getMeetingInfo===========')
+  console.log(getMeetingInfo)
+
+  // getMeetingInfo.then( function(meetingInfo) {
+
+  //   meeting.processMeetingRequest(meetingInfo, function(response) {
+
+  //       res.send(response);
+    
+  //   })
+
+  // } )
+
+})
+
 
 router.get('/parse', function (req, res) {
 

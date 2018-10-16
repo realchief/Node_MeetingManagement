@@ -829,9 +829,9 @@ input {
   margin: 5px 0;
   opacity: 0.85;
   display: inline-block;
-  font-size: 17px;
   line-height: 20px;
   text-decoration: none;
+  vertical-align: middle;
   /* remove underline from anchors */ }
   input:focus {
     background-color: #DB6668;

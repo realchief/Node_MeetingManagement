@@ -414,8 +414,10 @@ body {
   left: 0; }
 
 .section {
-  text-align: center;
-  padding: 0; }
+  /*text-align: center;*/
+  padding: 0;
+  margin-top: 30px;
+  margin-bottom: 30px; }
 
 .menu {
   background: #32343F;
@@ -432,9 +434,9 @@ body {
   overflow: auto; }
 
 .content {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px; }
+  padding: 20px 40px; }
 
 .full-width .content {
   max-width: 100%;
@@ -500,7 +502,7 @@ span.label {
   display: block; }
 
 p:last-child {
-  margin-bottom: 0; }
+  margin-bottom: 0 !important; }
 
 /* ==========================================================================
    Cards
@@ -515,12 +517,11 @@ p:last-child {
     content: "";
     display: table;
     clear: both; }
+  .card.tighter-card {
+    padding: 20px; }
 
 .card + .card {
   margin-top: 1.5em; }
-
-.tighter-card {
-  padding: 20px; }
 
 /* ==========================================================================
    Helpers
@@ -693,7 +694,7 @@ h4 {
   margin: 10px 0 0 0;
   padding: 0px 12px; }
 
-.content .label {
+h2.label {
   font-size: 16px;
   padding: 0; }
 
@@ -872,6 +873,13 @@ input[type=submit], button, .btn {
   input[type=submit]:focus, button:focus, .btn:focus {
     background-color: #DB6668; }
 
+.btn.soon {
+  background-color: #828594; }
+  .btn.soon:hover {
+    background-color: #828594; }
+  .btn.soon:focus {
+    background-color: #828594; }
+
 label {
   font-weight: normal;
   text-align: left; }
@@ -1049,12 +1057,56 @@ Messages
   border: 1px solid #ccc;
   border-bottom-width: 2px; }
 
+/* ==========================================================================
+Connections
+========================================================================== */
+.connections-list .card {
+  text-align: left; }
+
+.connections-list p {
+  margin: 0 0 20px 0; }
+
+.connections-list .btn {
+  border-radius: 10px; }
+
+.connections-list .label {
+  font-size: 24px;
+  color: #585D78; }
+
+.connections-list .description {
+  font-size: 16px;
+  color: #585D78; }
+
+.connections-list span.label {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #889EB7;
+  display: block; }
+
+.connections-list .link-with-icon {
+  text-align: left; }
+  .connections-list .link-with-icon span {
+    display: inline-block; }
+  .connections-list .link-with-icon a {
+    text-decoration: none;
+    color: #4A6F99;
+    text-transform: uppercase;
+    font-size: 13px;
+    margin-left: 5px; }
+
+.connection-logo {
+  max-height: 50px;
+  width: auto; }
+
 /* Uncomment and set these variables to customize the grid. */
 .container-flexbox-fluid {
   margin-right: auto;
   margin-left: auto;
   padding-right: 2rem;
   padding-left: 2rem; }
+
+.row > div {
+  margin-bottom: 1em; }
 
 .row {
   box-sizing: border-box;

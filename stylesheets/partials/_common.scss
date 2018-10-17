@@ -43,7 +43,7 @@ h3 {
 }
 
 p:last-child {
-	margin-bottom: 0;
+	margin-bottom: 0 !important;
 }
 
 
@@ -65,14 +65,17 @@ p:last-child {
 
 	text-align: center;
 
+	&.tighter-card {
+	    padding: 20px;
+	}
+
 }
 
 .card + .card {
     margin-top: 1.5em;
 }
 
-.tighter-card {
-    padding: 20px;
+.card-inside {
 }
 
 

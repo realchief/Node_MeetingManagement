@@ -91,6 +91,22 @@ input[type=submit], button, .btn {
     }
 }
 
+.btn {
+
+    &.soon {
+        background-color: #828594;
+
+         &:hover {
+            background-color: #828594;
+        }
+
+        &:focus {
+            background-color: #828594;
+        }
+
+    }
+}
+
 label {
     font-weight: normal;
     text-align: left;

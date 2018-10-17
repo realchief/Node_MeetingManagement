@@ -7,6 +7,10 @@
   padding-left: 2rem;
 }
 
+.row > div {
+    margin-bottom: 1em;
+}
+
 .row {
   box-sizing: border-box;
   display: -ms-flexbox;

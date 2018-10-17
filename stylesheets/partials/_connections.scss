@@ -1,0 +1,60 @@
+/* ==========================================================================
+Connections
+========================================================================== */ 
+
+.connections-list {
+
+	.card {
+		text-align: left;
+	}
+
+	p {
+		margin: 0 0 20px 0;
+	}
+
+	.actions {
+	}
+
+	.btn {
+		border-radius: 10px;
+	}
+
+	.label {
+		font-size: 24px;
+		color: #585D78;
+	}
+
+	.description {
+		font-size: 16px;
+		color: #585D78;
+	}
+
+	span.label {
+		font-size: 13px;
+		text-transform: uppercase;
+		color: #889EB7;
+		display: block;
+	}
+
+	.link-with-icon {
+
+		text-align: left;
+
+		span {
+			display: inline-block;
+		}
+
+		a {
+			text-decoration: none;
+			color: #4A6F99;
+			text-transform: uppercase;
+			font-size: 13px;
+			margin-left: 5px;
+		}
+	}
+}
+
+.connection-logo {
+	max-height: 50px;
+	width: auto;
+}

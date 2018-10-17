@@ -527,11 +527,18 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
        /* ===== modify base email ======= */
 
           // ---- schedule the email for sending
-          var msg = null
-         
-          thisModule.schedule_email(meetingId, meetingInfo, meetingInfo.meeting_start_time, msg, meeting, 'create');
-          onFinish( meetingId )
+          console.log('==========meeting info from Meeting table============')
+          console.log(meetingInfo.recurring_status) 
+          console.log('========================================================')
 
+          if (meetingInfo.recurring_status == false) {
+              var msg = null
+              thisModule.schedule_email(meetingId, meetingInfo, meetingInfo.meeting_start_time, msg, meeting, 'create');
+              onFinish( meetingId )
+          }
+          else {
+              console.log(meetingInfo.all_recurring_data)
+          }
     });
 
 }

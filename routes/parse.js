@@ -49,10 +49,9 @@ router.get('/ical', function (req, res) {
   var getMeetingInfo = emails.meetingFileParse('./uploads/invite_recurring_enddate.ics')
 
   getMeetingInfo.then( function(meetingInfo) {
-    console.log('=========meetingInfo============')
-    console.log(meetingInfo)
+
     meeting.processMeetingRequest(meetingInfo, function(response) {
-        console.log('=====response of processMeetingRequest=====')
+        
         // console.log(response)
         // res.send(response);
     })

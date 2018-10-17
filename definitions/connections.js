@@ -47,7 +47,6 @@ module.exports = {
 					}
 
 				],
-				propertyPattern: "account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}"
 			},
 
 			{ 
@@ -67,7 +66,6 @@ module.exports = {
 					},
 
 				],
-				propertyPattern: "account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}"
 			},
 
 			{ 

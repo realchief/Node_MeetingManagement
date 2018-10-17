@@ -537,7 +537,6 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
               onFinish( meetingId )
           }
           else {
-              console.log('================hahahaha==================')
               console.log(meetingInfo.all_recurring_data)
 
               for (var i = 0; i < meetingInfo.all_recurring_data.length; i++) { 

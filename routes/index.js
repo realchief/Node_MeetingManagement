@@ -87,8 +87,10 @@ router.get('/data-sources',  function (req, res) {
 
                     connection.account_email = chosen_account.email
 
-                    // need property display name
-                    connection.account_property = chosen_account.account_name
+                    _.forEach( connection.propertyDisplay, function( property, index ){
+                        property.name = chosen_account[property.property]
+                        console.log(property, property.name)
+                   })
 
                 }
 

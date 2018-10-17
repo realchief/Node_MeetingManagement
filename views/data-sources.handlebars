@@ -53,205 +53,168 @@
 {{/gt}}
 
 
+
+{{#if summaries.google_analytics.account_list }}
+
+<div class="section">
+	<div class="card">
+		<div class="flash-message">
+			<p>Before your Google Analytics account can be connected, we need to choose your view.</p>
+		</div>
+
+		<div class="select-google-view modal">
+
+		<h5 class="label ga-user">GA Accounts for {{summaries.google_analytics.user.email}} </h5>
+
+			<div class="modal-body">
+				
+				{{#each summaries.google_analytics.account_list.users as |account|}}
+					<h4 class="label ga-account">{{ account.account_name }}</h4>
+					{{#each account.web_properties as |property|}}
+						<h5 class="label ga-property">{{ property.property_name }}</h5>
+						
+						<ul class="views-list">
+						{{#each property.views as |view|}}
+							<li>
+								{{view.view_name}}
+								<span class="property-chooser">
+								<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}'>Use</a>
+								</span>
+							</li>
+						{{/each}}
+						</ul>
+
+					{{/each}}
+				{{/each}}
+			</div>
+		</div>
+	</div>
+</div>
+
+{{/if}}
+
+{{#if summaries.facebook.account_list}}
+
+	<div class="section">
+		<div class="card">
+			<div class="flash-message">
+				<p>Before your Facebook account can be connected, we need to choose your page account.</p>
+			</div>
+
+			<div class="select-facebook-view modal">
+				
+				<h5 class="label ga-user">Facebook Page Accounts for {{summaries.facebook.user.email}}</h5>
+
+				<div class="modal-body">											
+					<ul class="views-list">
+						{{#each summaries.facebook.account_list as |account|}}                                                              
+							<li class="fb-account">
+								{{ account.account_name }}
+								<span class="property-chooser">
+								<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
+								Use
+								</a>
+								</span>
+								
+							</li>                                                                
+						{{/each}}
+					</ul>
+				</div>               
+			</div>
+		</div>
+	</div>
+
+{{/if}}
+
 {{#if connectionsList}}
 
 <div class="section">
 
 <div class="connections-list">
 <div class="row">
+
 {{#each connectionsList}}
 <div class="col-xs-12 col-md-4 col-lg-3">
-<div class="card tighter-card">
-	
-	<div class="card-inside {{this.status}}">
-
-		<div class="info-top">
-			<p class="connection-logo">{{{this.logo}}}</p>
-			<p class="label">{{this.label}}</p>
-
-			{{#eq this.status "connected"}}
-
-				<p class="connection-info">
-					<span class="label">Connected As:</span>
-					{{ this.account_email }}
-				</p>
-
-				<p class="connection-info">
-					<span class="label">Property:</span>
-					{{ this.account_property }}
-				</p>
-
-
-			{{else}}
-
-			<p class="description">{{this.description}}</p>
-	
-			{{/eq}}
-
-		</div>
-
-		<div class="actions">
+	<div class="card tighter-card">
 		
-			{{#eq this.status "connected"}}
+		<div class="card-inside {{this.status}}">
 
-			<p class="edit link-with-icon">
+			<div class="info-top">
+				<p class="connection-logo">{{{this.logo}}}</p>
+				<p class="label">{{this.label}}</p>
 
-				<span class="icon">
-				<a href="{{this.buttonLink}}" class="{{this.status}}">
-				<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-				    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-				        <g id="Sources-Copy-8" transform="translate(-353.000000, -509.000000)" fill="#4A6F99" fill-rule="nonzero">
-				            <g id="Group" transform="translate(305.000000, 202.000000)">
-				                <g id="gridicons-cog" transform="translate(48.000000, 307.000000)">
-				                    <path d="M16.2,9 C16.2,8.4888 16.1451,7.9902 16.0434,7.5096 L17.694,6.0588 L15.894,2.9412 L13.8042,3.6486 C13.0671,2.9862 12.1959,2.4714 11.2311,2.1573 L10.8,0 L7.2,0 L6.7689,2.1564 C5.8041,2.4705 4.9329,2.9853 4.1958,3.6477 L2.106,2.9412 L0.306,6.0588 L1.9566,7.5096 C1.8549,7.9902 1.8,8.4888 1.8,9 C1.8,9.5112 1.8549,10.0098 1.9566,10.4904 L0.306,11.9412 L2.106,15.0588 L4.1958,14.3514 C4.9329,15.0138 5.8041,15.5286 6.7689,15.8427 L7.2,18 L10.8,18 L11.2311,15.8436 C12.1959,15.5295 13.0662,15.0147 13.8042,14.3523 L15.894,15.0597 L17.694,11.9421 L16.0434,10.4913 C16.1451,10.0098 16.2,9.5112 16.2,9 Z M9,12.6 C7.0119,12.6 5.4,10.9881 5.4,9 C5.4,7.0119 7.0119,5.4 9,5.4 C10.9881,5.4 12.6,7.0119 12.6,9 C12.6,10.9881 10.9881,12.6 9,12.6 Z" id="Shape"></path>
-				                </g>
-				            </g>
-				        </g>
-				    </g>
-				</svg>
-				</span>
+				{{#eq this.status "connected"}}
 
-				<span class="link">Remove Connection</span>
+					<p class="connection-info">
+						<span class="label">Connected As:</span>
+						{{ this.account_email }}
+					</p>
 
-				</a>
+					<p class="connection-info">
+									
+						{{#each this.propertyDisplay}}
+						<span class="connection-label">
+							<span class="label">{{this.propertyLabel}}</span>
+							{{ this.name }}
+						</span>
+						{{/each}}
+						
+					</p>
 
-			</p>
 
-			{{else}}
+				{{else}}
 
-				<p><a href="{{this.buttonLink}}" class="btn {{this.status}}">{{this.buttonText}}</a></p>
+				<p class="description">{{this.description}}</p>
+		
+				{{/eq}}
 
-			{{/eq}}
+			</div>
+
+			<div class="actions">
+			
+				{{#eq this.status "connected"}}
+
+				<p class="edit link-with-icon">
+
+					<span class="icon">
+					<a href="{{this.buttonLink}}" class="{{this.status}}">
+					<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+					        <g id="Sources-Copy-8" transform="translate(-353.000000, -509.000000)" fill="#4A6F99" fill-rule="nonzero">
+					            <g id="Group" transform="translate(305.000000, 202.000000)">
+					                <g id="gridicons-cog" transform="translate(48.000000, 307.000000)">
+					                    <path d="M16.2,9 C16.2,8.4888 16.1451,7.9902 16.0434,7.5096 L17.694,6.0588 L15.894,2.9412 L13.8042,3.6486 C13.0671,2.9862 12.1959,2.4714 11.2311,2.1573 L10.8,0 L7.2,0 L6.7689,2.1564 C5.8041,2.4705 4.9329,2.9853 4.1958,3.6477 L2.106,2.9412 L0.306,6.0588 L1.9566,7.5096 C1.8549,7.9902 1.8,8.4888 1.8,9 C1.8,9.5112 1.8549,10.0098 1.9566,10.4904 L0.306,11.9412 L2.106,15.0588 L4.1958,14.3514 C4.9329,15.0138 5.8041,15.5286 6.7689,15.8427 L7.2,18 L10.8,18 L11.2311,15.8436 C12.1959,15.5295 13.0662,15.0147 13.8042,14.3523 L15.894,15.0597 L17.694,11.9421 L16.0434,10.4913 C16.1451,10.0098 16.2,9.5112 16.2,9 Z M9,12.6 C7.0119,12.6 5.4,10.9881 5.4,9 C5.4,7.0119 7.0119,5.4 9,5.4 C10.9881,5.4 12.6,7.0119 12.6,9 C12.6,10.9881 10.9881,12.6 9,12.6 Z" id="Shape"></path>
+					                </g>
+					            </g>
+					        </g>
+					    </g>
+					</svg>
+					</span>
+
+					<span class="link">Remove Connection</span>
+
+					</a>
+
+				</p>
+
+				{{else}}
+
+					<p><a href="{{this.buttonLink}}" class="btn {{this.status}}">{{this.buttonText}}</a></p>
+
+				{{/eq}}
+
+			</div>
 
 		</div>
-
 	</div>
-
 </div>
-</div>
-
 {{/each}}
 
+</div>
+</div>
+
+</div>
+
 {{/if}}
-</div>
-</div>
 
 
-</div>
-
-<div class="section">
-
-<div class="card">
-
-	
-	<div class="connector">
-
-		<h2 class="with-line"><i class="fab fa-google"></i> Google Analytics</h2>
-		
-		<div class="google-accounts ">
-
-			{{#if summaries.google_analytics }}
-
-				{{#if summaries.google_analytics.account_list }}
-
-					<div class="flash-message">
-						<p>Before your Google Analytics account can be connected, we need to choose your view.</p>
-					</div>
-
-					<div class="select-google-view modal">
-
-					<h5 class="label ga-user">GA Accounts for {{summaries.google_analytics.user.email}} </h5>
-
-						<div class="modal-body">
-							
-							{{#each summaries.google_analytics.account_list.users as |account|}}
-								<h4 class="label ga-account">{{ account.account_name }}</h4>
-								{{#each account.web_properties as |property|}}
-									<h5 class="label ga-property">{{ property.property_name }}</h5>
-									
-									<ul class="views-list">
-									{{#each property.views as |view|}}
-										<li>
-											{{view.view_name}}
-											<span class="property-chooser">
-											<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}'>Use</a>
-											</span>
-										</li>
-									{{/each}}
-									</ul>
-
-								{{/each}}
-							{{/each}}
-						</div>
-					</div>
-				{{/if}}
-			{{/if}}
-		</div>
-		{{#if summaries.google_analytics }}
-			{{#if summaries.google_analytics.chosen_account }}
-				{{#if summaries.google_analytics.chosen_account.view_name}}
-					<div class="google-selected-accounts">
-						<h2 class="label ga-account">Connected as: {{summaries.google_analytics.chosen_account.email}}</h2>										
-						<h2 class="select-view-google-text label ga-account">
-							To Account: {{summaries.google_analytics.chosen_account.account_name}} : {{summaries.google_analytics.chosen_account.property_name}} - {{summaries.google_analytics.chosen_account.view_name}}
-						</h2>
-					</div>
-				{{/if}}
-			{{/if}}
-		{{/if}}
-	</div>
-
-	<div class="connector">
-		<h2 class="with-line"><i class="fab fa-facebook"></i> Facebook</h2>
-		
-		<div class="facebook-accounts">
-			{{#if summaries.facebook }}					
-
-				{{#if summaries.facebook.account_list}}
-
-					<div class="flash-message">
-						<p>Before your Facebook account can be connected, we need to choose your page account.</p>
-					</div>
-
-					<div class="select-facebook-view modal">
-						
-						<h5 class="label ga-user">Facebook Page Accounts for {{summaries.facebook.user.email}}</h5>
-
-						<div class="modal-body">											
-							<ul class="views-list">
-								{{#each summaries.facebook.account_list as |account|}}                                                              
-									<li class="fb-account">
-										{{ account.account_name }}
-										<span class="property-chooser">
-										<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
-										Use
-										</a>
-										</span>
-										
-									</li>                                                                
-								{{/each}}
-							</ul>
-						</div>               
-					</div>
-				{{/if}}
-			{{/if}}
-		</div>
-		{{#if summaries.facebook }}							
-			{{#if summaries.facebook.chosen_account}}
-
-				{{#if summaries.facebook.chosen_account.account_name}}
-					<div class="facebook-selected-accounts">
-						<h2 class="label fb-account">Connected as: {{summaries.facebook.chosen_account.email}}</h2>
-						<h2 class="select-view-facebook-text label fb-account">
-							To Account: {{summaries.facebook.chosen_account.account_name}}
-						</h2>
-					</div>
-				{{/if}}
-			{{/if}}
-		{{/if}}
-	</div>
-
-
-</div>			
-
-</div>

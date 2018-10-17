@@ -52,6 +52,15 @@ Connections
 			margin-left: 5px;
 		}
 	}
+
+	.connection-label {
+		display: block;
+		font-size: 14px;
+	}
+
+	.connection-label + .connection-label {
+		margin-top: 8px;
+	}
 }
 
 .connection-logo {

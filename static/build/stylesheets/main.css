@@ -1094,6 +1094,13 @@ Connections
     font-size: 13px;
     margin-left: 5px; }
 
+.connections-list .connection-label {
+  display: block;
+  font-size: 14px; }
+
+.connections-list .connection-label + .connection-label {
+  margin-top: 8px; }
+
 .connection-logo {
   max-height: 50px;
   width: auto; }

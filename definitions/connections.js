@@ -26,6 +26,27 @@ module.exports = {
 				url: "https://analytics.google.com",
 				status: 'available',
 				linkLabel: 'google',
+				propertyDisplay: [
+
+					{
+						propertyLabel: 'Account',
+						property: 'account_name',
+						name: 'to be filled in'
+					},
+
+					{
+						propertyLabel: 'Property',
+						property: 'property_name',
+						name: 'to be filled in'
+					},
+
+					{
+						propertyLabel: 'View',
+						property: 'view_name',
+						name: 'to be filled in'
+					}
+
+				],
 				propertyPattern: "account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}"
 			},
 
@@ -37,6 +58,15 @@ module.exports = {
 				url: "https://www.facebook.com",
 				status: 'available',
 				linkLabel: 'facebook',
+				propertyDisplay: [
+
+					{
+						propertyLabel: 'Page',
+						property: 'account_name',
+						name: 'to be filled in'
+					},
+
+				],
 				propertyPattern: "account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}"
 			},
 
@@ -47,6 +77,7 @@ module.exports = {
 				logo: "google-adwords-logo.png",
 				url: "https://adwords.google.com",
 				status: 'soon',
+				propertyLabel: 'notsetyet',
 				linkLabel: 'notsetyet',
 				propertyPattern: "notsetyet"
 			},

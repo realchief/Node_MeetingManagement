@@ -38,7 +38,10 @@ body {
 	top: 0;
 	bottom: 0;
 	overflow: auto;
+}
 
+.with-prompt .menu {
+	top: $prompt-height;
 }
 
 .main {

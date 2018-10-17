@@ -433,6 +433,9 @@ body {
   bottom: 0;
   overflow: auto; }
 
+.with-prompt .menu {
+  top: 40px; }
+
 .content {
   max-width: 1200px;
   margin: 0 auto;
@@ -1020,8 +1023,20 @@ ul.schedule li {
 /* ==========================================================================
 Messages
 ========================================================================== */
-.flash-message p, .note-message p, .persistent-message p {
+.flash-message p, .note-message p, .persistent-message p,
+.prompt-message p {
   margin: 0; }
+
+.prompt-message {
+  background: #D39B46;
+  color: #fff;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  text-align: center;
+  max-width: 100%;
+  display: block;
+  width: 100%;
+  height: 40px; }
 
 .flash-message {
   background: #c4f5e3;

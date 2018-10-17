@@ -89,7 +89,7 @@ router.get('/data-sources',  function (req, res) {
 
                     _.forEach( connection.propertyDisplay, function( property, index ){
                         property.name = chosen_account[property.property]
-                        console.log(property, property.name)
+                        //console.log(property, property.name)
                    })
 
                 }
@@ -102,7 +102,7 @@ router.get('/data-sources',  function (req, res) {
 
             })
 
-            console.log(summaries.accounts)
+            //console.log(summaries.accounts)
 
             //console.log('\n', emoji.get("smile"), '***** Results: ', results);
             //console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company.company_name);

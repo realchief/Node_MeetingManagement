@@ -1,6 +1,12 @@
 {{> head }}
 
-<body class="home">
+<body class="{{#if sessionPrompt.message}}with-prompt{{/if}}">
+
+	{{#if sessionPrompt.message}}
+	<div class="prompt-message">
+		<p>{{sessionPrompt.message}}
+	</div>
+	{{/if}}
 
 	<div class="app-container">
 

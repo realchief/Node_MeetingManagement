@@ -34,6 +34,9 @@ var userRoutes = require('./routes/user');
 var chartRoutes = require('./routes/charts')
 
 
+var messages = require('./controllers/messages')
+
+
 var colors = require('colors');
 var emoji = require('node-emoji')
 
@@ -119,7 +122,6 @@ app.use(flash());
 app.use(function (req, res, next) {
   
   res.locals.messages = require('express-messages')(req, res);
-
   res.locals.sessionFlash = req.session.sessionFlash;
   delete req.session.sessionFlash;
   next();
@@ -137,6 +139,15 @@ app.use(function(req, res, next) {
   //console.log('handling request for: ' + req.url);
   next();
 });
+
+
+app.use(function (req, res, next) {
+  messages.getPrompts(req, res).then( function(prompts){
+    res.locals.sessionPrompt = prompts
+    next()
+  })
+});
+
 
 // pass variables to our templates + all requests
 app.use((req, res, next) => {

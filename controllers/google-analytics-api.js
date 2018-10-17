@@ -778,6 +778,7 @@ exports.getAccountList = ( gAccount, cb ) => {
                                 };
 
 
+                                // MAKE PROFILE SETTER LINK //
                                 var utilities = require('../controllers/utilities');
 
                                 view.property_link = utilities.serialize({
@@ -789,7 +790,7 @@ exports.getAccountList = ( gAccount, cb ) => {
                                   view_name: view.view_name
                                 })
 
-                         
+
                                 property.views.push(view);
                             }
                             datum.web_properties.push(property);

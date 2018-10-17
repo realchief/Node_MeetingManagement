@@ -476,6 +476,7 @@ exports.getAccountList = ( fAccount, done ) => {
                     'account_token': response.accounts.data[i].access_token
                 };
 
+                // MAKE PROFILE SETTER LINK //
                 var utilities = require('../controllers/utilities');
 
                 datum.property_link = utilities.serialize({

@@ -537,7 +537,15 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
               onFinish( meetingId )
           }
           else {
+              console.log('================hahahaha==================')
               console.log(meetingInfo.all_recurring_data)
+
+              for (var i = 0; i < meetingInfo.all_recurring_data.length; i++) { 
+                var msg = null
+                console.log(meetingInfo.all_recurring_data[i])
+                thisModule.schedule_email(meetingId, meetingInfo, meetingInfo.all_recurring_data[i], msg, meeting, 'create');
+                onFinish( meetingId )
+              }
           }
     });
 

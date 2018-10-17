@@ -38,7 +38,7 @@ h3 {
 
  span.label {
 	margin-left: 0;
-	text-align: left;
+	/*text-align: left;*/
 	display: block;
 }
 
@@ -58,9 +58,9 @@ p:last-child {
     background: #fff;
 
     &:after {
-		content: "";
+		  content: "";
 	  	display: table;
-	 	clear: both;
+	 	 clear: both;
 	}
 
 	text-align: center;
@@ -84,6 +84,11 @@ p:last-child {
 /* ==========================================================================
    Helpers
    ========================================================================== */
+
+.centered {
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .clearfix:after {
 	content: "";

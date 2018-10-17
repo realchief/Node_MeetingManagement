@@ -501,7 +501,7 @@ h3 {
 
 span.label {
   margin-left: 0;
-  text-align: left;
+  /*text-align: left;*/
   display: block; }
 
 p:last-child {
@@ -529,6 +529,10 @@ p:last-child {
 /* ==========================================================================
    Helpers
    ========================================================================== */
+.centered {
+  margin-left: auto;
+  margin-right: auto; }
+
 .clearfix:after {
   content: "";
   display: table;
@@ -1075,9 +1079,6 @@ Messages
 /* ==========================================================================
 Connections
 ========================================================================== */
-.connections-list .card {
-  text-align: left; }
-
 .connections-list p {
   margin: 0 0 20px 0; }
 
@@ -1115,6 +1116,44 @@ Connections
 
 .connections-list .connection-label + .connection-label {
   margin-top: 8px; }
+
+.properties {
+  margin: 20px auto 0 auto;
+  border-bottom: 1px solid #E1E2E6;
+  text-align: center; }
+  .properties > li {
+    border: 1px solid #E1E2E6;
+    border-bottom: none;
+    padding: 0;
+    margin-top: 10px;
+    border-bottom: 1px solid #E1E2E6; }
+    .properties > li > span {
+      padding: 10px 20px;
+      display: block; }
+  .properties .properties-list {
+    border-top: 1px solid #E1E2E6;
+    text-align: center; }
+    .properties .properties-list li {
+      padding: 0;
+      margin: 0; }
+    .properties .properties-list a {
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #444;
+      background: #F3F4F8;
+      border-bottom: 1px solid #DBDDE3;
+      display: block; }
+      .properties .properties-list a:hover {
+        background: #D4D7E3; }
+    .properties .properties-list li:last-child a {
+      border-bottom: none; }
+    .properties .properties-list span {
+      display: block; }
+    .properties .properties-list span.property-label {
+      font-weight: bold;
+      font-size: 13px; }
+    .properties .properties-list span.view-label {
+      font-size: 16px; }
 
 .connection-logo {
   max-height: 50px;

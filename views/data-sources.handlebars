@@ -44,6 +44,130 @@
 {{/gt}}
 
 
+
+{{#if connectionsList}}
+
+{{#each connectionsList  as |connection|}}
+
+	{{#eq connection.status "property"}}
+
+		<div class="section">
+		<div class="connections-list choose-property-list">
+		<div class="row">
+
+		<div class="col-xs-12 col-md-6 col-lg-6 centered">
+			<div class="card tighter-card align-center">
+				
+				<div class="card-inside {{connection.status}}">
+
+					<div class="info-top">
+						<p class="connection-logo">{{{connection.logo}}}</p>
+						<p class="label">{{connection.label}}</p>
+
+						<p>Select which property you want to use for insights:</p>
+
+						<p class="connection-info">
+							<span class="label">Connected As:</span>
+							{{ connection.account_email }}
+						</p>
+
+					</div>
+
+					
+					<div class="property-chooser">
+
+						{{#eq connection.linkLabel "google"}}
+
+						<ul class="properties">
+							{{#each connection.account_list.users as |account|}}
+								<li>
+									<span class="account-label">{{ account.account_name }}</span>
+							
+									<ul class="properties-list">
+										{{#each account.web_properties as |property|}}
+											
+											{{#each property.views as |view|}}
+												<li>
+												
+													<a href="/{{connection.linkLabel}}/setprofile/?{{view.property_link}}">
+														<span class="property-label">{{property.property_name }}</span>
+														<span class="view-label">{{view.view_name}}</span>
+													</a>
+													
+												</li>
+											{{/each}}
+
+										{{/each}}
+	
+									</ul>
+								</li>
+							{{/each}}
+						</ul>
+
+						{{/eq}}
+
+
+						{{#eq connection.linkLabel "facebook"}}
+
+						<ul class="properties">
+							
+								<li>
+									<span class="account-label">Facebook Page Accounts</span>
+							
+									<ul class="properties-list">
+
+										{{#if connection.account_list }}
+
+										{{#each connection.account_list as |account|}}
+												<li>
+												
+													<a href="/{{connection.linkLabel}}/setprofile/?{{account.property_link}}">
+														<span class="property-label">{{ account.account_name }}</span>
+													</a>
+													
+												</li>
+										{{/each}}
+
+										{{else}}
+
+											<li>
+												<a href="/auth/{{connection.linkLabel}}/unlink">
+												You do not have any managed pages!										
+												</a>			
+											</li>
+
+										{{/if}}
+
+									</ul>
+								</li>
+						</ul>
+
+						{{/eq}}
+
+
+					</div>
+
+					<div class="actions">
+						<p><a href="/auth/{{connection.linkLabel}}/unlink" class="{{connection.status}}">Cancel</a></p>
+					</div>
+				</div>		
+		
+			</div>
+
+		</div>
+
+		</div>
+		</div>
+		</div>
+
+	{{/eq}}
+	
+{{/each}}
+
+{{/if}}
+
+
+
 {{#gt numConnections 0 }}
 
 <div class="persistent-message">
@@ -52,80 +176,6 @@
 
 {{/gt}}
 
-
-
-{{#if summaries.google_analytics.account_list }}
-
-<div class="section">
-	<div class="card">
-		<div class="flash-message">
-			<p>Before your Google Analytics account can be connected, we need to choose your view.</p>
-		</div>
-
-		<div class="select-google-view modal">
-
-		<h5 class="label ga-user">GA Accounts for {{summaries.google_analytics.user.email}} </h5>
-
-			<div class="modal-body">
-				
-				{{#each summaries.google_analytics.account_list.users as |account|}}
-					<h4 class="label ga-account">{{ account.account_name }}</h4>
-					{{#each account.web_properties as |property|}}
-						<h5 class="label ga-property">{{ property.property_name }}</h5>
-						
-						<ul class="views-list">
-						{{#each property.views as |view|}}
-							<li>
-								{{view.view_name}}
-								<span class="property-chooser">
-								<a href='/google/setprofile?account_id={{account.account_id}}&account_name={{account.account_name}}&property_id={{property.property_id}}&view_id={{view.view_id}}&view_name={{view.view_name}}&property_name={{property.property_name}}'>Use</a>
-								</span>
-							</li>
-						{{/each}}
-						</ul>
-
-					{{/each}}
-				{{/each}}
-			</div>
-		</div>
-	</div>
-</div>
-
-{{/if}}
-
-{{#if summaries.facebook.account_list}}
-
-	<div class="section">
-		<div class="card">
-			<div class="flash-message">
-				<p>Before your Facebook account can be connected, we need to choose your page account.</p>
-			</div>
-
-			<div class="select-facebook-view modal">
-				
-				<h5 class="label ga-user">Facebook Page Accounts for {{summaries.facebook.user.email}}</h5>
-
-				<div class="modal-body">											
-					<ul class="views-list">
-						{{#each summaries.facebook.account_list as |account|}}                                                              
-							<li class="fb-account">
-								{{ account.account_name }}
-								<span class="property-chooser">
-								<a href='/facebook/setprofile/?account_id={{account.account_id}}&account_name={{account.account_name}}&account_token={{account.account_token}}'>
-								Use
-								</a>
-								</span>
-								
-							</li>                                                                
-						{{/each}}
-					</ul>
-				</div>               
-			</div>
-		</div>
-	</div>
-
-{{/if}}
-
 {{#if connectionsList}}
 
 <div class="section">
@@ -133,26 +183,26 @@
 <div class="connections-list">
 <div class="row">
 
-{{#each connectionsList}}
+{{#each connectionsList as |connection| }}
 <div class="col-xs-12 col-md-4 col-lg-3">
-	<div class="card tighter-card">
+	<div class="card tighter-card align-left">
 		
-		<div class="card-inside {{this.status}}">
+		<div class="card-inside {{connection.status}}">
 
 			<div class="info-top">
-				<p class="connection-logo">{{{this.logo}}}</p>
-				<p class="label">{{this.label}}</p>
+				<p class="connection-logo">{{{connection.logo}}}</p>
+				<p class="label">{{connection.label}}</p>
 
-				{{#eq this.status "connected"}}
+				{{#eq connection.status "connected"}}
 
 					<p class="connection-info">
 						<span class="label">Connected As:</span>
-						{{ this.account_email }}
+						{{ connection.account_email }}
 					</p>
 
 					<p class="connection-info">
 									
-						{{#each this.propertyDisplay}}
+						{{#each connection.propertyDisplay}}
 						<span class="connection-label">
 							<span class="label">{{this.propertyLabel}}</span>
 							{{ this.name }}
@@ -164,7 +214,13 @@
 
 				{{else}}
 
-				<p class="description">{{this.description}}</p>
+
+				{{#eq connection.status "property"}}
+					<p class="description">Select which property you want to use for insights.</p>
+				{{else}}
+					<p class="description">{{connection.description}}</p>
+				{{/eq}}
+				
 		
 				{{/eq}}
 
@@ -172,12 +228,12 @@
 
 			<div class="actions">
 			
-				{{#eq this.status "connected"}}
+				{{#contains connection.status "connected"}}
 
 				<p class="edit link-with-icon">
 
 					<span class="icon">
-					<a href="{{this.buttonLink}}" class="{{this.status}}">
+					<a href="{{connection.buttonLink}}" class="{{connection.status}}">
 					<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 					    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
 					        <g id="Sources-Copy-8" transform="translate(-353.000000, -509.000000)" fill="#4A6F99" fill-rule="nonzero">
@@ -199,9 +255,9 @@
 
 				{{else}}
 
-					<p><a href="{{this.buttonLink}}" class="btn {{this.status}}">{{this.buttonText}}</a></p>
+					<p><a href="{{connection.buttonLink}}" class="btn {{connection.status}}">{{connection.buttonText}}</a></p>
 
-				{{/eq}}
+				{{/contains}}
 
 			</div>
 

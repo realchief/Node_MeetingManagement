@@ -84,7 +84,6 @@ router.get('/data-sources',  function (req, res) {
                     connection.status = "connected",
                     connection.buttonText = "Edit Connection"
                     connection.buttonLink = "/auth/" + connection.linkLabel + "/unlink/"
-
                     connection.account_email = chosen_account.email
 
                     _.forEach( connection.propertyDisplay, function( property, index ){
@@ -95,9 +94,12 @@ router.get('/data-sources',  function (req, res) {
                 }
 
                 if ( propertyList ) {
+
                     connection.status = "property"
-                    connection.buttonText = "Edit Connection"
+                    connection.buttonText = "Remove Connection"
                     connection.buttonLink = "/auth/" + connection.linkLabel + "/unlink/"
+                    connection.account_email = account_info.email
+                    connection.account_list = propertyList
                 }
 
             })

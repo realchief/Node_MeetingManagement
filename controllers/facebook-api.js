@@ -475,6 +475,15 @@ exports.getAccountList = ( fAccount, done ) => {
                     'account_name': account_name_assert,
                     'account_token': response.accounts.data[i].access_token
                 };
+
+                var utilities = require('../controllers/utilities');
+
+                datum.property_link = utilities.serialize({
+                  account_id: datum.account_id,
+                  account_name: datum.account_name,
+                  account_token: datum.account_token
+                })
+
                 data.push(datum)
             }
 
@@ -506,6 +515,7 @@ exports.getAccountListOrSelectView = function ( user, done ) {
                 cb(null, {
                     chosen_account: {
                         account_name: fAccount.account_name,
+                        user : fAccount,
                         email: fAccount.email
                     }, 
                     account_list: null
@@ -517,6 +527,7 @@ exports.getAccountListOrSelectView = function ( user, done ) {
                     cb(null, {
                         account_list: accounts, 
                         user : fAccount,
+                        email: fAccount.email,
                         chosen_account: null
                     })
                 });

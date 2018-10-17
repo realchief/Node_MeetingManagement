@@ -819,8 +819,7 @@ exports.getAccountListOrSelectView = function ( user, cb ) {
                         view_name: gAccount.view_name,
                         account_name: gAccount.account_name,
                         property_name: gAccount.property_name,
-                        email: gAccount.email,
-                        property_display : gAccount.account_name + ' : ' + gAccount.property_name + " - " + gAccount.view_name
+                        email: gAccount.email
                     }, 
                     account_list: null
                 });

@@ -88,16 +88,18 @@ exports.meetingFileParse = ( meetingFile ) => {
             
             var limited_allRecurring = []
             if ( untilDate == null) {
-
               _.forEach( allRecurring, function( date, index ) {
                 if ( index < 6 ) {
-                  console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))
-                  limited_allRecurring.push(date)
+                  console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))                  
+                  limited_allRecurring.push(moment(JSON.stringify(date),'YYYYMMDDTHHmmssZ').toDate())
                 }
               })
             }
             else {
-              limited_allRecurring = allRecurring
+              _.forEach( allRecurring, function( date, index ) {
+                console.log('Recurring Date>>>', moment(date, 'YYYYMMDDTHHmmssZ').format("ddd, MMMM D [at] h:mma"))                  
+                limited_allRecurring.push(moment(JSON.stringify(date),'YYYYMMDDTHHmmssZ').toDate())
+              })
             }
             isRecurring = true
         }
@@ -517,7 +519,9 @@ exports.create = ( user_id, meetingId, meetingInfo, onFinish ) => {
       created_time : meetingInfo.meeting_created,
       sequence : meetingInfo.meeting_sequence,
       user_id : meetingInfo.companyId,
-      sendgrid_recipients: meetingInfo.sendgrid_recipients
+      sendgrid_recipients: meetingInfo.sendgrid_recipients,
+      is_recurring : meetingInfo.recurring_status,
+      recurring_date : meetingInfo.all_recurring_data      
     
     }).then(function ( meeting ) {
        /* ===== modify base email ======= */

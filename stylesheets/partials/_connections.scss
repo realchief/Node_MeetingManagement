@@ -1,0 +1,136 @@
+/* ==========================================================================
+Connections
+========================================================================== */ 
+
+.connections-list {
+	
+	p {
+		margin: 0 0 20px 0;
+	}
+
+	.actions {
+	}
+
+	.btn {
+		border-radius: 10px;
+	}
+
+	.label {
+		font-size: 24px;
+		color: #585D78;
+	}
+
+	.description {
+		font-size: 16px;
+		color: #585D78;
+	}
+
+	span.label {
+		font-size: 13px;
+		text-transform: uppercase;
+		color: #889EB7;
+		display: block;
+	}
+
+	.link-with-icon {
+
+		text-align: left;
+
+		span {
+			display: inline-block;
+		}
+
+		a {
+			text-decoration: none;
+			color: #4A6F99;
+			text-transform: uppercase;
+			font-size: 13px;
+			margin-left: 5px;
+		}
+	}
+
+	.connection-label {
+		display: block;
+		font-size: 14px;
+	}
+
+	.connection-label + .connection-label {
+		margin-top: 8px;
+	}
+}
+
+
+.properties {
+
+	margin: 20px auto 0 auto;
+	border-bottom: 1px solid #E1E2E6;
+	text-align: center;
+
+	> li {
+
+		border: 1px solid #E1E2E6;
+		border-bottom: none;
+		padding: 0;
+		margin-top: 10px;
+		border-bottom: 1px solid #E1E2E6;
+
+		> span {
+
+			padding: 10px 20px;
+			display: block;
+
+		}
+
+	}
+
+	.properties-list {
+
+		border-top: 1px solid #E1E2E6;
+		text-align: center;
+		
+		li {
+			padding: 0;
+			margin: 0;
+		}
+
+		a {
+			padding: 10px 20px;
+			text-decoration: none;
+			color: #444;
+			background: #F3F4F8;
+			border-bottom: 1px solid #DBDDE3;
+			display: block;
+		
+			&:hover {
+				background: #D4D7E3;
+			}
+
+		}
+
+		li:last-child a {
+				border-bottom: none;
+			}
+
+		span {
+			display: block;
+		}
+
+		span.property-label {
+			font-weight: bold;
+			font-size: 13px;
+		}
+
+		span.view-label {
+			font-size: 16px;
+		}
+
+
+	}
+
+}
+
+
+.connection-logo {
+	max-height: 50px;
+	width: auto;
+}

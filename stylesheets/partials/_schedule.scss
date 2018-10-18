@@ -1,0 +1,54 @@
+/* ==========================================================================
+Schedule
+========================================================================== */ 
+
+ul.schedule li span {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+ul.schedule {
+    list-style-type: none;
+}
+
+ul.schedule li {
+    list-style-type: none;
+    margin-bottom: 5px;
+    display: block;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 15px 10px;
+}
+
+
+.tb-schedule {
+}
+
+.tb-schedule table,
+.tb-schedule th, 
+.tb-schedule td {
+    border: 1px solid black;
+}
+
+.tb-schedule table {
+    width: 100%;
+}
+
+.tb-schedule th {
+    height: 50px;
+}
+
+.tb-schedule th, 
+.tb-schedule td {
+    padding: 12px;
+    text-align: left;
+}
+
+.tb-schedule tr:hover {
+    background-color: #f5f5f5;
+}
+
+.tb-schedule th {
+    background-color: #DB6668;
+    color: white;
+}
+

@@ -1,0 +1,77 @@
+<div class="card">
+
+{{#if allInsights}}
+
+<h3>Insights</h3>
+
+{{#each allInsights}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+<br />
+
+{{#if allTalkingPoints}}
+
+
+<h3>Points</h3>
+
+{{#each allTalkingPoints}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+<br />
+
+
+
+
+{{#if filteredPoints}}
+
+<h3>Filtered Points</h3>
+
+{{#each filteredPoints}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+<br />
+
+{{#if filteredInsights}}
+
+<h3>Filtered Insights</h3>
+
+{{#each filteredInsights}}
+<li>{{this.phrase}}</li>
+  {{/each}}
+
+{{/if}}
+
+
+{{#if filteredReplacedPoints}}
+
+<h3>Filtered Replaced Points</h3>
+
+{{#each filteredReplacedPoints}}
+<li>{{this}}</li>
+  {{/each}}
+
+{{/if}}
+
+<br />
+
+{{#if filteredReplacedInsights}}
+
+<h3>Filtered Replaced Insights</h3>
+
+{{#each filteredReplacedInsights}}
+<li>{{this}}</li>
+  {{/each}}
+
+{{/if}}
+
+</div>
+

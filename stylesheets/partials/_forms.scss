@@ -1,0 +1,134 @@
+/* ==========================================================================
+Forms
+========================================================================== */ 
+
+* {
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+Containers
+========================================================================== */ 
+
+.input-group {
+    margin-bottom: 10px;
+    display: block;
+}
+
+
+p.alert {
+    font-size: 14px;
+    font-style: italic;
+    color: #e44;
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+
+
+.form-header {
+    margin-bottom: 30px;
+}
+
+.actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+/* ==========================================================================
+Inputs
+========================================================================== */ 
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    margin: 5px 0;
+    opacity: 0.85;
+    display: inline-block;
+    line-height: 20px;
+    text-decoration: none;
+    vertical-align: middle;
+
+    &:focus {
+        background-color: #DB6668;
+        outline: none;
+    }
+    /* remove underline from anchors */
+}
+
+input[type='radio'] {
+    width: auto;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    background: #fff;
+    border: 1px solid #828594;
+    margin-bottom: 10px;
+}
+
+/* Set a style for all buttons */
+input[type=submit], button, .btn {
+    background-color: #DB6668;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+   
+    &:hover {
+        background-color: #B63436;
+    }
+
+    &:focus {
+        background-color: #DB6668;
+    }
+}
+
+.btn {
+
+    &.soon {
+        background-color: #828594;
+
+         &:hover {
+            background-color: #828594;
+        }
+
+        &:focus {
+            background-color: #828594;
+        }
+
+    }
+}
+
+label {
+    font-weight: normal;
+    text-align: left;
+}
+
+
+.inline-form {
+
+    
+
+    label {
+        display: inline-block;
+    }
+
+    input {
+        width: 300px;
+        padding: 10px 10px;
+        border-radius: 2px;
+    }
+
+    input[type='radio'] {
+        width: auto;
+    }
+
+}

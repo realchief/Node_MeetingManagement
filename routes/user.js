@@ -12,6 +12,9 @@ var userInfo = require('../controllers/users')
 
 var utilities = require('../controllers/utilities')
 
+var Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
 router.get('/google/setprofile', function (req, res) {   
     
     if (req.user) {
@@ -135,7 +138,7 @@ router.get('/signin', function(req, res, next) {
     
         res.render('signin', { 
         	title: 'Sign In', 
-        	layout: false, 
+        	layout: 'main', 
         	errorMessage: req.flash('errMessage') 
         });
    
@@ -166,8 +169,8 @@ router.get('/signup', function(req, res, next) {
     } else {
         
         res.render('signup', { 
-        	title: 'Sign Up', 
-        	layout: false 
+            title: 'Sign Up', 
+            layout: 'main', 
         });
         
     }
@@ -187,7 +190,13 @@ router.post('/signup', function(req, res) {
     
     if (new_password != new_confirm_password) {
      
-        res.render('signup', {errorMessage: { password_match:'Password is not matched. Try again'}, layout: false} );
+        res.render('signup', {
+            errorMessage: { 
+                password_match: 'Your passwords do not match. Please try again!'
+            }, 
+            layout: 'main'
+        } );
+
     }
 
     else {
@@ -202,7 +211,12 @@ router.post('/signup', function(req, res) {
             
             if (user) {
         
-                res.render('signup', {errorMessage: { email:'Duplicated User, This email was already used. Use other email.'}, layout: false} );
+                res.render('signup', {
+                    errorMessage: { 
+                        email:'Sorry, this email address already exists.'
+                    }, 
+                    layout: 'main.handlebars'
+                } );
         
             }
         
@@ -217,9 +231,15 @@ router.post('/signup', function(req, res) {
                 
                 }).then( function( company ) {
 
-                    if (user) {
+                    if ( company ) {
         
-                        res.render('signup', {errorMessage: { email:'Company Name has already been used.'}, layout: false} );
+                        res.render('signup', {
+                            errorMessage: { 
+                                company_name:'Sorry, this company name has already been used.'
+                            }, 
+                            layout: 'main.handlebars'
+                        } );
+
                 
                     }
 
@@ -227,7 +247,7 @@ router.post('/signup', function(req, res) {
 
                         Model.Company.create( newUser ).then( function ( company ) {
 
-                            Model.User.create( newUser ).then(function ( user ) {
+                            return Model.User.create( newUser ).then(function ( user ) {
                           
                                 return Model.Role.findOne({
                                     
@@ -276,11 +296,20 @@ router.post('/signup', function(req, res) {
                                 // res.redirect('signin');
 
                             }).catch(function (err) {
-                                console.log(err);
-                                res.render('signup', {errorMessage: { signout:'You can not sign up', layout: false }});
+                          
+                                res.render('signup', {
+                                    errorMessage: { 
+                                        signout:' You can not sign up'
+                                    }, 
+                                    layout: 'main.handlebars'
+                                } );
+
                             });
 
-                        })
+                        }).catch(function(err) {
+                            // print the error details
+                            console.log('Company Create Error:', err);
+                        });
 
                     }
             
@@ -343,9 +372,9 @@ router.get('/getuser/:user_id', function (req, res) {
     moreInfo.momentUTCOffsetFromMountain = moment().tz("America/Denver").utcOffset()
     moreInfo.momentUTCOffsetFromPacific = moment().tz("America/Los_Angeles").utcOffset()
 
-    res.render('fingertips', {
+    res.render('accounts', {
         version: 'fingertips',
-        layout: 'accounts.handlebars',
+        layout: 'main',
         user: credentials.user,
         linkedAccounts: credentials.accounts,
         moreInfo: moreInfo
@@ -369,9 +398,9 @@ router.get('/settings',  function (req, res) {
             if (err) {
                 req.flash('setting_error', err.error);
             } 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'settings.handlebars',
+            res.render('settings', {
+                layout: 'main',
+                page: 'settings',
                 time: setting.insights_time,
                 attendees: setting.insights_to,
                 user:req.user
@@ -445,8 +474,9 @@ router.get('/profile', function(req, res, next) {
 
     } else {        
 
-        res.render('fingertips', {
-            layout: 'profile.handlebars',
+        res.render('profile', {
+            layout: 'main',
+            page: 'profile',
             user : req.user                     
         });
 
@@ -471,10 +501,11 @@ router.get('/profile', function(req, res, next) {
 
     if (updated_password != updated_confirm_password) {
         
-        res.render( 'fingertips', { 
-            layout: 'profile.handlebars',
+        res.render( 'profile', { 
+            layout: 'main',
+            page: 'profile',
             errorMessage: { 
-                password_match:'Password is not matched. Try again'
+                password_match:'Your passwords do not match. Please try again!'
             },
             user: req.user
         })
@@ -498,32 +529,61 @@ router.get('/profile', function(req, res, next) {
       
   if (req.user) { 
 
-      req.user.getCompany().then( function( company ){
+    // look for an existing user
+         Model.User.findOne({
+            
+            where: {
+                [Op.or]: [{'email': updated_email}]
 
-        company.updateAttributes(companyToUpdate).then( function( updatedResult ){
-
-             req.user.updateAttributes(toUpdate).then(function (updatedResult) {   
-
-                req.session.sessionFlash = {
-                        type: 'info',
-                        message: 'Profile has been updated.'
+                //, {'user_id': updated_user_id}
+            }
+        
+            }).then(function (user) {
+                
+                if ( user && ( req.user.email !== updated_email ) ) {
+            
+                    var errorMessage =  { 
+                        email:'Sorry, ' + updated_email + ' is already in use.'
                     }
+                    
 
-                res.redirect('/profile');
-              })
+                    res.render( 'profile', { 
+                        layout: 'main',
+                        page: 'profile',
+                        errorMessage: errorMessage,
+                        user: req.user
+                    })
+            
+                }
+            
+                else {
+
+
+                  req.user.getCompany().then( function( company ){
+
+                    company.updateAttributes(companyToUpdate).then( function( updatedResult ){
+
+                         req.user.updateAttributes(toUpdate).then(function (updatedResult) {   
+
+                            req.session.sessionFlash = {
+                                    type: 'info',
+                                    message: 'Profile has been updated.'
+                                }
+
+                            res.redirect('/profile');
+                          })
+
+                    })
+                   })
+
+                }
 
         })
-
-    })
-
     } 
 
   else {
     
-    req.session.sessionFlash = {
-        type: 'info',
-        message: 'Something happened wrong from profile settings.'
-    }
+    req.session.redirectTo = '/profile'
 
     res.redirect('signin');
  }
@@ -542,13 +602,13 @@ router.get('/team',  function (req, res) {
 
         req.user.getCompany().then( function( company ) {
 
-            company.getUsers().then( function( team ) {
+            company.getUsers().then( function( members ) {
                 
-                res.render('fingertips', {
-                    version: 'fingertips',
-                    layout: 'team.handlebars',
-                    team : team,
-                    user:req.user
+                res.render('team', {
+                    layout: 'main',
+                    page: 'team',
+                    members : members,
+                    user: req.user
                 });
 
             })
@@ -569,9 +629,10 @@ router.get('/team/add',  function (req, res) {
     }
     else {          
 
-        res.render('fingertips', {
+        res.render('add-team-member', {
             version: 'fingertips',
-            layout: 'add-team-member.handlebars',
+            layout: 'main',
+            page: 'team',
             user: req.user
         });
 
@@ -590,37 +651,74 @@ router.post('/team/add',  function (req, res) {
         return res.redirect('/signin')
     }
 
-    else {          
+    else {    
 
-        Model.User.create( newTeamMember ).then(function ( member ) {
-                          
-            return Model.Role.findOne({
+
+        // look for an existing user
+         Model.User.findOne({
+            
+            where: {
+                'email': newTeamMember.email
+            }
+        
+            }).then(function (user) {
                 
-                where : { 'role_name' : 'team_member' }
+                if (user) {
+            
+                    var errorMessage =  { 
+                       email:'Sorry, ' + newTeamMember.email + ' is already in use.'
+                    }
+                    
 
-            }).then( function( role ) {
-
-                if ( !role ) {
-                    console.log('no role!!')
+                    res.render('add-team-member', {
+                        layout: 'main',
+                        page: 'team',
+                        errorMessage : errorMessage,
+                        newTeamMember : newTeamMember,
+                        user: req.user
+                    });
+            
                 }
+            
+                else {
 
-                return member.setRole( role ).then( function() {
+                Model.User.create( newTeamMember ).then(function ( member ) {
+                          
+                    return Model.Role.findOne({
+                        
+                        where : { 'role_name' : 'team_member' }
 
-                    return member.setCompany( req.user.company ).then( function() {
+                    }).then( function( role ) {
 
-                       req.session.sessionFlash = {
-                            type: 'info',
-                            message: 'Team Member' + ' ' + member.username + ' ' + 'has been added.'
+                        if ( !role ) {
+                            console.log('no role!!')
                         }
 
-                       res.redirect('/team');
+                        return member.setRole( role ).then( function() {
+
+                            return member.setCompany( req.user.company ).then( function() {
+
+                               req.session.sessionFlash = {
+                                    type: 'info',
+                                    message: 'Team Member' + ' ' + member.username + ' ' + 'has been added.'
+                                }
+
+                               res.redirect('/team');
+
+                            })
+                        })
 
                     })
+                
                 })
 
-            })
-        
+            }
+
+
         })
+
+
+        
 
     }
 
@@ -641,9 +739,9 @@ router.get('/team/edit/:id',  function (req, res) {
 
         Model.User.findOne( { where: whereClause } ).then(function ( member ) {
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'edit-team-member.handlebars',
+            res.render('edit-team-member', {
+                layout: 'main',
+                page: 'team',
                 teamMember : member,
                 user: req.user
             });
@@ -667,22 +765,58 @@ router.post('/team/edit/',  function (req, res) {
 
     else {          
 
-        var whereClause = { 'id' : memberInfo.id }
 
-        Model.User.findOne( { where: whereClause } ).then(function ( member ) {
 
-            member.updateAttributes(memberInfo).then( function( updatedResult ){
-           
-                req.session.sessionFlash = {
-                        type: 'info',
-                       message: 'Team Member' + ' ' + member.username + ' ' + 'has been updated.'
+        // look for an existing user
+         Model.User.findOne({
+            
+            where: {
+                'email': memberInfo.email
+            }
+        
+            }).then(function (user) {
+                
+                if (user && ( user.email !== memberInfo.current_email) ) {
+            
+                    var errorMessage =  { 
+                       email:'Sorry, ' + memberInfo.email + ' is already in use.'
                     }
+                    
+                    memberInfo.email = memberInfo.current_email
 
-                res.redirect('/team/edit/' + updatedResult.id);
+                    res.render('edit-team-member', {
+                        layout: 'main',
+                        page: 'team',
+                        errorMessage : errorMessage,
+                        teamMember : memberInfo,
+                        user: req.user
+                    });
+            
+                }
+            
+                else {
 
-              })
-         
-        })
+
+                    var whereClause = { 'id' : memberInfo.id }
+
+                    Model.User.findOne( { where: whereClause } ).then(function ( member ) {
+
+                        member.updateAttributes(memberInfo).then( function( updatedResult ){
+                       
+                            req.session.sessionFlash = {
+                                    type: 'info',
+                                   message: 'Team Member' + ' ' + member.username + ' ' + 'has been updated.'
+                                }
+
+                            res.redirect('/team/edit/' + updatedResult.id);
+
+                          })
+                     
+                    })
+
+                }
+
+            })
 
     }
 
@@ -702,9 +836,9 @@ router.get('/team/delete/:id',  function (req, res) {
 
         Model.User.findOne( { where: whereClause } ).then(function ( member ) {
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'delete-team-member.handlebars',
+            res.render('delete-team-member', {
+                layout: 'main',
+                page: 'team',
                 teamMember : member,
                 user: req.user
             });

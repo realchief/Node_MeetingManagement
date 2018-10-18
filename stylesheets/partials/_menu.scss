@@ -1,0 +1,141 @@
+/* ==========================================================================
+Menu
+========================================================================== */ 
+
+.logo {
+
+	text-align: center;
+	padding-top: 10px;
+
+	img {
+		max-width: 115px;
+		height: auto;
+		margin-left: -10px;
+	}
+}
+
+.menu {
+
+	color: #B7CBE5;
+
+	a {
+		color: #B7CBE5;
+		text-decoration: none;
+	}
+
+	.cell {
+		margin-bottom: 20px;
+	}
+
+	.company-name {
+		color: #fff;
+		margin: 0;
+	}
+
+	.current {
+		color: #ffffff;
+
+		a {
+			color: #ffffff;
+		}
+	}
+
+	.admin-cell {
+		margin-top: 30px;
+		border-top: 1px solid #5B5E6F;
+		padding-top: 20px;
+	}
+
+}
+
+.admin-items {
+	font-size: 13px;
+
+	li {
+		margin: 0;
+		padding: 3px 0;
+	}
+
+
+}
+
+.profile-items {
+
+	li {
+		padding: 8px 0;
+	}
+
+}
+
+.user-items {
+	font-size: 13px;
+
+	li {
+		margin: 0;
+		padding: 5px 0;
+	}
+
+	.label {
+		text-transform: uppercase;
+		margin-bottom: 3px;
+	}
+}
+
+.menu-items {
+
+	margin-left: -$menu-padding;
+	margin-right: -$menu-padding;
+
+	li {
+		display: block;
+		margin: 0 0 1px 0;
+		padding: 0;
+		width: 100%;
+		vertical-align: middle;
+	
+		&.current {
+			background: #585D78;
+		
+			span.icon {
+				left: 15px;
+			}
+
+			svg g {
+				fill: #ffffff;
+			}
+
+			a {
+				color: #fff;
+				padding-left: 55px;
+				border-left: 5px solid #D39B46;
+
+			}
+		}
+
+
+	}
+
+	a {
+		display: block;
+		position: relative;
+		vertical-align: middle;
+		padding: 15px 20px 15px 60px;
+		width: 100%;
+		
+		&:hover {
+			background: #585D78;
+		}
+	}
+
+
+	span.icon {
+		position: absolute;
+		left: $menu-padding;
+		top: 10px;
+	}
+
+	span {
+		display: inline-block;
+	}
+}
+

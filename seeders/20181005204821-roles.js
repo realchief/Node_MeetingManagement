@@ -5,13 +5,15 @@ module.exports = {
   
     return queryInterface.bulkInsert('Roles', [{
         role_name: 'admin',
-        role_type: 'Administrator',
+        role_label: 'Administrator',
+        role_description: 'Administrator access',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         role_name: 'team_member',
-        role_type: 'Team Member',
+        role_label: 'Team Member',
+        role_description: 'Team Member access',
         createdAt: new Date(),
         updatedAt: new Date()
       }], {});

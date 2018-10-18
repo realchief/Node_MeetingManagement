@@ -9,6 +9,8 @@ var userInfo = require('../controllers/users')
 var colors = require('colors');
 var emoji = require('node-emoji')
 
+var _ = require('lodash');
+
 router.get('/',  function (req, res) {
 
     var redirectTo = req.session.redirectTo ? req.session.redirectTo : '/';
@@ -30,8 +32,8 @@ router.get('/',  function (req, res) {
         console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company.company_name);
 
         res.render('fingertips', {
-            version: 'fingertips',
-            layout: 'fingertips.handlebars',
+            layout: 'main',
+            page: 'home',
             user : req.user,
         });
 
@@ -59,6 +61,10 @@ router.get('/data-sources',  function (req, res) {
 
     if (req.user) {
 
+        var utilities = require('../controllers/utilities')
+        var connectionsList = require('../definitions/connections').get()
+        var connectionsOrder = connectionsList.map(a => a.name);
+     
         userInfo.getSummaries(req.user.user_id, function ( err, summaries ) {
             
             if (err) {
@@ -66,30 +72,56 @@ router.get('/data-sources',  function (req, res) {
                 return;
             }
 
+            _.forEach( summaries.accounts, function( account_info, account_name ){
+
+                var connectionIndex = connectionsOrder.indexOf(account_name)
+                var connection = connectionsList[connectionIndex]
+
+                var propertyList = account_info.account_list
+                var chosen_account = account_info.chosen_account;
+
+                if ( chosen_account ) {
+                    connection.status = "connected",
+                    connection.buttonText = "Edit Connection"
+                    connection.buttonLink = "/auth/" + connection.linkLabel + "/unlink/"
+                    connection.account_email = chosen_account.email
+
+                    _.forEach( connection.propertyDisplay, function( property, index ){
+                        property.name = chosen_account[property.property]
+                        //console.log(property, property.name)
+                   })
+
+                }
+
+                if ( propertyList ) {
+
+                    connection.status = "property"
+                    connection.buttonText = "Remove Connection"
+                    connection.buttonLink = "/auth/" + connection.linkLabel + "/unlink/"
+                    connection.account_email = account_info.email
+                    connection.account_list = propertyList
+                }
+
+            })
+
+            //console.log(summaries.accounts)
+
             //console.log('\n', emoji.get("smile"), '***** Results: ', results);
             //console.log('\n', emoji.get("smile"), '***** User: ', req.user.username, req.user.email, req.user.company.company_name);
 
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'data-sources.handlebars',
+            res.render('data-sources', {
+                layout: 'main',
+                page: 'data-sources',
                 user : req.user,
                 summaries : summaries.accounts,
                 numConnections: summaries.numberOfConnectedAccounts,
-                numAccountLists: summaries.numberOfAccountLists
+                numAccountLists: summaries.numberOfAccountLists,
+                connectionsList: connectionsList
             });
 
         });
     }
     else res.redirect('/signin');
-});
-
-router.get('/frontend', function(req, res, next) {
-            
-            res.render('fingertips', {
-                version: 'fingertips',
-                layout: 'frontend.handlebars'
-            });
-        
 });
 
 module.exports = router

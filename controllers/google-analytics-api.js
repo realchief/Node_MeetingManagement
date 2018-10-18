@@ -771,14 +771,31 @@ exports.getAccountList = ( gAccount, cb ) => {
                                 views: []
                             }
                             for (var k = 0; k < response.data.items[i].webProperties[j].profiles.length; k++) {
+
                                 var view = {
                                     view_id: response.data.items[i].webProperties[j].profiles[k].id,
                                     view_name: response.data.items[i].webProperties[j].profiles[k].name
                                 };
+
+
+                                // MAKE PROFILE SETTER LINK //
+                                var utilities = require('../controllers/utilities');
+
+                                view.property_link = utilities.serialize({
+                                  account_id: datum.account_id,
+                                  account_name: datum.account_name,
+                                  property_id: property.property_id,
+                                  property_name: property.property_name,
+                                  view_id: view.view_id,
+                                  view_name: view.view_name
+                                })
+
+
                                 property.views.push(view);
                             }
                             datum.web_properties.push(property);
                         }
+
                         data.push(datum);
                     }
                     cb(null, data);
@@ -819,6 +836,7 @@ exports.getAccountListOrSelectView = function ( user, cb ) {
                         view_name: gAccount.view_name,
                         account_name: gAccount.account_name,
                         property_name: gAccount.property_name,
+                        user : gAccount,
                         email: gAccount.email
                     }, 
                     account_list: null
@@ -832,6 +850,7 @@ exports.getAccountListOrSelectView = function ( user, cb ) {
                     cb(null, {
                         account_list: accounts, 
                         user : gAccount,
+                        email: gAccount.email,
                         chosen_account: null
                     })
                 });

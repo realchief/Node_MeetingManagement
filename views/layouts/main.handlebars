@@ -1,0 +1,41 @@
+{{> head }}
+
+<body class="{{#if sessionPrompt.message}}with-prompt{{/if}}">
+
+	{{#if sessionPrompt.message}}
+	<div class="prompt-message">
+		<p>{{sessionPrompt.message}}
+	</div>
+	{{/if}}
+
+	<div class="app-container">
+
+		<div class="menu">
+			{{> menu }}
+		</div>
+
+		<div class="main">
+
+			{{#if extraClass}}
+			<div class="{{extraClass}}">
+			{{/if}}
+
+			<div class="content">
+				{{{ body }}}
+			</div>
+		
+			{{#if extraClass}}
+			</div>
+			{{/if}}
+
+		</div>
+		</div>
+
+	</div>	
+
+</div>
+
+{{> scripts }}
+
+</body>
+</html>

@@ -69,10 +69,8 @@ router.get('/chart/:chart', function (req, res) {
 
       } else {
 
-        //console.log('Complete');  
-  
-         res.render('fingertips', {
-            layout: 'chart-test.handlebars',  
+         res.render('chart-test', {
+            layout: 'main',  
             datetime: formattedDateTime 
           })
 

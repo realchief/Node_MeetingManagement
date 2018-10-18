@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     Company.associate = function(models) {
         models.Company.belongsTo(models.Facebook);
         models.Company.belongsTo(models.Google);
-        models.Company.belongsTo(models.Setting);
+        models.Company.hasOne(models.Setting);
         models.Company.hasMany(models.User);
     };
 

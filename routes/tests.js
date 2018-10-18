@@ -363,8 +363,8 @@ router.get('/testphrase/', function (req, res) {
 
   console.log( emoji.get("sparkles"), 'Platform pageview asset links', platformList.all.metrics.pageviews )
 
-  res.render('fingertips', {
-        layout: 'phrases-test.handlebars',
+  res.render('phrases-test', {
+        layout: 'main',
         allTalkingPoints : allTalkingPoints,
         allInsights : allInsights,
         filteredPoints : filteredPoints,
@@ -440,8 +440,8 @@ router.get('/testdates/', function (req, res) {
     var range = dates.getDateRangeNumDays(defaultNumDays);
     var defaultDates = JSON.stringify(dates.setDateWindow(range))
 
-    res.render('fingertips', {
-        layout: 'dates-test.handlebars',
+    res.render('dates-test', {
+        layout: 'main',
         dates : defaultDates
 
     })
@@ -459,8 +459,8 @@ router.get('/phrasetestdb/', function (req, res) {
         
        var filteredInsights = phraseMaker.matchingAllTagsFilter(phrases.allInsights, ['google_analytics', 'positive', 'pageviews'])
 
-      res.render('fingertips', {
-        layout: 'phrases-test.handlebars',
+      res.render('phrases-test', {
+        layout: 'main',
        // allTalkingPoints : allTalkingPoints,
         allInsights : phrases.allInsights,
        // filteredPoints : filteredPoints,

@@ -1,0 +1,276 @@
+
+{{!-- 
+{{#if messages.info}}
+<div class="flash-message">
+	{{#each messages.info }}
+	<p>{{value}}</p>
+	{{/each}}
+</div>
+{{/if}}
+
+{{#if flash}} 
+	<div class="flash-message">
+		<p>{{flash}}</p>
+	</div>
+{{/if}}
+
+---}}
+
+{{#if sessionFlash.message}}
+	{{#contains sessionFlash.type "info"}}
+	<div class="flash-message">
+		<p>{{{sessionFlash.message}}}</p>
+	</div>
+	{{/contains}}
+{{/if}}
+
+{{#eq numConnections 0 }}
+
+	{{#eq numAccountLists 0 }}
+		<div class="persistent-message">
+			<p>You have not connected any data sources yet. We need to connect a data source so we can send you a MeetBrief!</p>
+		</div>
+	{{/eq}}
+
+{{/eq}}
+
+{{#gt numAccountLists 0 }}
+
+	<div class="note-message">
+		<p>Almost there! We need to choose the property that we're going to analyze for insights!</p>
+	</div>
+
+
+{{/gt}}
+
+
+
+{{#if connectionsList}}
+
+{{#each connectionsList  as |connection|}}
+
+	{{#eq connection.status "property"}}
+
+		<div class="section">
+		<div class="connections-list choose-property-list">
+		<div class="row">
+
+		<div class="col-xs-12 col-md-6 col-lg-6 centered">
+			<div class="card tighter-card align-center">
+				
+				<div class="card-inside {{connection.status}}">
+
+					<div class="info-top">
+						<p class="connection-logo">{{{connection.logo}}}</p>
+						<p class="label">{{connection.label}}</p>
+
+						<p>Select which property you want to use for insights:</p>
+
+						<p class="connection-info">
+							<span class="label">Connected As:</span>
+							{{ connection.account_email }}
+						</p>
+
+					</div>
+
+					
+					<div class="property-chooser">
+
+						{{#eq connection.linkLabel "google"}}
+
+						<ul class="properties">
+							{{#each connection.account_list.users as |account|}}
+								<li>
+									<span class="account-label">{{ account.account_name }}</span>
+							
+									<ul class="properties-list">
+										{{#each account.web_properties as |property|}}
+											
+											{{#each property.views as |view|}}
+												<li>
+												
+													<a href="/{{connection.linkLabel}}/setprofile/?{{view.property_link}}">
+														<span class="property-label">{{property.property_name }}</span>
+														<span class="view-label">{{view.view_name}}</span>
+													</a>
+													
+												</li>
+											{{/each}}
+
+										{{/each}}
+	
+									</ul>
+								</li>
+							{{/each}}
+						</ul>
+
+						{{/eq}}
+
+
+						{{#eq connection.linkLabel "facebook"}}
+
+						<ul class="properties">
+							
+								<li>
+									<span class="account-label">Facebook Page Accounts</span>
+							
+									<ul class="properties-list">
+
+										{{#if connection.account_list }}
+
+										{{#each connection.account_list as |account|}}
+												<li>
+												
+													<a href="/{{connection.linkLabel}}/setprofile/?{{account.property_link}}">
+														<span class="property-label">{{ account.account_name }}</span>
+													</a>
+													
+												</li>
+										{{/each}}
+
+										{{else}}
+
+											<li>
+												<a href="/auth/{{connection.linkLabel}}/unlink">
+												You do not have any managed pages!										
+												</a>			
+											</li>
+
+										{{/if}}
+
+									</ul>
+								</li>
+						</ul>
+
+						{{/eq}}
+
+
+					</div>
+
+					<div class="actions">
+						<p><a href="/auth/{{connection.linkLabel}}/unlink" class="{{connection.status}}">Cancel</a></p>
+					</div>
+				</div>		
+		
+			</div>
+
+		</div>
+
+		</div>
+		</div>
+		</div>
+
+	{{/eq}}
+	
+{{/each}}
+
+{{/if}}
+
+
+
+{{#gt numConnections 0 }}
+
+<div class="persistent-message">
+	<p>You have set up a connected data source! You can now add  insights@meetbrief.com to any meeting you set up with your {{user.user_id}} email address. You'll get insights 30 minutes before the meeting starts! </p>
+</div>
+
+{{/gt}}
+
+{{#if connectionsList}}
+
+<div class="section">
+
+<div class="connections-list">
+<div class="row">
+
+{{#each connectionsList as |connection| }}
+<div class="col-xs-12 col-md-4 col-lg-3">
+	<div class="card tighter-card align-left">
+		
+		<div class="card-inside {{connection.status}}">
+
+			<div class="info-top">
+				<p class="connection-logo">{{{connection.logo}}}</p>
+				<p class="label">{{connection.label}}</p>
+
+				{{#eq connection.status "connected"}}
+
+					<p class="connection-info">
+						<span class="label">Connected As:</span>
+						{{ connection.account_email }}
+					</p>
+
+					<p class="connection-info">
+									
+						{{#each connection.propertyDisplay}}
+						<span class="connection-label">
+							<span class="label">{{this.propertyLabel}}</span>
+							{{ this.name }}
+						</span>
+						{{/each}}
+						
+					</p>
+
+
+				{{else}}
+
+
+				{{#eq connection.status "property"}}
+					<p class="description">Select which property you want to use for insights.</p>
+				{{else}}
+					<p class="description">{{connection.description}}</p>
+				{{/eq}}
+				
+		
+				{{/eq}}
+
+			</div>
+
+			<div class="actions">
+			
+				{{#contains connection.status "connected"}}
+
+				<p class="edit link-with-icon">
+
+					<span class="icon">
+					<a href="{{connection.buttonLink}}" class="{{connection.status}}">
+					<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+					        <g id="Sources-Copy-8" transform="translate(-353.000000, -509.000000)" fill="#4A6F99" fill-rule="nonzero">
+					            <g id="Group" transform="translate(305.000000, 202.000000)">
+					                <g id="gridicons-cog" transform="translate(48.000000, 307.000000)">
+					                    <path d="M16.2,9 C16.2,8.4888 16.1451,7.9902 16.0434,7.5096 L17.694,6.0588 L15.894,2.9412 L13.8042,3.6486 C13.0671,2.9862 12.1959,2.4714 11.2311,2.1573 L10.8,0 L7.2,0 L6.7689,2.1564 C5.8041,2.4705 4.9329,2.9853 4.1958,3.6477 L2.106,2.9412 L0.306,6.0588 L1.9566,7.5096 C1.8549,7.9902 1.8,8.4888 1.8,9 C1.8,9.5112 1.8549,10.0098 1.9566,10.4904 L0.306,11.9412 L2.106,15.0588 L4.1958,14.3514 C4.9329,15.0138 5.8041,15.5286 6.7689,15.8427 L7.2,18 L10.8,18 L11.2311,15.8436 C12.1959,15.5295 13.0662,15.0147 13.8042,14.3523 L15.894,15.0597 L17.694,11.9421 L16.0434,10.4913 C16.1451,10.0098 16.2,9.5112 16.2,9 Z M9,12.6 C7.0119,12.6 5.4,10.9881 5.4,9 C5.4,7.0119 7.0119,5.4 9,5.4 C10.9881,5.4 12.6,7.0119 12.6,9 C12.6,10.9881 10.9881,12.6 9,12.6 Z" id="Shape"></path>
+					                </g>
+					            </g>
+					        </g>
+					    </g>
+					</svg>
+					</span>
+
+					<span class="link">Remove Connection</span>
+
+					</a>
+
+				</p>
+
+				{{else}}
+
+					<p><a href="{{connection.buttonLink}}" class="btn {{connection.status}}">{{connection.buttonText}}</a></p>
+
+				{{/contains}}
+
+			</div>
+
+		</div>
+	</div>
+</div>
+{{/each}}
+
+</div>
+</div>
+
+</div>
+
+{{/if}}
+
+

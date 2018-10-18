@@ -1,0 +1,57 @@
+/* ==========================================================================
+Messages
+========================================================================== */ 
+
+.flash-message p, .note-message p, .persistent-message p, 
+.prompt-message p {
+	margin: 0;
+}
+
+.prompt-message {
+	background: #D39B46;
+	color: #fff;
+	box-sizing: border-box;
+	padding: 10px 20px;
+	text-align: center;
+	max-width: 100%;
+	display: block;
+	width: 100%;
+	height: $prompt-height;
+}
+
+.flash-message {
+	background: #c4f5e3;
+	box-sizing: border-box;
+	padding: 20px 20px;
+	text-align: center;
+	max-width: 100%;
+	display: block;
+	margin: 0 auto 10px auto;
+	 border: 1px solid #ccc;
+    border-bottom-width: 2px;
+}
+
+.note-message {
+	background: #88d8ff;
+	box-sizing: border-box;
+	padding: 20px 20px;
+	text-align: center;
+	max-width: 100%;
+	display: block;
+	margin: 0 auto 10px auto;
+	 border: 1px solid #ccc;
+    border-bottom-width: 2px;
+}
+
+.persistent-message {
+	background: rgba(88,93,120,1);
+	box-sizing: border-box;
+	color: #fff;
+	padding: 20px 20px;
+	text-align: center;
+	max-width: 100%;
+	display: block;
+	margin: 0 auto 10px auto;
+	 border: 1px solid #ccc;
+    border-bottom-width: 2px;
+}

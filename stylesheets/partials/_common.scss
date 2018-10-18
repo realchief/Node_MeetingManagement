@@ -1,0 +1,157 @@
+/* ==========================================================================
+Common and Defaults
+========================================================================== */ 
+
+body {
+	color: #4A4A4A;
+	font-family: 'proxima-soft', Arial, Verdana, Tahoma, sans-serif;
+}
+
+/*body.in-results,
+body.no-vertical-center {
+	background: #f9f9f9;
+}*/
+
+button, input, optgroup, select, textarea {
+   font-family: 'proxima-soft', Arial, Verdana, Tahoma, sans-serif;
+}
+
+textarea, input, button { 
+		outline: none; 
+}
+
+textarea { 
+	border: 1px solid #e5e5e5; 
+	padding: 10px;
+}
+
+h3 {
+	font-weight: normal;
+	margin-bottom: 0;
+}
+
+:focus {
+  outline-color: transparent;
+  outline-style: none;
+}
+
+
+ span.label {
+	margin-left: 0;
+	/*text-align: left;*/
+	display: block;
+}
+
+p:last-child {
+	margin-bottom: 0 !important;
+}
+
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+.card {
+    padding: 40px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    background: #fff;
+
+    &:after {
+		  content: "";
+	  	display: table;
+	 	 clear: both;
+	}
+
+	text-align: center;
+
+	&.tighter-card {
+	    padding: 20px;
+	}
+
+}
+
+.card + .card {
+    margin-top: 1.5em;
+}
+
+.card-inside {
+}
+
+
+
+
+/* ==========================================================================
+   Helpers
+   ========================================================================== */
+
+.centered {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.clearfix:after {
+	content: "";
+  display: table;
+  clear: both;
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-middle {
+  vertical-align: middle;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.floated-right {
+    float: right;
+    margin-left: 40px;
+    margin-bottom: 40px;
+}
+
+.floated-left {
+    float: left;
+    margin-right: 40px;
+    margin-bottom: 40px;
+}
+
+.relative {
+  position: relative;
+}
+
+.row.no-inside-margin > div {
+  margin-bottom: 0;
+} 
+
+.row.smaller-inside-margin > div {
+  margin-bottom: .5rem;
+} 
+
+.covered {
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.vertically-align {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}

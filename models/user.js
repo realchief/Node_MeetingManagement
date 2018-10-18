@@ -75,9 +75,9 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = function(models) {
-       // models.User.belongsTo(models.Setting);
-        models.User.belongsTo(models.Role);
+       //models.User.belongsTo(models.UserSetting);
         models.User.belongsTo(models.Company);
+        models.User.belongsTo(models.Role);
         models.User.hasMany(models.Meeting);
     };
 

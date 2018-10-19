@@ -19,6 +19,12 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING,
         },
+        resetPasswordToken: {
+            type: DataTypes.STRING,
+        },
+        resetPasswordExpires: {
+            type: DataTypes.DATE,
+        },
         timezone: {
             type: DataTypes.STRING,
         }

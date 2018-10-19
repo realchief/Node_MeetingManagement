@@ -183,12 +183,12 @@ router.get('/forgot', function(req, res) {
         layout: 'main',
         
     });
-    
+
 });
 
-router.post('/forgot', function(req, res, next) {
+router.post('/forgot', function(req, res, next) {    
 
-    async.waterfall([
+    Async.waterfall([
         function(done) {
             crypto.randomBytes(20, function(err, buf) {
                 var token = buf.toString('hex');
@@ -196,12 +196,19 @@ router.post('/forgot', function(req, res, next) {
             });
         },
         function(token, done) {
-            User.findOne({ email: req.body.email }, function(err, user) {
-                if (!user) {
+            console.log(req.body.email)
+            console.log(token)
+            Model.User.findOne({
+                where: {
+                    'email': req.body.email
+                }
+            }).then(function (user) {
+
+                if (!user) {                    
                     req.flash('error', 'No account with that email address exists.');
                     return res.redirect('/forgot');
-                }
-        
+                }  
+                           
                 user.resetPasswordToken = token;
                 user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         
@@ -211,6 +218,8 @@ router.post('/forgot', function(req, res, next) {
             });
         },
         function(token, user, done) {
+
+            console.log(user.email)
             var smtpTransport = nodemailer.createTransport('SMTP', {
                 service: 'SendGrid',
                 auth: {

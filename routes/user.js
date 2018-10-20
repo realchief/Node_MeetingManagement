@@ -9,6 +9,7 @@ var colors = require('colors');
 var emoji = require('node-emoji')
 
 const moment = require("moment-timezone");
+// var moment = require('moment');
 var userInfo = require('../controllers/users')
 
 var utilities = require('../controllers/utilities')
@@ -247,6 +248,41 @@ router.post('/forgot', function(req, res, next) {
         if (err) return next(err);
         res.redirect('/forgot');
     });
+});
+
+router.get('/reset/:token', function(req, res) {
+
+    console.log(req.params.token)
+    console.log(moment().toDate())
+
+    Model.User.findOne({
+        where: {
+            'resetPasswordToken': req.params.token            
+        }
+    }).then(function (user) {
+
+        console.log(user)
+        console.log(user.resetPasswordExpires)
+        let current_date = moment().toDate();    
+        let isExpired = moment(current_date).isAfter(user.resetPasswordExpires);
+        console.log(isExpired)
+
+        if (!user) {                    
+            req.flash('error', 'Password reset token is invalid');
+            return res.redirect('/forgot');
+        }
+
+        if (isExpired) {
+            req.flash('error', 'Token is expired');
+            return res.redirect('/forgot');
+        }
+        
+        res.render('reset', {
+            layout: 'main',
+            user: req.user
+        });
+    });
+
 });
 
 router.post('/signup', function(req, res) {

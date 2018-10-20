@@ -1,3 +1,4 @@
+const sgMail = require('@sendgrid/mail');
 let express = require('express');
 let router = express.Router();
 let passport = require('passport');
@@ -212,34 +213,35 @@ router.post('/forgot', function(req, res, next) {
                 user.resetPasswordToken = token;
                 user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         
-                user.save(function(err) {
-                    done(err, token, user);
+                user.save().then(function() {
+                    done(null, token, user);
                 });
             });
         },
         function(token, user, done) {
 
-            console.log(user.email)
-            var smtpTransport = nodemailer.createTransport('SMTP', {
-                service: 'SendGrid',
-                auth: {
-                    user: '!!! YOUR SENDGRID USERNAME !!!',
-                    pass: '!!! YOUR SENDGRID PASSWORD !!!'
-                }
-            });
-            var mailOptions = {
+            const EmailContent = require('../components/EmailContent.js');
+            console.log(token)
+            console.log(user.email)  
+            
+            var from = "insights@meetbrief.com"
+            var subject = "Password Reset for Meetbrief meeting site"
+
+            const msg = {
                 to: user.email,
-                from: 'passwordreset@demo.com',
-                subject: 'Node.js Password Reset',
+                from: {
+                  email : from,
+                  name: "MeetBrief"
+                },
+                subject: subject,              
                 text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
                 'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-                'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+                'http://localhost:3001' + '/reset/' + token + '\n\n' +
                 'If you did not request this, please ignore this email and your password will remain unchanged.\n'
             };
-            smtpTransport.sendMail(mailOptions, function(err) {
-                req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
-                done(err, 'done');
-            });
+          
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+            sgMail.send( msg );            
         }
     ], function(err) {
         if (err) return next(err);

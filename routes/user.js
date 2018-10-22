@@ -252,9 +252,6 @@ router.post('/forgot', function(req, res, next) {
 
 router.get('/reset/:token', function(req, res) {
 
-    console.log(req.params.token)
-    console.log(moment().toDate())
-
     Model.User.findOne({
         where: {
             'resetPasswordToken': req.params.token            
@@ -287,73 +284,74 @@ router.get('/reset/:token', function(req, res) {
 
 router.post('/reset/:token', function(req, res) { 
 
-    console.log(req.params.token)
+    let new_changed_password = req.body.changed_password;
+    let new_confirm_changed_password = req.body.confirm_changed_password;
 
-    Async.waterfall([
-        function(done) {
-            Model.User.findOne({
-                where: {
-                    'resetPasswordToken': req.params.token            
-                }
-            }).then(function (user) {
-
-                console.log('====post====reset========')
-                console.log(user)
-                console.log(user.resetPasswordExpires)
-                console.log(req.body)
-                
-                let current_date = moment().toDate();
-                console.log(current_date)   
-                let isExpired = moment(user.resetPasswordExpires).isAfter(current_date);
-                console.log(isExpired)
-        
-                if (!user) {                    
-                    req.flash('error', 'Password reset token is invalid');
-                    return res.redirect('/forgot');
-                }
-        
-                if (isExpired) {
-                    req.flash('error', 'Token is expired');
-                    return res.redirect('/forgot');
-                }
-                
-                user.password = req.body.changed_password;
-                user.resetPasswordToken = undefined;
-                user.resetPasswordExpires = undefined;
-
-                user.save().then(function() {
-                    done(null, user);
+    if (new_changed_password != new_confirm_changed_password) {
+        res.render('reset', {
+            errorMessage: { 
+                password_match: 'Your passwords do not match. Please try again!'
+            }, 
+            layout: 'main'
+        } );
+    }
+    else {
+        Async.waterfall([
+            function(done) {
+                Model.User.findOne({
+                    where: {
+                        'resetPasswordToken': req.params.token            
+                    }
+                }).then(function (user) {      
+                    
+                    let current_date = moment().toDate();              
+                    let isExpired = moment(user.resetPasswordExpires).isAfter(current_date);             
+            
+                    if (!user) {                    
+                        req.flash('error', 'Password reset token is invalid');
+                        return res.redirect('/forgot');
+                    }
+            
+                    if (isExpired) {
+                        req.flash('error', 'Token is expired');
+                        return res.redirect('/forgot');
+                    }
+                    
+                    user.password = req.body.changed_password;                 
+    
+                    user.save().then(function() {
+                        done(null, user);
+                    });
                 });
-            });
-        },
-        function(user, done) {
-
-            const EmailContent = require('../components/EmailContent.js');
-            
-            console.log(user.email)
-            
-            var from = "insights@meetbrief.com"
-            var subject = "Your password has been changed"
-
-            const msg = {
-                to: user.email,
-                from: {
-                  email : from,
-                  name: "MeetBrief"
-                },
-                subject: subject,              
-                text: 'Hello,\n\n' +
-                'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
-            };
-          
-            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-            sgMail.send( msg ); 
-            
-            res.redirect('/signin');      
-        }
-    ], function(err) {
-      res.redirect('/');
-    });
+            },
+            function(user, done) {
+    
+                const EmailContent = require('../components/EmailContent.js');           
+                
+                var from = "insights@meetbrief.com"
+                var subject = "Your password has been changed"
+    
+                const msg = {
+                    to: user.email,
+                    from: {
+                      email : from,
+                      name: "MeetBrief"
+                    },
+                    subject: subject,              
+                    text: 'Hello,\n\n' +
+                    'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+                };
+              
+                sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+                sgMail.send( msg ); 
+    
+                res.redirect('/signin');      
+            }
+        ], function(err) {
+          res.redirect('/');
+        });
+    }   
+    
   });
 
 router.post('/signup', function(req, res) {

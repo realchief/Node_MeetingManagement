@@ -317,7 +317,9 @@ router.post('/reset/:token', function(req, res) {
                         return res.redirect('/forgot');
                     }
                     
-                    user.password = req.body.changed_password;                 
+                    user.password = req.body.changed_password;
+                    user.resetPasswordToken = undefined;
+                    user.resetPasswordExpires = undefined;
     
                     user.save().then(function() {
                         done(null, user);
